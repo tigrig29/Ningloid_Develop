@@ -1,13 +1,3 @@
-# 実行用
-.bat
-
-# esLint
-.eslintrc.js
-
-# sublime
-.sublime-project
-.sublime-workspace
-
 # Logs
 logs
 *.log
