@@ -113,7 +113,7 @@ ningloid.parser = {
 				url,
 				success: (data) => {
 					// 一行ずつ配列に保存
-					scenarioArray = data.split(/\r\n|\r\n/);
+					scenarioArray = data.split(/\r\n|\n/);
 					// 配列を返す
 					resolve(scenarioArray);
 				},
