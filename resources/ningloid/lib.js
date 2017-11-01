@@ -1,5 +1,5 @@
 // electron jQuery読み込み
-const $ = jQuery = require("./libs/jquery-3.0.0.min.js");
+const $ = jQuery = require("../resources/libs/jquery-3.0.0.min.js");
 
 (function($){
     // オブジェクトの値渡し（オブジェクトをコピーして返す）
