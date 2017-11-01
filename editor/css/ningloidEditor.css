@@ -12,6 +12,8 @@ body{
 	height: 70%;
 	position: absolute;
 	border: 1px solid black;
+	overflow: hidden;
+	background: black;
 }
 
 #editorText{
