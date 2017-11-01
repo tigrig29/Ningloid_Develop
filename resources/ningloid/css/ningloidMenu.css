@@ -1,0 +1,132 @@
+
+/* ================================================================ */
+/* ●　共通															*/
+/* ================================================================ */
+.menuLayer{
+	width: 100%;
+	height: 100%;
+	display: none;
+	position: absolute;
+}
+.menuClose{
+	top: 10px;
+	right: 40px;
+	width: 50px;
+	height: 50px;
+	border-radius: 10px;
+	border: solid 5px black;
+	position: absolute;
+	cursor: pointer;
+}
+.menuClose > p{
+	left: 5px;
+	margin: auto;
+	font-size: 50px;
+	font-weight: bold;
+	line-height: 40px;
+	position: relative;
+}
+
+
+/* ================================================================ */
+/* ●　セーブ画面														*/
+/* ================================================================ */
+#saveMenu{
+	background: rgba(100, 100, 160, 0.9);
+}
+
+/* ================================================================ */
+/* ●　ロード画面														*/
+/* ================================================================ */
+#loadMenu{
+	background: rgba(160, 100, 100, 0.9);
+}
+
+/* ================================================================ */
+/* ●　セーブ・ロード共通													*/
+/* ================================================================ */
+.saveDataAreaWrapper{
+	width: 100%;
+	height: 100%;
+}
+.saveDataAreaWrapper div{
+	position: relative;
+}
+.saveDataArea{
+	width: 80%;
+	height: 19%;
+	margin-top: 10px;
+	border: 1px solid black;
+	cursor: pointer;
+}
+.saveDataArea:after{
+	content: "";
+	clear: both;
+	display: block;
+}
+.saveDataArea > div{
+	float: left;
+}
+.saveNumber{
+	width: 30px;
+	height: 100%;
+	margin-left: 5px;
+	font-size: 3.0em;
+}
+.saveThumbnail{
+	width: calc(100% * 19 / 80);
+	height: 100%;
+	margin-right: 50px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+.saveInfo{
+	width: calc(100% * 50 / 80);
+	height: 100%;
+	font-size: 1.5em;
+	overflow: hidden;
+}
+.saveTitle{
+	font-size: 1.5em;
+	border-bottom: double 5px black;
+	margin-bottom: 5px;
+	padding-bottom: 5px;
+}
+.saveText{
+}
+
+
+/* ================================================================ */
+/* ●　バックログ														*/
+/* ================================================================ */
+#backlog{
+	background: rgba(200, 200, 200, 0.75);
+}
+#logDataAreaWrapper{
+	width: 100%;
+	height: 100%;
+	overflow-y: scroll;
+	position: absolute;
+}
+.logDataArea{
+	left: 3%;
+	width: 80%;
+	border-bottom: 1px solid black;
+	padding: 20px 0px;
+	position: relative;
+}
+.logDataArea:after{
+	content: "";
+	clear: both;
+	display: block;
+}
+.logSpeaker{
+	float: left;
+	font-size: 1.5em;
+}
+.logMessage{
+	float: left;
+	margin-left: 300px;
+	font-size: 2.0em;
+}
