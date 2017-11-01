@@ -5,7 +5,7 @@ ningloid.menu = {
 	// ================================================================
 	init(){
 		// メニュー系のHTML用CSS読み込み
-		ningloid.addCSS("./ningloid/css/ningloidMenu.css");
+		ningloid.addCSS("../resources/ningloid/css/ningloidMenu.css");
 		// メニュー共通戻るボタンのクリックイベント設定
 		$("#menuWrapper").on("click", ".menuClose", (e) => {
 			this.hide($(e.currentTarget).parent().attr("id"));
@@ -33,13 +33,13 @@ ningloid.menu = {
 	// ================================================================
 	/**
 	 * セーブ画面を作成する
-	 * セーブ画面のHTMLデータは、./ningloid/html/save.htmlとする
+	 * セーブ画面のHTMLデータは、../resources/ningloid/html/save.htmlとする
 	 */
 	createSaveMenu(){
 		const layer = ningloid.layer;
 		(async () => {
 			// 同期処理、メニューラッパーにsave.htmlから読み取ったHTMLを追加する
-			await layer.appendHTML(layer.getLayer("menuWrapper"), "./ningloid/html/save.html");
+			await layer.appendHTML(layer.getLayer("menuWrapper"), "../resources/ningloid/html/save.html");
 			// HTMLデータ追加完了後、セーブ画面の各種レイヤを取得する
 			const $saveMenu = this.jObj.saveMenu = $("#saveMenu");
 			const $saveDataAreaWrapper = $saveMenu.find(".saveDataAreaWrapper");
@@ -73,13 +73,13 @@ ningloid.menu = {
 	},
 	/**
 	 * ロード画面を作成する
-	 * ロード画面のHTMLデータは、./ningloid/html/load.htmlとする
+	 * ロード画面のHTMLデータは、../resources/ningloid/html/load.htmlとする
 	 */
 	createLoadMenu(){
 		const layer = ningloid.layer;
 		(async () => {
 			// 同期処理、メニューラッパーにlaod.htmlから読み取ったHTMLを追加する
-			await layer.appendHTML(layer.getLayer("menuWrapper"), "./ningloid/html/load.html");
+			await layer.appendHTML(layer.getLayer("menuWrapper"), "../resources/ningloid/html/load.html");
 			// HTMLデータ追加完了後、セーブ画面の各種レイヤを取得する
 			const $loadMenu = this.jObj.loadMenu = $("#loadMenu");
 			const $saveDataAreaWrapper =  $loadMenu.find(".saveDataAreaWrapper");
@@ -117,7 +117,7 @@ ningloid.menu = {
 		const layer = ningloid.layer;
 		(async () => {
 			// 同期処理、メニューラッパーにlaod.htmlから読み取ったHTMLを追加する
-			await layer.appendHTML(layer.getLayer("menuWrapper"), "./ningloid/html/backlog.html");
+			await layer.appendHTML(layer.getLayer("menuWrapper"), "../resources/ningloid/html/backlog.html");
 			const $backlog = this.jObj.backlog = $("#backlog");
 			// ログエリアクリック時の処理（その時点まで戻る）
 			// $("#logDataAreaWrapper").on("click", ".logDataArea", (e) => {

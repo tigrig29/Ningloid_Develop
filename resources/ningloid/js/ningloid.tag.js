@@ -81,7 +81,7 @@ ningloid.tag.bg = {
 
 		// 描画データを作成
 		const spriteData = {};
-		const bgData = spriteData[`./data/bgimage/${pm.storage}`] = {};
+		const bgData = spriteData[`../resources/data/bgimage/${pm.storage}`] = {};
 		if(pm.width) bgData.width = parseFloat(pm.width);
 		if(pm.height) bgData.height = parseFloat(pm.height);
 
@@ -250,7 +250,7 @@ ningloid.tag.messageConfig = {
 		if(pm["bg-color"] !== "") bgstyle["background-color"] = pm["bg-color"];
 		if(pm.opacity !== "") bgstyle.opacity = pm.opacity;
 		if(pm["bg-image"] !== ""){
-			bgstyle["background-image"] = `url(./data/image/${pm["bg-image"]})`;
+			bgstyle["background-image"] = `url(../resources/data/image/${pm["bg-image"]})`;
 			bgstyle["background-repeat"] = "none";
 		}
 
@@ -534,7 +534,7 @@ ningloid.tag.jump = {
 		const parser = ningloid.parser;
 		if(pm.storage){
 			// シナリオファイルの読み込み
-			parser.loadScenario(`./data/scenario/${pm.storage}`).then(() => {
+			parser.loadScenario(`../resources/data/scenario/${pm.storage}`).then(() => {
 				// 3MB以上のファイルを新規に読み込むと、処理がカクつく可能性がある
 				// この場合にはsetTimeoutで↓の処理を囲んだほうが良い
 					// setTimeout(() => {}, 200);

@@ -86,14 +86,14 @@ ningloid.character = {
 			// partsDataで指定されていない場合、デフォルト値としてキャラクター定義の最上位の値を適応する
 			const partID = partsData.partID || Object.keys(this.data[characterName])[0];
 			const characterImageFileName = this.data[characterName][partID];
-			spriteData[`./data/fgimage/${characterImageFileName}`] = partsData.spriteProperty || {};
+			spriteData[`../resources/data/fgimage/${characterImageFileName}`] = partsData.spriteProperty || {};
 		}
 		else{
 			for(let partGroupID in this.data[characterName]){
 				// partsDataで指定されていないパーツに関しては、デフォルト値としてキャラクター定義の最上位の値を適応する
 				const partID = partsData[partGroupID].partID || Object.keys(this.data[characterName][partGroupID])[0];
 				const partImageFileName = this.data[characterName][partGroupID][partID];
-				spriteData[`./data/fgimage/${partImageFileName}`] = partsData[partGroupID].spriteProperty || {};
+				spriteData[`../resources/data/fgimage/${partImageFileName}`] = partsData[partGroupID].spriteProperty || {};
 			}
 		}
 

@@ -19,7 +19,7 @@ ningloid.parser = {
 	// ● 初期処理
 	// ================================================================
 	init(){
-		this.playScenarioByFile("./data/scenario/first.ks");
+		this.playScenarioByFile("../resources/data/scenario/first.ks");
 	},
 
 	// ================================================================
