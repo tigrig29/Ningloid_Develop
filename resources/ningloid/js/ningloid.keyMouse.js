@@ -6,11 +6,29 @@ ningloid.keyMouse = {
 			this.next();
 		});
 		const mousewheelevent = "onwheel" in document ? "wheel" : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
-		$(document).on({
+		const $base = ningloid.layer.getLayer("base");
+
+		// 右クリック
+		$base.on({
 			mousedown: (e) => {
 				if(e.which == 3) ningloid.menu.hide();
 			},
-			contextmenu: () => false,
+			contextmenu: () => false
+		});
+		// マウスホイール
+		$base.on(mousewheelevent, (e) => {
+			// e.preventDefault();
+			const delta = e.originalEvent.deltaY ? -(e.originalEvent.deltaY) : e.originalEvent.wheelDelta ? e.originalEvent.wheelDelta : -(e.originalEvent.detail);
+			if (delta < 0){
+				// マウスホイールを下にスクロールしたときの処理を記載
+				// console.log("↓")
+			} else {
+				// マウスホイールを上にスクロールしたときの処理を記載
+				ningloid.menu.show("backlog");
+			}
+		});
+		// キーボード
+		$(document).on({
 			keydown: (e) => {
 				const keyNumber = e.which;
 				const keydownArray = this.keydownArray;
@@ -42,17 +60,6 @@ ningloid.keyMouse = {
 						break;
 				}
 			},
-		});
-		$(document).on(mousewheelevent, (e) => {
-			// e.preventDefault();
-			const delta = e.originalEvent.deltaY ? -(e.originalEvent.deltaY) : e.originalEvent.wheelDelta ? e.originalEvent.wheelDelta : -(e.originalEvent.detail);
-			if (delta < 0){
-				// マウスホイールを下にスクロールしたときの処理を記載
-				// console.log("↓")
-			} else {
-				// マウスホイールを上にスクロールしたときの処理を記載
-				ningloid.menu.show("backlog");
-			}
 		});
 	},
 	// 次へ進む

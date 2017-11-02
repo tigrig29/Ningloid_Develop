@@ -106,12 +106,15 @@ ningloid.layer = {
 		// ベースレイヤには、ゲーム画面サイズに応じてスケールをかける
 		const remote = require("electron").remote;
 		const win = remote.getCurrentWindow();
+
+		// エディタ内にゲームを表示している時は、サイズをウィンドウのの７割に設定
 		if($base.parent().attr("id") == "game" && $("#editorText")){
 			$.extend(style, {
 				"-webkit-transform": `scale(${win.getContentSize()[0] * 0.7 / width}`,
 				"transform": `scale(${win.getContentSize()[0] * 0.7 / width})`,
 			});
 		}
+		// 通常時はウィンドウサイズに合わせる
 		else{
 			$.extend(style, {
 				"-webkit-transform": `scale(${win.getContentSize()[0] / width}`,
