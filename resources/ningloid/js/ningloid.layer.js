@@ -106,10 +106,21 @@ ningloid.layer = {
 		// ベースレイヤには、ゲーム画面サイズに応じてスケールをかける
 		const remote = require("electron").remote;
 		const win = remote.getCurrentWindow();
-		$.extend(style, {
-			"-webkit-transform": `scale(${win.getContentSize()[0] / width}`,
-			"transform": `scale(${win.getContentSize()[0] / width})`,
-		});
+
+		// エディタ内にゲームを表示している時は、サイズをウィンドウのの７割に設定
+		if($base.parent().attr("id") == "game" && $("#editorText")){
+			$.extend(style, {
+				"-webkit-transform": `scale(${win.getContentSize()[0] * 0.7 / width}`,
+				"transform": `scale(${win.getContentSize()[0] * 0.7 / width})`,
+			});
+		}
+		// 通常時はウィンドウサイズに合わせる
+		else{
+			$.extend(style, {
+				"-webkit-transform": `scale(${win.getContentSize()[0] / width}`,
+				"transform": `scale(${win.getContentSize()[0] / width})`,
+			});
+		}
 		$base.css(style);
 		// ブラインドレイヤも同様にスケールをかけて、ついでに「Loading」の文字を中央に表示できるようにline-height調整もする
 		$.extend(style, {"line-height": `${height}px`});
