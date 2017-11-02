@@ -109,9 +109,10 @@ ningloid.layer = {
 
 		// エディタ内にゲームを表示している時は、サイズをウィンドウのの７割に設定
 		if($base.parent().attr("id") == "game" && $("#editorText")){
+			const gameWidth = $("#game").width();
 			$.extend(style, {
-				"-webkit-transform": `scale(${win.getContentSize()[0] * 0.7 / width}`,
-				"transform": `scale(${win.getContentSize()[0] * 0.7 / width})`,
+				"-webkit-transform": `scale(${gameWidth / width}`,
+				"transform": `scale(${gameWidth / width})`,
 			});
 		}
 		// 通常時はウィンドウサイズに合わせる
