@@ -4,8 +4,11 @@
 // let win = new BrowserWindow(windowOptions);
 // win.loadURL(`file://${__dirname}/../game/index.html`);
 
-const windowOption = require("./window_options.js")
+const ningloidEditor = {
+	init(){
+		const windowOption = require("./window_options.js");
+		$("#game").css(windowOption.game);
 
-$(document).ready(() => {
-	$("#game").css(windowOption.game);
-});
+		ningloid.init();
+	}
+};

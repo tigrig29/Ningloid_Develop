@@ -16,6 +16,7 @@ module.exports = {
     "globals": {
       "PIXI": true,
       "ningloid": true,
+      "ningloidEditor": true,
       "Container": true,
       "autoDetectRenderer": true,
       "loader": true,
