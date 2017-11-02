@@ -235,8 +235,8 @@ const $ = jQuery = require("../resources/libs/jquery-3.0.0.min.js");
         }
         */
         // 開発テストデータ
-        fs.writeFileSync(`./${key}.sav`, escape(data));
-        fs.writeFileSync(`./${key}Visible.sav`, data);
+        fs.writeFileSync(`../game/${key}.sav`, escape(data));
+        fs.writeFileSync(`../game/${key}Visible.sav`, data);
         // 正規データ
         // fs.writeFileSync(`${outPath}/${key}.sav`, escape(data));
     };
@@ -283,8 +283,8 @@ const $ = jQuery = require("../resources/libs/jquery-3.0.0.min.js");
             */
 
             // 開発テストデータ
-            if (fs.existsSync(`./${key}.sav`) ){
-                const data = fs.readFileSync(`./${key}.sav`);
+            if (fs.existsSync(`../game/${key}.sav`) ){
+                const data = fs.readFileSync(`../game/${key}.sav`);
                 jsonData = JSON.parse(unescape(data));
             } else {
                 jsonData = JSON.parse(unescape(localStorage.getItem(key)));
