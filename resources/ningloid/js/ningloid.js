@@ -1,11 +1,3 @@
-// pixiオブジェクトの簡易記述用変数
-const 	Container = PIXI.Container,
-		autoDetectRenderer = PIXI.autoDetectRenderer,
-		loader = PIXI.loader,
-		resources = PIXI.loader.resources,
-		TextureCache = PIXI.utils.TextureCache,
-		Sprite = PIXI.Sprite;
-
 // ningloidオブジェクトの作成
 const ningloid = {
 	config: {},
@@ -41,6 +33,23 @@ const ningloid = {
 			append: false,
 			skip: false,
 		},
+	},
+	init(){
+		// 基本レイヤの準備
+		this.layer.init();
+		// キー・マウスイベントの初期化処理
+		this.keyMouse.init();
+		// システム系の初期化処理
+		this.system.init();
+		// キャラ系の初期化処理
+		this.character.init();
+		this.menu.init();
+
+		// ゲームタイトルの設定
+		document.title = this.config.projectName;
+
+		// シナリオ開始
+		this.parser.init();
 	},
 	// 処理スキップ用resolver
 	resolve(){
@@ -123,27 +132,11 @@ const ningloid = {
 	},
 };
 
-// テスト：エディタとゲームを同時起動する
-// const {BrowserWindow} = require("electron").remote;
-// const windowOptions = require("./windowOptions.js");
-// let win = new BrowserWindow(windowOptions);
-// win.loadURL(`file://${_dirname}/Reference/reference.html`);
 
-//実行処理
-$(document).ready(() => {
-	// 基本レイヤの準備
-	ningloid.layer.init();
-	// キー・マウスイベントの初期化処理
-	ningloid.keyMouse.init();
-	// システム系の初期化処理
-	ningloid.system.init();
-	// キャラ系の初期化処理
-	ningloid.character.init();
-	ningloid.menu.init();
-
-	// ゲームタイトルの設定
-	document.title = ningloid.config.projectName;
-
-	// シナリオ開始
-	ningloid.parser.init();
-});
+// pixiオブジェクトの簡易記述用変数
+const   Container = PIXI.Container,
+        autoDetectRenderer = PIXI.autoDetectRenderer,
+        loader = PIXI.loader,
+        resources = PIXI.loader.resources,
+        TextureCache = PIXI.utils.TextureCache,
+        Sprite = PIXI.Sprite;
