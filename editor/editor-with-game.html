@@ -17,6 +17,7 @@
 	<script id="firstScript" type="text/javascript" src="../resources/ningloid/lib.js" ></script>
 
 	<script type="text/javascript" src="./js/ningloidEditor.js" ></script>
+	<script type="text/javascript" src="./libs/ace.js"></script>
 
 	<script type="text/javascript" src="../resources/libs/janimate.min.js"></script>
 	<script type="text/javascript" src="../resources/libs/velocity.min.js"></script>
@@ -54,8 +55,19 @@
 			<div id="menuWrapper" class="wrapper" data-html2canvas-ignore="true"></div>
 		</div>
 	</div>
-	<div id="editorText"></div>
-	<div id="editorBlank"></div>
+	<div id="editor">
+		<div id="editButton">
+			<div id="editLoad">
+				<input id="editFileOpener" type="file" style="display: none">
+				<i class="fa fa-folder-open fa-2x" aria-hidden="true"></i>
+			</div>
+			<div id="editSave">
+				<i class="fa fa-floppy-o fa-2x" aria-hidden="true"></i>
+			</div>
+		</div>
+		<div id="editInputArea"></div>
+	</div>
+	<div id="resourceManager"></div>
 </body>
 
 </html>

@@ -25,6 +25,7 @@ module.exports = {
       "Texture": true,
       "Sprite": true,
       "html2canvas": true,
+      "ace": true,
     },
     "rules": {
         /*エラーが起きやすいもの（基本は全て2）*/
