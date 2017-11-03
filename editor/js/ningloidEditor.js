@@ -5,7 +5,7 @@
 // win.loadURL(`file://${__dirname}/../game/index.html`);
 
 const ningloidEditor = {
-	currentLine: 0,
+	currentLine: -1,
 	init(){
 		const windowOption = require("./window_options.js");
 		$("#game").css(windowOption.game);
@@ -19,6 +19,8 @@ const ningloidEditor = {
 		// キャラ系の初期化処理
 		ningloid.character.init();
 		ningloid.menu.init();
+
+		document.title = "Ningloid Editor";
 
 		this.test();
 	},
@@ -78,6 +80,10 @@ const ningloidEditor = {
 			success: (data) => {
 				// 取得したテキストをエディタに表示
 				editor.setValue(data, -1);
+				// シナリオ全文を取得 → 命令配列化
+				ningloid.parser.url = "../resources/data/scenario/first.ks";
+				this.parser.scenarioArray = $.cloneArray(editor.getSession().getDocument().$lines);
+				this.parser.orderArray = ningloid.parser.createOrderArray(this.parser.scenarioArray);
 			},
 			error: () => {
 				// Error
@@ -92,11 +98,21 @@ const ningloidEditor = {
 		// エディタ操作のキーバインド
 		$("#editor").on({
 			mousedown: () => {
+				const oldLine = this.currentLine;
 				const newLine = editor.getCursorPosition().row;
-				if(this.currentLine != newLine){
+				// カーソルを順方向（下方向）に移動させた場合
+				if(this.currentLine < newLine){
+					console.log("aaa")
 					// エディタのフォーカス行数を更新
 					this.currentLine = newLine;
-					console.log(editor.getSession().getDocument())
+					// 命令の実行
+					this.parser.playScenario(this.parser.orderArray, oldLine + 1, newLine);
+				}
+				// カーソルを逆方向（上方向）に移動させた場合
+				else if(this.currentLine > newLine){
+					// 画面の復元（未）
+					// 命令の実行
+					this.parser.playScenario(this.parser.orderArray, newLine, newLine);
 				}
 			},
 			keydown: (e) => {
@@ -117,3 +133,42 @@ const ningloidEditor = {
 		});
 	}
 };
+
+ningloidEditor.parser = {
+	playScenario: async function(orderArray, startLine, endLine){
+		const parser = ningloid.parser;
+		parser.line = startLine || 0;
+
+		// 開始行番号から終了行番号までシナリオ実行
+		for(let i = parser.line; i <= endLine; i++){
+			const order = orderArray[i];
+
+			// 実行中の行数を保存
+			parser.line = i + 1;
+
+			// iscriptが実行された場合
+			if(parser.tmpScript !== null && !order.includes("[endscript]")){
+				parser.tmpScript += order;
+				continue;
+			}
+			// macroが実行された場合
+			if(parser.macro.tmpName !== null && !order.includes("[endmacro]")){
+				parser.macro.pushOrder(order);
+				continue;
+			}
+
+			// コメント、メッセージ、ラベルの場合
+			if(!$.isArray(order)){
+				// 保存
+				parser.nextOrder = "";
+				await parser.executeOrder(order);
+				// 以降の処理実行は不要なので、次のループに進む
+				continue;
+			}
+
+			const stopFlag = await parser.executePluralOrders(order);
+			if(stopFlag === "stop") return;
+		}
+	},
+};
+
