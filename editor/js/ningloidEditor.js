@@ -10,7 +10,15 @@ const ningloidEditor = {
 		const windowOption = require("./window_options.js");
 		$("#game").css(windowOption.game);
 
-		ningloid.init();
+		// 基本レイヤの準備
+		ningloid.layer.init();
+		// キー・マウスイベントの初期化処理
+		ningloid.keyMouse.init();
+		// システム系の初期化処理
+		ningloid.system.init();
+		// キャラ系の初期化処理
+		ningloid.character.init();
+		ningloid.menu.init();
 
 		this.test();
 	},
@@ -64,6 +72,19 @@ const ningloidEditor = {
 			});
 		});
 
+		// エディタの初期状態はfirst.ks
+		$.ajax({
+			url: "../resources/data/scenario/first.ks",
+			success: (data) => {
+				// 取得したテキストをエディタに表示
+				editor.setValue(data, -1);
+			},
+			error: () => {
+				// Error
+				alert("ファイル[../resources/data/scenario/first.ks]の読み込みに失敗しました。<br>first.ksが実際に存在するかを確認して下さい。");
+			}
+		});
+
 		// ================================================================
 		// ● ゲームへのリアルタイム反映
 		// ================================================================
@@ -75,7 +96,7 @@ const ningloidEditor = {
 				if(this.currentLine != newLine){
 					// エディタのフォーカス行数を更新
 					this.currentLine = newLine;
-					console.log(this.currentLine)
+					console.log(editor.getSession().getDocument())
 				}
 			},
 			keydown: (e) => {
