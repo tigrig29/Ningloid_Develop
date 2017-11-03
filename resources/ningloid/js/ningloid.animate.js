@@ -245,8 +245,14 @@ ningloid.animate.ext = {
 			promise[1](`指定されたmethod「${options.method}」は存在しません。`);
 		}
 
+		let method = options.method;
+
 		// スキップ時は速度を早める
-		if(ningloid.flag.skipMode === true) options.duration = 100;
+		if(ningloid.flag.skipMode === true){
+			// options.duration = 100;
+			if(method.includes("In")) method = "show";
+			if(method.includes("Out")) method = "hide";
+		}
 
 		switch(options.method){
 			// transitionアニメーションを適応

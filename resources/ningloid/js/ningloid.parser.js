@@ -401,11 +401,12 @@ ningloid.parser = {
 			const pm = tagObject.parameter = {};
 			for(let i = 1; i < splitedOrder.length; i++){
 				const targetOrder = splitedOrder[i];
-				// 構文チェック（key=valになっているか）
-				if(!targetOrder.includes("=")) throw new Error(`パラメータ${key}の記述が不正です`);
 				// パラメータ名とパラメータ値
 				const key = targetOrder.split("=")[0];
 				let val = targetOrder.replace(`${key}=`, "").replace(/\"/g, "");
+
+				// 構文チェック（key=valになっているか）
+				if(!targetOrder.includes("=")) throw new Error(`パラメータ${key}の記述が不正です`);
 
 				// マクロ内のタグ処理時
 				// %式の記述を、変数渡しの&式に書き換える（デフォルト値の記述書き換えは、【%hoge|'huga'】→【&mp.hoge||'huga'】）
