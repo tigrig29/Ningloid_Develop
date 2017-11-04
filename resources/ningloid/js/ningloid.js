@@ -29,6 +29,7 @@ const ningloid = {
 	flag: {
 		animating: 0,
 		autoMode: false,
+		skipMode: false,
 		message:{
 			append: false,
 			skip: false,
