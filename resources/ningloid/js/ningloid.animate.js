@@ -254,7 +254,7 @@ ningloid.animate.ext = {
 			if(method.includes("Out")) method = "hide";
 		}
 
-		switch(options.method){
+		switch(method){
 			// transitionアニメーションを適応
 			case "show":
 				target.css("opacity", 1);
