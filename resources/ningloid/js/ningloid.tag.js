@@ -2,6 +2,7 @@ ningloid.tag = {};
 ningloid.tag.l = {
 	start: () => {
 		return new Promise((resolve, reject) => {
+			if(ningloid.flag.systemSkipMode === true) resolve();
 			ningloid.tmp.resolver = resolve;
 			ningloid.tmp.stopResolver = resolve;
 			if(ningloid.flag.skipMode === true) ningloid.system.skip.resolveAfterSkipWaitTime();

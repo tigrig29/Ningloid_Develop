@@ -102,17 +102,48 @@ const ningloidEditor = {
 				const newLine = editor.getCursorPosition().row;
 				// カーソルを順方向（下方向）に移動させた場合
 				if(this.currentLine < newLine){
-					console.log("aaa")
 					// エディタのフォーカス行数を更新
 					this.currentLine = newLine;
-					// 命令の実行
-					this.parser.playScenario(this.parser.orderArray, oldLine + 1, newLine);
+					(async () => {
+						ningloid.flag.systemSkipMode = true;
+						// フォーカス行までの命令の実行
+						await this.parser.playScenario(this.parser.orderArray, oldLine + 1, newLine - 1);
+
+						ningloid.flag.systemSkipMode = false;
+						// フォーカス行の命令の実行
+						await this.parser.playScenario(this.parser.orderArray, newLine, newLine);
+					})();
 				}
 				// カーソルを逆方向（上方向）に移動させた場合
 				else if(this.currentLine > newLine){
-					// 画面の復元（未）
-					// 命令の実行
-					this.parser.playScenario(this.parser.orderArray, newLine, newLine);
+					// エディタのフォーカス行数を更新
+					this.currentLine = newLine;
+
+					// 復元ラベルを選定
+					let labelKey = ningloid.stat.currentLabel;
+					let labelLine = ningloid.parser.label.data[ningloid.stat.currentLabel].line;
+					if(newLine < labelLine){
+						const labelKeys = Object.keys(ningloid.parser.label.data);
+						for(let i = labelKeys.length - 1; i >= 0; i--){
+							const labelData = ningloid.parser.label.data[labelKeys[i]];
+							if(labelData.line < newLine){
+								labelKey = labelKeys[i];
+								labelLine = labelData.line;
+								break;
+							}
+						}
+					}
+
+					const saveKey = `labelSave-${labelKey}`;
+					ningloid.system.doLoad(saveKey, false, async () => {
+						ningloid.flag.systemSkipMode = true;
+						// 復元元のラベルがある行からフォーカス行までの命令の実行
+						await this.parser.playScenario(this.parser.orderArray, labelLine+ 1, newLine - 1);
+
+						ningloid.flag.systemSkipMode = false;
+						// フォーカス行の命令の実行
+						await this.parser.playScenario(this.parser.orderArray, newLine, newLine);
+					});
 				}
 			},
 			keydown: (e) => {

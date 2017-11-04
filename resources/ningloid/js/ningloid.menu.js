@@ -62,7 +62,7 @@ ningloid.menu = {
 				$saveDataArea.on("click", (e) => {
 					// セーブ番号を読み取って、その番号のデータにセーブを行う
 					// セーブ完了後、データの更新に従って表示を更新する
-					ningloid.system.doSave($(e.currentTarget).data("save-number"), () => this.updateSaveData("saveMenu"));
+					ningloid.system.doSave($(e.currentTarget).data("save-number"), true, () => this.updateSaveData("saveMenu"));
 				});
 			}
 			// 戻るボタンを追加
@@ -168,6 +168,7 @@ ningloid.menu = {
 	 *         					   this.addNewLogDataの第二引数に渡して利用する
 	 */
 	reuseBacklogAndReturnOperation(newLogData, oldLogData){
+		if(!newLogData || newLogData.length == 0) return;
 		// 新規追加ログ（newLog）
 		// ログデータの先頭、後尾のログナンバーを取得する
 		const [newLogFirstNum, newLogLastNum] = [
@@ -242,6 +243,7 @@ ningloid.menu = {
 	 *         					         this.reuseBacklogAndReturnOperation()から受け取る
 	 */
 	addNewLogData(newLogData, operationToAddLog){
+		if(!newLogData || newLogData.length == 0) return;
 		const $backlog = this.getLayer("backlog");
 		const $logDataAreaWrapper = $backlog.find("#logDataAreaWrapper");
 		// ログの追加

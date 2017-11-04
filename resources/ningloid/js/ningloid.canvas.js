@@ -296,6 +296,9 @@ ningloid.canvas = {
 		const renderer = this.getRenderer(canvasName);
 		stage.removeChildren();
 		renderer.render(stage);
+
+		// canvasデータオブジェクトのスプライト情報をリセットする
+		if(ningloid.stat.canvas[canvasName] && Object.keys(ningloid.stat.canvas[canvasName]).includes("sprite")) ningloid.stat.canvas[canvasName].sprite = {};
 	},
 
 
@@ -337,8 +340,10 @@ ningloid.canvas = {
 	buildCanvasFromStat(canvasName, cb){
 		// ステージ
 		const stage = this.getStage(canvasName);
+		const renderer = this.getRenderer(canvasName);
 		// クリアする
 		stage.removeChildren();
+		renderer.render(stage);
 
 		// キャンバスのプロパティ保管オブジェクト取得
 		const canvasProperty = this.getProperty(canvasName);

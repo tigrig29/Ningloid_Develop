@@ -9,9 +9,6 @@ ningloid.system = {
 	// ================================================================
 	// ● 取得系
 	// ================================================================
-	// ● 初期処理
-	// ================================================================
-	// ================================================================
 	/**
 	 * セーブデータを取得する
 	 * @return {Object} セーブデータオブジェクト
@@ -29,7 +26,7 @@ ningloid.system = {
 	/**
 	 * セーブを行う
 	 */
-	doSave(saveNumber, cb){
+	doSave(saveNumber, createThumbnail, cb){
 		const [config, parser, layer] = [ningloid.config, ningloid.parser, ningloid.layer];
 		const [$canvasWrapper, $systemWrapper] = [layer.getLayer("canvasWrapper"), layer.getLayer("systemWrapper")];
 
@@ -58,21 +55,31 @@ ningloid.system = {
 			},
 			stat: $.cloneObject(ningloid.stat)
 		};
-		// サムネイルの取得
-		this.createThumbnail(config.save.thumbnail, (imageCode) => {
-			data.thumbnail = imageCode;
+
+		// サムネイルなし
+		if(createThumbnail === false){
 			// データの保存
 			saveData[saveNumber] = data;
 			$.storeData(`${config.projectName}`, saveData, config.save.type);
 			if(cb) cb();
 			console.log("dosave");
-		});
-
+		}
+		else{
+			// サムネイルの取得
+			this.createThumbnail(config.save.thumbnail, (imageCode) => {
+				data.thumbnail = imageCode;
+				// データの保存
+				saveData[saveNumber] = data;
+				$.storeData(`${config.projectName}`, saveData, config.save.type);
+				if(cb) cb();
+				console.log("dosave");
+			});
+		}
 	},
 	/**
 	 * セーブデータのロード、画面の復元を行う
 	 */
-	doLoad(saveNumber){
+	doLoad(saveNumber, scenarioRestart, cb){
 		const config = ningloid.config;
 		// データの取得
 		const saveData = this.getSaveData();
@@ -83,21 +90,31 @@ ningloid.system = {
 		const oldLogData = $.cloneArray(ningloid.stat.backlog);
 		// statオブジェクトを更新
 		ningloid.stat = $.cloneObject(data.stat);
+		if(scenarioRestart !== false){
+			// ロード時はブラインドレイヤを表示する
+			const $blind = ningloid.layer.getLayer("blind");
+			$blind.fadeIn("fast", () => {
+				// レイヤの更新を行う
+				ningloid.layer.updateLayersFromSaveData(data, () => {
+					// 更新終了後、ブラインドレイヤを消す
+					$blind.fadeOut("fast", () => {
+						// 現行シナリオの実行停止
+						ningloid.stopResolve();
+						// 新たにシナリオ実行
+						ningloid.parser.playScenarioByFile(scene.url, scene.line, scene.nextOrder);
 
-		// ロード時はブラインドレイヤを表示する
-		const $blind = ningloid.layer.getLayer("blind");
-		$blind.fadeIn("fast", () => {
-			// レイヤの更新を行う
-			ningloid.layer.updateLayersFromSaveData(data, () => {
-				// 更新終了後、ブラインドレイヤを消す
-				$blind.fadeOut("fast", () => {
-					// 現行シナリオの実行停止
-					ningloid.stopResolve();
-					// 新たにシナリオ実行
-					ningloid.parser.playScenarioByFile(scene.url, scene.line, scene.nextOrder);
+						if(cb) cb();
+					});
 				});
 			});
-		});
+		}
+		// シナリオの自動開始が不要な場合（主にエディタ）
+		else{
+			// レイヤの更新を行う
+			ningloid.layer.updateLayersFromSaveData(data, () => {
+				if(cb) cb();
+			});
+		}
 		// バックログの更新
 		ningloid.menu.updateBacklog(oldLogData);
 		console.log("doload");

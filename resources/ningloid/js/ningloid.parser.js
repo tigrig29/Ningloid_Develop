@@ -494,7 +494,7 @@ ningloid.parser = {
 				// ================ ↑ ここまで ↑ ================
 
 				// スキップ時
-				if(ningloid.flag.skipMode === true){
+				if(ningloid.flag.skipMode === true || ningloid.flag.systemSkipMode === true){
 					// テキスト一括表示
 					$target.html(text);
 					// 次へ
@@ -650,8 +650,12 @@ ningloid.parser = {
 	// ================================================================
 	label: {
 		data:{},
-		execute: async function(labelKey){
-			ningloid.stat.currentLabel = labelKey.split("|")[0];
+		execute: async function(label){
+			return new Promise((resolve) => {
+				const key = ningloid.stat.currentLabel = label.split("|")[0];
+				// ラベル地点でオートセーブ（エディタ、バックログのシーンバック用）
+				ningloid.system.doSave(`labelSave-${key}`, false, () => resolve());
+			});
 		}
 	},
 

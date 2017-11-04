@@ -248,14 +248,23 @@ ningloid.animate.ext = {
 		let method = options.method;
 
 		// スキップ時は速度を早める
-		if(ningloid.flag.skipMode === true){
+		if(ningloid.flag.skipMode === true || ningloid.flag.systemSkipMode === true){
 			// options.duration = 100;
 			if(method.includes("In")) method = "show";
 			if(method.includes("Out")) method = "hide";
 		}
 
 		switch(method){
-			// transitionアニメーションを適応
+			case "fadeIn":
+				target.animate({opacity: "1"}, options.duration, options.easing, () => {
+					if(cb) cb();
+				});
+				break;
+			case "fadeOut":
+				target.animate({opacity: "0"}, options.duration, options.easing, () => {
+					if(cb) cb();
+				});
+				break;
 			case "show":
 				target.css("opacity", 1);
 				if(cb) cb();
