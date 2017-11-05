@@ -295,7 +295,7 @@ ningloid.parser = {
 			// 命令の実行
 			const stopFlag = await this.executeOrder(order);
 			// 次に実行する命令から、今実行した命令を削除する
-			this.nextOrder.shift();
+			if(this.nextOrder.length !== 0) this.nextOrder.shift();
 			// 現在のシナリオファイル全文実行から抜け出す必要がある場合（[s]や[jump]で一行ずつの実行がキャンセルになる場合）
 			// soptFlagには"stop"が渡り、ループから抜け出す
 			if(stopFlag === "stop") return stopFlag;

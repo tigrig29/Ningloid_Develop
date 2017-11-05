@@ -172,6 +172,11 @@ const ningloid = {
 			},
 		};
 
+		// キャンバスの初期化
+		for(let key in this.canvas.stage){
+			this.canvas.clearStage(key);
+		}
+
 		// レイヤの初期化
 		$layer.dummyWrapper.empty();
 		$layer.canvasWrapper.empty();
