@@ -5,6 +5,8 @@
 // win.loadURL(`file://${__dirname}/../game/index.html`);
 
 const ningloidEditor = {
+	// 編集状態（未保存状態）を管理するflag
+	editFlag: false,
 	init(){
 		const windowOption = require("./window_options.js");
 		$("#game").css(windowOption.game);
