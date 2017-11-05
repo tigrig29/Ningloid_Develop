@@ -614,6 +614,8 @@ ningloid.tag.macro = {
 		const p = new Promise((resolve, reject) => [resolver, rejecter] = [resolve, reject]);
 
 		ningloid.parser.macro.tmpName = pm.name;
+		// 同じ名称のマクロが既に存在する場合、上書きする
+		ningloid.parser.macro.data[pm.name] = [];
 
 		resolver();
 		return p;

@@ -71,7 +71,7 @@ ningloid.parser = {
 		for(let i = this.line; i < orderArray.length; i++){
 			const order = orderArray[i];
 			// 実行中の行数を保存
-			this.line = i + 1;
+			this.line = i;
 
 			// iscriptが実行された場合
 			if(this.tmpScript !== null && !order.includes("[endscript]")){
@@ -259,6 +259,21 @@ ningloid.parser = {
 			// 実行した命令をログに表示（tag以外はここで、tagの場合はtag.execute内でログ表示処理を行う）
 			$.orderLog();
 		}
+
+		if(orderType != "label"){
+			// オートセーブの実行判定 → trueなら実行
+			// ※labelの場合は、label.executeでセーブ処理を行うため不要
+			if(ningloid.system.autoSave.judge()){
+				// saveKeyは、file名+行数
+				// 例：first100 → 「first.ksの100行目」
+				let saveKey = this.url.split("/");
+				saveKey = saveKey[saveKey.length - 1].split(".")[0];
+				saveKey = `${saveKey}${this.line}`;
+				// オートセーブの実行
+				ningloid.system.autoSave.execute(`autoSave-${saveKey}`);
+			}
+		}
+
 		// 命令の実行、stopFlagの受取
 		const stopFlag = this[orderType] ? await this[orderType].execute(order) : null;
 
@@ -651,11 +666,9 @@ ningloid.parser = {
 	label: {
 		data:{},
 		execute: async function(label){
-			return new Promise((resolve) => {
-				const key = ningloid.stat.currentLabel = label.split("|")[0];
-				// ラベル地点でオートセーブ（エディタ、バックログのシーンバック用）
-				ningloid.system.doSave(`labelSave-${key}`, false, () => resolve());
-			});
+			const key = ningloid.stat.currentLabel = label.split("|")[0];
+			// ラベル地点でオートセーブ実行
+			await ningloid.system.autoSave.execute(`autoSave-${key}`);
 		}
 	},
 
