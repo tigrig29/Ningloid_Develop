@@ -27,6 +27,15 @@ const ningloidEditor = {
 		this.editor.init();
 		this.design.init();
 	},
+	reset(){
+		// ゲーム画面のリセット
+		ningloid.resetGame();
+		// シナリオ全文を取得 → 命令配列化
+		this.parser.scenarioArray = $.cloneArray(this.editor.aceObject.getSession().getDocument().$lines);
+		this.parser.orderArray = ningloid.parser.createOrderArray(this.parser.scenarioArray);
+		// オートセーブデータを削除
+		ningloid.system.autoSave.clear();
+	},
 };
 
 const NLE = ningloidEditor;

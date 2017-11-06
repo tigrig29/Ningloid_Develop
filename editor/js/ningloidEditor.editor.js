@@ -3,6 +3,8 @@
 ningloidEditor.editor = {
 	// ace.editで作成したエディターオブジェクト
 	aceObject: null,
+	// 編集から一定時間経過でゲーム実行処理を行うタイマー
+	timer: "done",
 	// ================================================================
 	// ● 初期処理系
 	// ================================================================
@@ -17,11 +19,8 @@ ningloidEditor.editor = {
 		// エディタの初期状態はfirst.ks
 		ningloid.parser.url = "../resources/data/scenario/first.ks";
 		this.openFile(ningloid.parser.url, () => {
-			// シナリオ全文を取得 → 命令配列化
-			NLE.parser.scenarioArray = $.cloneArray(editor.getSession().getDocument().$lines);
-			NLE.parser.orderArray = ningloid.parser.createOrderArray(NLE.parser.scenarioArray);
-			// オートセーブデータを削除
-			ningloid.system.autoSave.clear();
+			// ゲーム画面と、シナリオデータのリセット
+			NLE.reset();
 		});
 
 		// エディターのリアルタイム反映用イベントをセット
@@ -53,9 +52,15 @@ ningloidEditor.editor = {
 			}
 		});
 	},
+	/**
+	 * エディタ上のテキストをファイルに保存する
+	 * @param  {String}   url ファイル名（パス）
+	 * @param  {Function} cb  コールバック
+	 */
 	saveFile(url, cb){
 		const editor = this.aceObject;
 		const fs = require("fs");
+		// ファイルに保存
 		fs.writeFile(url, editor.getValue(), () => {
 			// 編集中フラグをfalse、保存済み状態とする
 			NLE.editFlag = false;
@@ -121,17 +126,12 @@ ningloidEditor.editor = {
 			let filePath = this.files[0].path;
 			filePath = filePath.replace(/\\/g, "/");
 			filePath = `../resources${filePath.split("/resources")[1]}`;
-			// ゲームのリセット
-			ningloid.resetGame();
 
 			// 開いたファイルのシナリオテキストをエディタ上に展開する
 			ningloid.parser.url = filePath;
 			NLE.editor.openFile(filePath, () => {
-				// シナリオ全文を取得 → 命令配列化
-				NLE.parser.scenarioArray = $.cloneArray(NLE.editor.aceObject.getSession().getDocument().$lines);
-				NLE.parser.orderArray = ningloid.parser.createOrderArray(NLE.parser.scenarioArray);
-				// オートセーブデータを削除
-				ningloid.system.autoSave.clear();
+				// ゲーム画面と、シナリオデータのリセット
+				NLE.reset();
 			});
 		});
 
@@ -139,13 +139,17 @@ ningloidEditor.editor = {
 		$("#editSave").on("click", () => {
 			// テキストデータの保存
 			this.saveFile(ningloid.parser.url, () => {
-				// ゲームの初期化
-				ningloid.resetGame();
-				// シナリオ全文を取得 → 命令配列化
-				NLE.parser.scenarioArray = $.cloneArray(editor.getSession().getDocument().$lines);
-				NLE.parser.orderArray = ningloid.parser.createOrderArray(NLE.parser.scenarioArray);
-				// オートセーブデータを削除
-				ningloid.system.autoSave.clear();
+				// 時限式ゲーム実行が行われた場合は、以下のゲーム実行処理を行わない
+				if(this.timer == "done") return;
+				// 時限式ゲーム実行のタイマーが待機状態ならば、タイマーを消す
+				else if(this.timer){
+					clearTimeout(this.timer);
+					this.timer = "done";
+				}
+				// ゲーム画面と、シナリオデータのリセット
+				NLE.reset();
+				// 命令実行
+				NLE.parser.playFocusSectionOrder();
 			});
 		});
 	},
@@ -154,9 +158,27 @@ ningloidEditor.editor = {
 	// ● ace（エディタ）イベント系
 	// ================================================================
 	setAceEvent(){
-		this.aceObject.on("change", (e) => {
+		const editor = this.aceObject;
+		editor.on("change", (e) => {
+			// 編集が繰り返されるうちは、↓のタイマーをリセットする
+			if(this.timer !== "done") clearTimeout(this.timer);
+
 			// 編集中フラグをtrueにし、ゲームの実行を止める
 			NLE.editFlag = true;
+			// 編集から一定時間が経過したらシナリオ実行
+			this.timer = setTimeout(() => {
+				if(NLE.editFlag === false) return;
+				NLE.editFlag = false;
+				// ゲーム画面と、シナリオデータのリセット
+				NLE.reset();
+
+				// 命令実行（行数などが変わるので、初期ロードから実行させるため、currentLineを更新する）
+				NLE.parser.currentLine = this.aceObject.getCursorPosition().row;
+				NLE.parser.playFocusSectionOrder();
+
+				// タイマーを消す
+				this.timer = "done";
+			}, 2000);
 		});
 	},
 };
