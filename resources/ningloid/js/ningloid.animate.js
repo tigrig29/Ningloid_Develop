@@ -104,6 +104,9 @@ ningloid.animate = {
 	 */
 	skipToEnd(animObj){
 		switch(animObj.lib){
+			case "velocity":
+				animObj.target.velocity("finish");
+				break;
 			case "keyframes":
 				animObj.target.keyframes("pause");
 				if(animObj.complete) animObj.complete();
@@ -117,6 +120,36 @@ ningloid.animate = {
 	// ================================================================
 	// ● 実行系
 	// ================================================================
+	/**
+	 * jQueryによるアニメーション
+	 * @param  {$Object } target      アニメーション対象のjQueryオブジェクト
+	 * @param  {Object  } props       アニメーション対象のスタイルプロパティ
+	 * @param  {Object  } options     アニメーションオプション
+	 *                    .duration   {Number[ms]} アニメーション時間
+	 *                    .easing     {String    } イージング名
+	 *                    .skippable  {Boolean   } スキップ可/不可フラグ
+	 * @param  {Function} cb          コールバック
+	 */
+	velocity(target, props, options, cb){
+		// アニメーションオブジェクトの作成
+		const animObj = this.createObject(target, "velocity", function(self){
+			// アニメーション完了時
+			// コールバック関数
+			if(cb) cb(target);
+			self.complete = null;
+		});
+
+		// アニメーション開始前に、アニメーション実行数をインクリメント
+		ningloid.flag.animating++;
+		// アニメーション実行
+		target.velocity(props, options.duration, options.easing, function(){
+			// コールバックはアニメーションオブジェクトから呼び出す
+			animObj.complete();
+		});
+
+		// アニメーションキューにオブジェクトを保存
+		if(options.skippable !== false) this.queue.push(animObj);
+	},
 	/**
 	 * CSSプロパティの操作によるアニメーション
 	 * @param  {$Object } target      アニメーション対象のjQueryオブジェクト
@@ -256,12 +289,12 @@ ningloid.animate.ext = {
 
 		switch(method){
 			case "fadeIn":
-				target.animate({opacity: "1"}, options.duration, options.easing, () => {
+				ningloid.animate.velocity(target, {opacity: "1"}, options, () => {
 					if(cb) cb();
 				});
 				break;
 			case "fadeOut":
-				target.animate({opacity: "0"}, options.duration, options.easing, () => {
+				ningloid.animate.velocity(target, {opacity: "0"}, options, () => {
 					if(cb) cb();
 				});
 				break;
