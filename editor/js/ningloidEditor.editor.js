@@ -42,7 +42,8 @@ ningloidEditor.editor = {
 				// 取得したテキストをエディタに表示
 				editor.setValue(data, -1);
 				// 編集中フラグをfalse、保存済み状態とする
-				NLE.editFlag = false;
+				this.editEnd();
+				this.editSaveDone();
 				// コールバック
 				if(cb) cb();
 			},
@@ -63,9 +64,25 @@ ningloidEditor.editor = {
 		// ファイルに保存
 		fs.writeFile(url, editor.getValue(), () => {
 			// 編集中フラグをfalse、保存済み状態とする
-			NLE.editFlag = false;
+			this.editEnd();
+			this.editSaveDone();
 			if(cb) cb();
 		});
+	},
+	// ================================================================
+	// ● 編集状態管理
+	// ================================================================
+	editStart(){
+		NLE.editFlag = true;
+		$("#editNowCondition").removeClass("edited").addClass("editing");
+		$("#editSaveCondition").removeClass("saved").addClass("not-saved");
+	},
+	editEnd(){
+		NLE.editFlag = false;
+		$("#editNowCondition").removeClass("editing").addClass("edited");
+	},
+	editSaveDone(){
+		$("#editSaveCondition").removeClass("not-saved").addClass("saved");
 	},
 
 	// ================================================================
@@ -164,11 +181,11 @@ ningloidEditor.editor = {
 			if(this.timer !== "done") clearTimeout(this.timer);
 
 			// 編集中フラグをtrueにし、ゲームの実行を止める
-			NLE.editFlag = true;
+			this.editStart();
 			// 編集から一定時間が経過したらシナリオ実行
 			this.timer = setTimeout(() => {
 				if(NLE.editFlag === false) return;
-				NLE.editFlag = false;
+				this.editEnd();
 				// ゲーム画面と、シナリオデータのリセット
 				NLE.reset();
 
