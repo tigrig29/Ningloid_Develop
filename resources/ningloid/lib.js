@@ -139,6 +139,7 @@ const $ = jQuery = require("../resources/libs/jquery-3.0.0.min.js");
                     typeAnimated: true,
                     boxWidth: "50%",
                     useBootstrap: false,
+                    draggable: true,
                     buttons: {
                         close: () => {}
                     }

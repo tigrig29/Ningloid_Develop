@@ -138,11 +138,12 @@ ningloid.parser = {
 	/**
 	 * シナリオを読み取り、シナリオ行毎配列、命令格納配列を作成する
 	 * @param  {String} scenarioArray シナリオテキストを行ごとに配列化したデータ
+	 *                                ※注意：配列を直接渡すと参照渡しになるので、必要に応じて$.cloneArrayすること
 	 * @return {Array}                シナリオ内の命令を全て格納した配列
 	 */
 	loadScenario(scenarioArray){
 		// シナリオ配列を読み取り、実行用の配列を作成
-		this.scenarioArray = $.cloneArray(scenarioArray);
+		this.scenarioArray = scenarioArray;
 		this.orderArray = this.createOrderArray(scenarioArray);
 		return this.orderArray;
 	},

@@ -39,7 +39,7 @@ const ningloidEditor = {
 		// ゲーム画面のリセット
 		ningloid.resetGame();
 		// シナリオ全文を取得 → 命令配列化
-		ningloid.parser.loadScenario(Editor.getSession().getDocument().$lines);
+		ningloid.parser.loadScenario($.cloneArray(Editor.getSession().getDocument().$lines));
 		// オートセーブデータを削除
 		ningloid.system.autoSave.clear();
 	},
