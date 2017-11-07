@@ -1,4 +1,4 @@
-/* global NLE: true */
+/* global NLE: true, Editor: true */
 
 ningloidEditor.editor = {
 	// ace.editで作成したエディターオブジェクト
@@ -10,11 +10,11 @@ ningloidEditor.editor = {
 	// ================================================================
 	init(){
 		// エディタ作成
-		const editor = this.aceObject = ace.edit("editInputArea");
+		window.Editor = this.aceObject = ace.edit("editInputArea");
 		// 警告消去
-		editor.$blockScrolling = Infinity;
+		Editor.$blockScrolling = Infinity;
 		// 右端折り返し
-		editor.getSession().setUseWrapMode(true);
+		Editor.getSession().setUseWrapMode(true);
 
 		// エディタの初期状態はfirst.ks
 		ningloid.parser.url = "../resources/data/scenario/first.ks";
@@ -35,12 +35,11 @@ ningloidEditor.editor = {
 	// ================================================================
 	// シナリオファイルを開き、エディタコンテンツ欄にテキストを出力する
 	openFile(url, cb){
-		const editor = this.aceObject;
 		$.ajax({
 			url: url,
 			success: (data) => {
 				// 取得したテキストをエディタに表示
-				editor.setValue(data, -1);
+				Editor.setValue(data, -1);
 				// 編集中フラグをfalse、保存済み状態とする
 				this.editEnd();
 				this.editSaveDone();
@@ -59,10 +58,9 @@ ningloidEditor.editor = {
 	 * @param  {Function} cb  コールバック
 	 */
 	saveFile(url, cb){
-		const editor = this.aceObject;
 		const fs = require("fs");
 		// ファイルに保存
-		fs.writeFile(url, editor.getValue(), () => {
+		fs.writeFile(url, Editor.getValue(), () => {
 			// 編集中フラグをfalse、保存済み状態とする
 			this.editEnd();
 			this.editSaveDone();
@@ -90,8 +88,6 @@ ningloidEditor.editor = {
 	// ================================================================
 	// エディタエリアの操作イベントを付与
 	setKeyMouseEvent(){
-		const editor = this.aceObject;
-
 		// エディタ操作のキーバインド
 		$("#editor").on({
 			keydown: (e) => {
@@ -114,7 +110,7 @@ ningloidEditor.editor = {
 					case 38:
 					case 39:
 					case 40: {
-						const newLine = editor.getCursorPosition().row;
+						const newLine = Editor.getCursorPosition().row;
 						if(NLE.parser.currentLine != newLine){
 							NLE.parser.playFocusSectionOrder();
 						}
@@ -175,8 +171,7 @@ ningloidEditor.editor = {
 	// ● ace（エディタ）イベント系
 	// ================================================================
 	setAceEvent(){
-		const editor = this.aceObject;
-		editor.on("change", (e) => {
+		Editor.on("change", (e) => {
 			// 編集されたらエラーフラグは消す
 			NLE.flag.error = false;
 

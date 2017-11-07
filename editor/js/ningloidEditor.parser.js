@@ -1,12 +1,8 @@
-/* global NLE: true */
+/* global NLE: true, Editor: true */
 
 ningloidEditor.parser = {
 	// 現在エディタ上でフォーカスしている行数
 	currentLine: -1,
-	// 現在エディタで開いているシナリオファイルから作成したシナリオ配列データ
-	scenarioArray: [],
-	// 現在エディタで開いているシナリオファイルから作成した命令配列データ
-	orderArray: [],
 
 	// ================================================================
 	// ● 統括系
@@ -28,7 +24,7 @@ ningloidEditor.parser = {
 		// 以前のフォーカス行
 		const oldLine = this.currentLine;
 		// 現在のフォーカス行
-		const newLine = NLE.editor.aceObject.getCursorPosition().row;
+		const newLine = Editor.getCursorPosition().row;
 
 		// エディタのフォーカス行数を更新
 		this.currentLine = newLine;
@@ -118,11 +114,11 @@ ningloidEditor.parser = {
 	highSpeedProceedOrder: async function(startLine, endLine){
 		ningloid.flag.systemSkipMode = true;
 		// フォーカス行までの命令の実行（ここまではシステムスキップ＝即時進行）
-		await this.playSectionScenario(this.orderArray, startLine, endLine - 1);
+		await this.playSectionScenario(ningloid.parser.orderArray, startLine, endLine - 1);
 
 		ningloid.flag.systemSkipMode = false;
 		// フォーカス行の命令の実行（ここだけ通常速度で実行）
-		await this.playSectionScenario(this.orderArray, endLine, endLine);
+		await this.playSectionScenario(ningloid.parser.orderArray, endLine, endLine);
 	},
 
 

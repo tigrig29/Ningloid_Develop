@@ -535,7 +535,7 @@ ningloid.tag.jump = {
 		const parser = ningloid.parser;
 		if(pm.storage){
 			// シナリオファイルの読み込み
-			parser.loadScenario(`../resources/data/scenario/${pm.storage}`).then(() => {
+			parser.loadScenarioByFile(`../resources/data/scenario/${pm.storage}`).then(() => {
 				// 3MB以上のファイルを新規に読み込むと、処理がカクつく可能性がある
 				// この場合にはsetTimeoutで↓の処理を囲んだほうが良い
 					// setTimeout(() => {}, 200);

@@ -33,7 +33,7 @@ ningloid.parser = {
 	 *                            ※主にロード時に利用する
 	 */
 	playScenarioByFile(url, line, nextOrder){
-		this.loadScenario(url).then((orderArray) => {
+		this.loadScenarioByFile(url).then((orderArray) => {
 			return this.playScenario(orderArray, line, nextOrder);
 		}).catch((e) => {
 			$.tagError(e);
@@ -130,13 +130,23 @@ ningloid.parser = {
 	 * @param  {String} url シナリオファイルのアドレス
 	 * @return {Array}      シナリオファイル内の命令を全て格納した配列
 	 */
-	loadScenario: async function(url){
+	loadScenarioByFile: async function(url){
 		this.url = url;
 		// シナリオファイルを読み取り、実行用の配列を作成
-		this.scenarioArray = await this.fetchText(this.url);
-		this.orderArray = this.createOrderArray(this.scenarioArray);
+		return this.loadScenario(await this.fetchText(url));
+	},
+	/**
+	 * シナリオを読み取り、シナリオ行毎配列、命令格納配列を作成する
+	 * @param  {String} scenarioArray シナリオテキストを行ごとに配列化したデータ
+	 * @return {Array}                シナリオ内の命令を全て格納した配列
+	 */
+	loadScenario(scenarioArray){
+		// シナリオ配列を読み取り、実行用の配列を作成
+		this.scenarioArray = $.cloneArray(scenarioArray);
+		this.orderArray = this.createOrderArray(scenarioArray);
 		return this.orderArray;
 	},
+
 
 	// ================================================================
 	// ● 命令準備系

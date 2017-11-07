@@ -1,3 +1,6 @@
+/* global Editor: true */
+
+
 // // テスト：２窓式
 // const {BrowserWindow} = require("electron").remote;
 // const windowOptions = require("../game/window_options.js");
@@ -36,8 +39,7 @@ const ningloidEditor = {
 		// ゲーム画面のリセット
 		ningloid.resetGame();
 		// シナリオ全文を取得 → 命令配列化
-		this.parser.scenarioArray = $.cloneArray(this.editor.aceObject.getSession().getDocument().$lines);
-		this.parser.orderArray = ningloid.parser.createOrderArray(this.parser.scenarioArray);
+		ningloid.parser.loadScenario(Editor.getSession().getDocument().$lines);
 		// オートセーブデータを削除
 		ningloid.system.autoSave.clear();
 	},
