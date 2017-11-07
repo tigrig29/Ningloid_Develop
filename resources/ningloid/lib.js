@@ -137,7 +137,7 @@ const $ = jQuery = require("../resources/libs/jquery-3.0.0.min.js");
                     smoothContent: false,
                     type: "red",
                     typeAnimated: true,
-                    boxWidth: "700px",
+                    boxWidth: "50%",
                     useBootstrap: false,
                     buttons: {
                         close: () => {}

@@ -73,12 +73,12 @@ ningloidEditor.editor = {
 	// ● 編集状態管理
 	// ================================================================
 	editStart(){
-		NLE.editFlag = true;
+		NLE.flag.edit = true;
 		$("#editNowCondition").removeClass("edited").addClass("editing");
 		$("#editSaveCondition").removeClass("saved").addClass("not-saved");
 	},
 	editEnd(){
-		NLE.editFlag = false;
+		NLE.flag.edit = false;
 		$("#editNowCondition").removeClass("editing").addClass("edited");
 	},
 	editSaveDone(){
@@ -177,6 +177,9 @@ ningloidEditor.editor = {
 	setAceEvent(){
 		const editor = this.aceObject;
 		editor.on("change", (e) => {
+			// 編集されたらエラーフラグは消す
+			NLE.flag.error = false;
+
 			// 編集が繰り返されるうちは、↓のタイマーをリセットする
 			if(this.timer !== "done") clearTimeout(this.timer);
 
@@ -184,7 +187,7 @@ ningloidEditor.editor = {
 			this.editStart();
 			// 編集から一定時間が経過したらシナリオ実行
 			this.timer = setTimeout(() => {
-				if(NLE.editFlag === false) return;
+				if(NLE.flag.edit === false || NLE.flag.error === true) return;
 				this.editEnd();
 				// ゲーム画面と、シナリオデータのリセット
 				NLE.reset();

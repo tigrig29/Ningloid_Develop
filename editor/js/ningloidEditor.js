@@ -5,8 +5,13 @@
 // win.loadURL(`file://${__dirname}/../game/index.html`);
 
 const ningloidEditor = {
-	// 編集状態（未保存状態）を管理するflag
-	editFlag: false,
+	// 各種Flag変数
+	flag:{
+		// エラー発生状態を管理する
+		error: false,
+		// 編集状態（未保存状態）を管理する
+		edit: false,
+	},
 	init(){
 		const windowOption = require("./window_options.js");
 		$("#game").css(windowOption.game);
