@@ -1,0 +1,121 @@
+body{
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	background-color: white;
+}
+
+#game{
+	width: 70%;
+	height: 70%;
+	position: absolute;
+	overflow: hidden;
+	background: black;
+}
+
+#editor{
+	left: 70%;
+	width: 30%;
+	height: 100%;
+	position: absolute;
+}
+#editFileLabel{
+	left: 0%;
+	height: 3%;
+	width: 30%;
+	margin: 0px;
+	background: #ccc;
+	border-radius: 10px 10px 0px 0px;
+	display: none;
+}
+
+#editButton > div{
+	float: left;
+	margin: 10px;
+	cursor: pointer;
+}
+#editButton:after{
+	content: "";
+	clear: both;
+	display: block;
+}
+
+#editCondition{
+	top: 0px;
+	right: 0px;
+	position: absolute;
+}
+#editCondition > div{
+	margin: 5px;
+	font-weight: bold;
+	float: left;
+	cursor: pointer;
+}
+#editCondition:after{
+	content: "";
+	clear: both;
+	display: block;
+}
+#editNowCondition{
+	width: 70px;
+	height: 40px;
+	margin-top: 5px;
+	border-radius: 20px;
+}
+.editing{
+	background: orange;
+}
+.editing:after{
+	left: 12px;
+	top: 9px;
+	content: "編集中";
+	position: relative;
+}
+.edited{
+	background: #69F;
+}
+.edited:after{
+	left: 12px;
+	top: 9px;
+	content: "実行中";
+	position: relative;
+}
+#editSaveCondition{
+	width: 70px;
+	height: 40px;
+	margin-top: 5px;
+	border-radius: 20px;
+}
+.not-saved{
+	background: orange;
+}
+.not-saved:after{
+	left: 12px;
+	top: 9px;
+	content: "未保存";
+	position: relative;
+}
+.saved{
+	background: #69F;
+}
+.saved:after{
+	left: 12px;
+	top: 9px;
+	content: "保存済";
+	position: relative;
+}
+
+#editInputArea{
+	width: 100%;
+	height: 93%;
+}
+
+#resourceManager{
+	top: 70%;
+	width: 70%;
+	height: 30%;
+	position: absolute;
+	border: 1px solid black;
+}

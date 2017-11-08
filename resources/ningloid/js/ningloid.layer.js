@@ -90,8 +90,7 @@ ningloid.layer = {
 		// ================================================================
 
 		// ブラインドレイヤ
-		const $blind = this.jObj.blind = $("<div id='blind'>Now Loading...</div>");
-		$base.after($blind);
+		const $blind = this.jObj.blind = $("#blind");
 
 		// ningloid.layer.jObjにcanvasレイヤ、systemレイヤを保管
 		this.storeLayer();

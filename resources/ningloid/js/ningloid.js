@@ -14,6 +14,9 @@ const ningloid = {
         backlog: [],
         // 表示中のpixiスプライトの各種パラメータを保管しておく → セーブ時にこれを保存 → ロード時このデータを元に復元
         canvas: {},
+        // 命令実行ごとにインクリメントし、オートセーブ実行のタイミングを管理する変数
+		// この値がsystem.autoSave.intervalの値に達すると、オートセーブが実行される
+		autoSaveTimingCounta: 0,
 	},
 	tmp: {
 		resolver: () => {},
@@ -130,6 +133,61 @@ const ningloid = {
 	},
 	storeSystemVariable(){
 		$.storeData(`${this.config.projectName}_sf`, $.cloneObject(this.variable.sf));
+	},
+
+	/**
+	 * ゲームを起動時の状態に戻す
+	 * ※statデータや画面の状態を初期状態にする
+	 */
+	resetGame(){
+		const $layer = ningloid.layer.jObj;
+
+		// 変数の初期化
+		this.stat = {
+			vertical: "false",
+			f: {},
+			currentLayer: "message0",
+			currentLabel: null,
+			messageNumber: 0,
+			backlog: [],
+			canvas: {},
+			autoSaveTimingCounta: 0,
+		};
+		this.tmp = {
+			resolver: () => {},
+			currentMessage: "",
+			autoStartTimeoutIdOfResolve: null,
+			skipStartTimeoutIdOfResolve: null,
+		};
+		this.variable = {
+			sf: {}, tf: {}, mp: {},
+		};
+		this.flag = {
+			animating: 0,
+			autoMode: false,
+			skipMode: false,
+			message:{
+				append: false,
+				skip: false,
+			},
+		};
+
+		// キャンバスの初期化
+		for(let key in this.canvas.stage){
+			this.canvas.clearStage(key);
+		}
+
+		// レイヤの初期化
+		$layer.dummyWrapper.empty();
+		$layer.canvasWrapper.empty();
+		$layer.systemWrapper.empty();
+		$layer.menuWrapper.empty();
+
+		this.layer.init();
+		this.menu.init();
+
+		// 各種イベントの初期化
+		this.keyMouse.init();
 	},
 };
 

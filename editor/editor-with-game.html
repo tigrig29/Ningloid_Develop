@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Loading Ningloid</title>
+	<title>Loading NingloidEditor</title>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="user-scalable=no" />
@@ -9,9 +9,20 @@
 	<link href="../resources/libs/animate.css" rel="stylesheet" type="text/css"/>
 	<link href="../resources/libs/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
 	<link href="../resources/libs/jquery-confirm.min.css" rel="stylesheet" type="text/css"/>
+
 	<link href="../resources/ningloid/css/ningloid.css" rel="stylesheet" type="text/css"/>
+	<link href="./css/ningloidEditor.css" rel="stylesheet" type="text/css"/>
+
 
 	<script id="firstScript" type="text/javascript" src="../resources/ningloid/lib.js" ></script>
+
+	<script type="text/javascript" src="./js/ningloidEditor.js" ></script>
+	<script type="text/javascript" src="./js/ningloidEditor.parser.js" ></script>
+	<script type="text/javascript" src="./js/ningloidEditor.editor.js" ></script>
+	<script type="text/javascript" src="./js/ningloidEditor.design.js" ></script>
+	<script type="text/javascript" src="./libs/ace.js"></script>
+	<script type="text/javascript" src="./libs/mode-javascript.js"></script>
+	<script type="text/javascript" src="./libs/mode-kag.js"></script>
 
 	<script type="text/javascript" src="../resources/libs/janimate.min.js"></script>
 	<script type="text/javascript" src="../resources/libs/velocity.min.js"></script>
@@ -36,18 +47,37 @@
 
 	<script>
 		//実行処理
-		$(document).ready(() => ningloid.init());
+		$(document).ready(() => ningloidEditor.init());
 	</script>
 </head>
 
 <body style="overflow:hidden">
-	<div id="ningloidBase" unselectable="on" >
-		<div id="dummyWrapper" class="wrapper"></div>
-		<div id="canvasWrapper" class="wrapper"></div>
-		<div id="systemWrapper" class="wrapper"></div>
-		<div id="menuWrapper" class="wrapper" data-html2canvas-ignore="true"></div>
+	<div id="game">
+		<div id="ningloidBase" unselectable="on" >
+			<div id="dummyWrapper" class="wrapper"></div>
+			<div id="canvasWrapper" class="wrapper"></div>
+			<div id="systemWrapper" class="wrapper"></div>
+			<div id="menuWrapper" class="wrapper" data-html2canvas-ignore="true"></div>
+		</div>
+		<div id="blind">Now Loading ...</div>
 	</div>
-	<div id="blind">Now Loading...</div>
+	<div id="editor">
+		<div id="editButton">
+			<div id="editLoad">
+				<input id="editFileOpener" type="file" style="display: none">
+				<i class="fa fa-folder-open fa-2x" aria-hidden="true"></i>
+			</div>
+			<div id="editSave">
+				<i class="fa fa-floppy-o fa-2x" aria-hidden="true"></i>
+			</div>
+		</div>
+		<div id="editCondition">
+			<div id="editNowCondition" class="editing"></div>
+			<div id="editSaveCondition" class="saved"></div>
+		</div>
+		<div id="editInputArea"></div>
+	</div>
+	<div id="resourceManager"></div>
 </body>
 
 </html>

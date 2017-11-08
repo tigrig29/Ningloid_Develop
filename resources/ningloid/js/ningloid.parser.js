@@ -33,7 +33,7 @@ ningloid.parser = {
 	 *                            ※主にロード時に利用する
 	 */
 	playScenarioByFile(url, line, nextOrder){
-		this.loadScenario(url).then((orderArray) => {
+		this.loadScenarioByFile(url).then((orderArray) => {
 			return this.playScenario(orderArray, line, nextOrder);
 		}).catch((e) => {
 			$.tagError(e);
@@ -71,7 +71,7 @@ ningloid.parser = {
 		for(let i = this.line; i < orderArray.length; i++){
 			const order = orderArray[i];
 			// 実行中の行数を保存
-			this.line = i + 1;
+			this.line = i;
 
 			// iscriptが実行された場合
 			if(this.tmpScript !== null && !order.includes("[endscript]")){
@@ -130,13 +130,24 @@ ningloid.parser = {
 	 * @param  {String} url シナリオファイルのアドレス
 	 * @return {Array}      シナリオファイル内の命令を全て格納した配列
 	 */
-	loadScenario: async function(url){
+	loadScenarioByFile: async function(url){
 		this.url = url;
 		// シナリオファイルを読み取り、実行用の配列を作成
-		this.scenarioArray = await this.fetchText(this.url);
-		this.orderArray = this.createOrderArray(this.scenarioArray);
+		return this.loadScenario(await this.fetchText(url));
+	},
+	/**
+	 * シナリオを読み取り、シナリオ行毎配列、命令格納配列を作成する
+	 * @param  {String} scenarioArray シナリオテキストを行ごとに配列化したデータ
+	 *                                ※注意：配列を直接渡すと参照渡しになるので、必要に応じて$.cloneArrayすること
+	 * @return {Array}                シナリオ内の命令を全て格納した配列
+	 */
+	loadScenario(scenarioArray){
+		// シナリオ配列を読み取り、実行用の配列を作成
+		this.scenarioArray = scenarioArray;
+		this.orderArray = this.createOrderArray(scenarioArray);
 		return this.orderArray;
 	},
+
 
 	// ================================================================
 	// ● 命令準備系
@@ -259,6 +270,21 @@ ningloid.parser = {
 			// 実行した命令をログに表示（tag以外はここで、tagの場合はtag.execute内でログ表示処理を行う）
 			$.orderLog();
 		}
+
+		if(orderType != "label"){
+			// オートセーブの実行判定 → trueなら実行
+			// ※labelの場合は、label.executeでセーブ処理を行うため不要
+			if(ningloid.system.autoSave.judge()){
+				// saveKeyは、file名+行数
+				// 例：first100 → 「first.ksの100行目」
+				let saveKey = this.url.split("/");
+				saveKey = saveKey[saveKey.length - 1].split(".")[0];
+				saveKey = `${saveKey}${this.line}`;
+				// オートセーブの実行
+				ningloid.system.autoSave.execute(`autoSave-${saveKey}`);
+			}
+		}
+
 		// 命令の実行、stopFlagの受取
 		const stopFlag = this[orderType] ? await this[orderType].execute(order) : null;
 
@@ -280,7 +306,7 @@ ningloid.parser = {
 			// 命令の実行
 			const stopFlag = await this.executeOrder(order);
 			// 次に実行する命令から、今実行した命令を削除する
-			this.nextOrder.shift();
+			if(this.nextOrder.length !== 0) this.nextOrder.shift();
 			// 現在のシナリオファイル全文実行から抜け出す必要がある場合（[s]や[jump]で一行ずつの実行がキャンセルになる場合）
 			// soptFlagには"stop"が渡り、ループから抜け出す
 			if(stopFlag === "stop") return stopFlag;
@@ -494,7 +520,7 @@ ningloid.parser = {
 				// ================ ↑ ここまで ↑ ================
 
 				// スキップ時
-				if(ningloid.flag.skipMode === true){
+				if(ningloid.flag.skipMode === true || ningloid.flag.systemSkipMode === true){
 					// テキスト一括表示
 					$target.html(text);
 					// 次へ
@@ -650,8 +676,10 @@ ningloid.parser = {
 	// ================================================================
 	label: {
 		data:{},
-		execute: async function(labelKey){
-			ningloid.stat.currentLabel = labelKey.split("|")[0];
+		execute: async function(label){
+			const key = ningloid.stat.currentLabel = label.split("|")[0];
+			// ラベル地点でオートセーブ実行
+			await ningloid.system.autoSave.execute(`autoSave-${key}`);
 		}
 	},
 

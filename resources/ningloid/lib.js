@@ -104,7 +104,7 @@ const $ = jQuery = require("../resources/libs/jquery-3.0.0.min.js");
         if(!parse.order && !parse.orderObj) return;
 
         // ログのタイトル部分
-        let title = `%c[${parse.url}]:${parse.line}行目`;
+        let title = `%c[${parse.url}]:${parse.line + 1}行目`;
         // ログの実行命令表記
         let order = `%c${parse.order}`;
         // ログ出力
@@ -137,8 +137,9 @@ const $ = jQuery = require("../resources/libs/jquery-3.0.0.min.js");
                     smoothContent: false,
                     type: "red",
                     typeAnimated: true,
-                    boxWidth: "700px",
+                    boxWidth: "50%",
                     useBootstrap: false,
+                    draggable: true,
                     buttons: {
                         close: () => {}
                     }

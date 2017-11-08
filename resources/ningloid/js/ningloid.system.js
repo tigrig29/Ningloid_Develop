@@ -9,9 +9,6 @@ ningloid.system = {
 	// ================================================================
 	// ● 取得系
 	// ================================================================
-	// ● 初期処理
-	// ================================================================
-	// ================================================================
 	/**
 	 * セーブデータを取得する
 	 * @return {Object} セーブデータオブジェクト
@@ -29,7 +26,7 @@ ningloid.system = {
 	/**
 	 * セーブを行う
 	 */
-	doSave(saveNumber, cb){
+	doSave(saveKey, createThumbnail, cb){
 		const [config, parser, layer] = [ningloid.config, ningloid.parser, ningloid.layer];
 		const [$canvasWrapper, $systemWrapper] = [layer.getLayer("canvasWrapper"), layer.getLayer("systemWrapper")];
 
@@ -58,49 +55,69 @@ ningloid.system = {
 			},
 			stat: $.cloneObject(ningloid.stat)
 		};
-		// サムネイルの取得
-		this.createThumbnail(config.save.thumbnail, (imageCode) => {
-			data.thumbnail = imageCode;
+
+		// サムネイルなし
+		if(createThumbnail === false){
 			// データの保存
-			saveData[saveNumber] = data;
+			saveData[saveKey] = data;
 			$.storeData(`${config.projectName}`, saveData, config.save.type);
 			if(cb) cb();
-			console.log("dosave");
-		});
-
+			console.log(`dosave-${saveKey}`);
+		}
+		else{
+			// サムネイルの取得
+			this.createThumbnail(config.save.thumbnail, (imageCode) => {
+				data.thumbnail = imageCode;
+				// データの保存
+				saveData[saveKey] = data;
+				$.storeData(`${config.projectName}`, saveData, config.save.type);
+				if(cb) cb();
+				console.log(`dosave-${saveKey}`);
+			});
+		}
 	},
 	/**
 	 * セーブデータのロード、画面の復元を行う
 	 */
-	doLoad(saveNumber){
+	doLoad(saveKey, scenarioRestart, cb){
 		const config = ningloid.config;
 		// データの取得
 		const saveData = this.getSaveData();
-		const data = saveData[saveNumber];
+		const data = saveData[saveKey];
 		const scene = data.scene;
 
 		// backlog更新用に前のstatオブジェクトのbacklog配列を保管しておく
 		const oldLogData = $.cloneArray(ningloid.stat.backlog);
 		// statオブジェクトを更新
 		ningloid.stat = $.cloneObject(data.stat);
+		if(scenarioRestart !== false){
+			// ロード時はブラインドレイヤを表示する
+			const $blind = ningloid.layer.getLayer("blind");
+			$blind.fadeIn("fast", () => {
+				// レイヤの更新を行う
+				ningloid.layer.updateLayersFromSaveData(data, () => {
+					// 更新終了後、ブラインドレイヤを消す
+					$blind.fadeOut("fast", () => {
+						// 現行シナリオの実行停止
+						ningloid.stopResolve();
+						// 新たにシナリオ実行
+						ningloid.parser.playScenarioByFile(scene.url, scene.line, scene.nextOrder);
 
-		// ロード時はブラインドレイヤを表示する
-		const $blind = ningloid.layer.getLayer("blind");
-		$blind.fadeIn("fast", () => {
-			// レイヤの更新を行う
-			ningloid.layer.updateLayersFromSaveData(data, () => {
-				// 更新終了後、ブラインドレイヤを消す
-				$blind.fadeOut("fast", () => {
-					// 現行シナリオの実行停止
-					ningloid.stopResolve();
-					// 新たにシナリオ実行
-					ningloid.parser.playScenarioByFile(scene.url, scene.line, scene.nextOrder);
+						if(cb) cb();
+					});
 				});
 			});
-		});
+		}
+		// シナリオの自動開始が不要な場合（主にエディタ）
+		else{
+			// レイヤの更新を行う
+			ningloid.layer.updateLayersFromSaveData(data, () => {
+				if(cb) cb();
+			});
+		}
 		// バックログの更新
 		ningloid.menu.updateBacklog(oldLogData);
-		console.log("doload");
+		console.log(`doload-${saveKey}`);
 	},
 	/**
 	 * サムネイルを生成する
@@ -228,6 +245,74 @@ ningloid.system = {
 			ningloid.tmp.skipStartTimeoutIdOfResolve = null;
 		},
 	},
-};
 
+	// ================================================================
+	// ● オートセーブ処理
+	// ================================================================
+	autoSave: {
+		// オートセーブするたび、セーブキーとセーブ時のシナリオ行数を保管したオブジェクトを、"配列の先頭に"追加する
+		// → 新しいセーブデータが常に0番にくる
+		list: [
+			// {
+			// 	key: "labelSave-*test",
+			// 	line: 100
+			// }
+		],
+		// オートセーブを行う行数間隔
+		interval: 500,
+		/**
+		 * オートセーブが必要な状態かどうかを判定する
+		 * @return {Boolean} オートセーブ必要ならばtrue, 不要ならばfalse
+		 */
+		judge(){
+			// オートセーブからの進行行数をインクリメント
+			ningloid.stat.autoSaveTimingCounta++;
+
+			// オートセーブを行う行数間隔を超えていない場合はfalse
+			if(ningloid.stat.autoSaveTimingCounta < this.interval) return false;
+			// 超えている場合はtrue
+			else return true;
+		},
+		/**
+		 * オートセーブの実行
+		 * @param  {String}  saveKey セーブデータの呼び出しキー
+		 * @return {Promise}         セーブが実行された場合はpromiseで非同期処理可能
+		 */
+		execute(saveKey){
+			// 既にlistにセーブ情報が保管されている場合には処理不要
+			let i = 0;
+			for(; i < this.list.length; i++){
+				if(this.list[i].key == saveKey) break;
+			}
+			if(i < this.list.length) return;
+
+			// Promise
+			return new Promise((resolve) => {
+				// カウンタのリセット
+				ningloid.stat.autoSaveTimingCounta = 0;
+				// リストの先頭に、オートセーブの情報を追加する
+				this.list.unshift({key: saveKey, line: ningloid.parser.line});
+				// セーブ処理 → 完了後resolve
+				ningloid.system.doSave(saveKey, false, () => resolve());
+			});
+		},
+		/**
+		 * オートセーブデータの消去
+		 */
+		clear(){
+			const config = ningloid.config;
+			const saveData = ningloid.system.saveData;
+			// セーブデータの内、autoSaveと名称の付くデータを削除する
+			for(let key in saveData){
+				if(key.includes("autoSave")){
+					delete saveData[key];
+				}
+			}
+			// オートセーブデータ削除後のセーブデータをストレージに保存
+			$.storeData(`${config.projectName}`, saveData, config.save.type);
+			// オートセーブデータ情報のlistも空にする
+			this.list = [];
+		},
+	},
+};
 
