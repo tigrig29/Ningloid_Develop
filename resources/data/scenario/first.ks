@@ -61,3 +61,6 @@
 テスト[l][cm]
 
 [hidemessage]
+
+
+[jump storage=second.ks]

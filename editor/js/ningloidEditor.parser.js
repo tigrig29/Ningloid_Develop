@@ -45,6 +45,20 @@ ningloidEditor.parser = {
 		// または 現在のフォーカス行 > 以前のフォーカス行 である（フォーカスを上の行に移動した）場合
 		// または 現在のフォーカス行 = 以前のフォーカス行 である（同じ行をクリックした）場合
 		if(i < saveList.length || oldLine > newLine || oldLine == newLine){
+			// endscriptが実行される前なら
+			const parser = ningloid.parser;
+			if(parser.tmpScript !== null){
+				// JSコードをを破棄する
+				parser.tmpScript = null;
+			}
+			// endmacroが実行される前なら
+			const macro = parser.macro;
+			const tmpName = macro.tmpName;
+			if(tmpName !== null){
+				// 作成中のマクロデータを破棄する
+				delete macro.data[tmpName];
+				macro.tmpName = null;
+			}
 			// 現在のフォーカス行に最も近いオートセーブデータをロードして、
 			// その地点から現在のフォーカス行まで命令を実行する
 			this.playOrderAfterLoadAutoSave(newLine);
@@ -74,6 +88,16 @@ ningloidEditor.parser = {
 		for(let i = parser.line; i <= endLine; i++){
 			const order = orderArray[i];
 
+			// jumpタグが実行された場合
+			for(let val of order){
+				if(val.includes("jump") && (val.includes("[") || val.includes("@"))){
+					const e = "Sorry: Jumpタグの処理はエディタに未対応です。";
+					$.tagError(e);
+					if(ningloid.config.develop.mode === true) console.error(e);
+					return;
+				}
+			}
+
 			// 実行中の行数を保存
 			parser.line = i;
 
@@ -102,6 +126,7 @@ ningloidEditor.parser = {
 				NLE.flag.error = true;
 				$.tagError(e);
 				if(ningloid.config.develop.mode === true) console.error(e);
+				return "stop";
 			});
 			if(stopFlag === "stop") return;
 		}
