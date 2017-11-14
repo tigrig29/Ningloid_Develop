@@ -139,6 +139,34 @@ ningloid.tag.blind = {
 	},
 };
 
+// 動画再生
+ningloid.tag.movie = {
+	vital: ["layer"],
+	pm: {layer: "", storage: ""},
+	start: (pm) => {
+		// Promise
+		let [resolver, rejecter] = [null, null];
+		const p = new Promise((resolve, reject) => resolver = resolve);
+
+		const storage = `../resources/data/movie/${pm.storage}`;
+
+		const $target = ningloid.layer.getLayer(pm.layer);
+		const $video = $(`<video style="left:0; top:0; position:absolute;" src="${storage}"></video>`);
+		$target.css({
+			"mix-blend-mode": "overlay"
+		});
+		$video.attr("autoplay", "true");
+		$video.attr("loop", "true");
+		$video.attr("autoplay", "true");
+		$target.append($video);
+
+		// 次へ
+		resolver();
+
+		return p;
+	}
+};
+
 // ================================================================
 // ● キャラ関連
 // ================================================================
@@ -717,7 +745,7 @@ ningloid.tag. = {
 	pm: {},
 	start: (pm) => {
 		// Promise
-		let resolver = null;
+		let [resolver, rejecter] = [null, null];
 		const p = new Promise((resolve, reject) => resolver = resolve);
 
 		// 次へ
