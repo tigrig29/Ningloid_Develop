@@ -19,7 +19,7 @@ $(document).ready(function() {
 				"<h3 class='tag_name'>[" + self.name + "] " + self.overview + "</h3>" +
 				"<p class='tag_description'>" + self.description + "</p>" +
 				"<table class='develop_info'>" +
-					"<thead><tr><td>実装状態</td><td>改善要望</td><td>打ち合わせ要求項目</td></tr></thead>" +
+					"<thead><tr><td>実装状態</td><td>改善要望</td><td>未設計項目</td></tr></thead>" +
 					"<tbody><tr><td>" + self.develop_info[0] + "</td><td>" + self.develop_info[1] + "</td><td>" + self.develop_info[2] + "</td></tr></tbody>" +
 				"</table>" +
 				"<table class='tag_parameter'>" +
