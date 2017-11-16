@@ -16,7 +16,7 @@
 
 [l]
 
-[movie layer=fore0 storage="3.webm"]
+[playmovie layer=fore0 storage="3.webm" loop=false control=true]
 
 
 [hidemessage method="lightSpeedOut"]

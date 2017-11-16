@@ -140,25 +140,33 @@ ningloid.tag.blind = {
 };
 
 // 動画再生
-ningloid.tag.movie = {
-	vital: ["layer"],
-	pm: {layer: "", storage: ""},
+ningloid.tag.playmovie = {
+	vital: ["layer", "storage"],
+	pm: {
+		storage: "", layer: "",
+		fade: 0, loop: false, volume: 100,
+		click: false, wait: true,
+	},
 	start: (pm) => {
 		// Promise
 		let [resolver, rejecter] = [null, null];
 		const p = new Promise((resolve, reject) => resolver = resolve);
 
+		// 動画ファイル選択
 		const storage = `../resources/data/movie/${pm.storage}`;
-
+		// オプション
+		const options = {
+			autoplay: "autoplay",
+		};
+		if(pm.loop == "true") options.loop = "loop";
+		// レイヤ選択
 		const $target = ningloid.layer.getLayer(pm.layer);
-		const $video = $(`<video style="left:0; top:0; position:absolute;" src="${storage}"></video>`);
-		$target.css({
-			"mix-blend-mode": "overlay"
-		});
-		$video.attr("autoplay", "true");
-		$video.attr("loop", "true");
-		$video.attr("autoplay", "true");
-		$target.append($video);
+
+		ningloid.layer.appendVideo($target, storage, options);
+
+		// $target.css({
+		// 	"mix-blend-mode": "overlay"
+		// });
 
 		// 次へ
 		resolver();

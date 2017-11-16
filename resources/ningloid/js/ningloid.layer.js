@@ -199,6 +199,14 @@ ningloid.layer = {
 			})();
 		});
 	},
+	appendVideo($target, videoFileUrl, options){
+		const $video = $(`<video src="${videoFileUrl}"></video>`);
+		// $target.css({
+		// 	"mix-blend-mode": "overlay"
+		// });
+		$video.attr(options);
+		$target.append($video);
+	},
 
 	// ================================================================
 	// ● データ取得系
