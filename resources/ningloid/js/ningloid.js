@@ -6,9 +6,9 @@ const ningloid = {
 	system: {},
 	tag: {},
 	stat: {
-        vertical: "false",
-        f: {},// ゲーム内変数（セーブデータ毎の保存）
-        currentLayer: "message0",
+		vertical: "false",
+		f: {},// ゲーム内変数（セーブデータ毎の保存）
+		currentLayer: "message0",
 		currentLabel: null,
         messageNumber: 0,
         backlog: [],
@@ -30,6 +30,7 @@ const ningloid = {
         mp: {},
 	},
 	flag: {
+		playingVideo: false,
 		animating: 0,
 		autoMode: false,
 		skipMode: false,
@@ -81,6 +82,38 @@ const ningloid = {
 				na.skipToEnd(animObj);
 			}
 			na.clearQueue();
+			return;
+		}
+	},
+
+	// ムービーのクリックイベント
+	videoClick(){
+		const nv = this.video;
+		if(this.flag.playingVideo === true){
+			// クリッカブルなvideoオブジェクトを全取得
+			for(let clickableVideoObj of nv.queue){
+				const $video = clickableVideoObj.target;
+				const clickremove = clickableVideoObj.clickremove;
+				const clickskip = clickableVideoObj.clickskip;
+
+				if(String(clickskip) == "true"){
+					let cancelEnd = false;
+					// スキップ、リムーブ両方のフラグが立っている場合
+					if(String(clickremove) != "false") cancelEnd = true;
+					// スキップ処理
+					nv.skipToEnd($video, cancelEnd);
+				}
+				// クリックリムーブ
+				if(String(clickremove) != "false"){
+					// フェードアウト時間
+					const time = parseInt(clickremove);
+					// 即時消去（その後、エンドファンクション呼び出し）
+					if(time == 0 || isNaN(time)) ningloid.video.remove($video, true);
+					// フェードアウト→消去（その後、エンドファンクション呼び出し）
+					else ningloid.video.fadeOut($video, time, true);
+				}
+			}
+			nv.clearQueue();
 			return;
 		}
 	},
