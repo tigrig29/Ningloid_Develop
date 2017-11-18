@@ -144,8 +144,8 @@ ningloid.tag.playmovie = {
 	vital: ["layer", "storage"],
 	pm: {
 		storage: "", layer: "",
-		fade: 0, loop: false, volume: 100,
-		click: false, wait: true,
+		fade: null, loop: false, volume: 100,
+		endremove: true, clickskip: false, clickremove: false, wait: true,
 	},
 	start: (pm) => {
 		// Promise
@@ -162,14 +162,47 @@ ningloid.tag.playmovie = {
 		// レイヤ選択
 		const $target = ningloid.layer.getLayer(pm.layer);
 
-		ningloid.layer.appendVideo($target, storage, options);
+		// ビデオ要素の追加、実行
+		const $video = ningloid.test = ningloid.video.createAndPlay($target, storage, options, (self) => {
+			// 終了時のイベント
 
-		// $target.css({
-		// 	"mix-blend-mode": "overlay"
-		// });
+			// Video再生フラグ消去
+			ningloid.flag.playingVideo = false;
+			// 終了時消去
+			if(String(pm.endremove) != "false"){
+				const time = parseInt(pm.endremove);
+				// 即時消去（フラグ管理やresolveは消去以外の時と同じ）
+				if(time == 0 || isNaN(time)) ningloid.video.remove(self, false);
+				// フェードアウト→消去
+				else{
+					ningloid.video.fadeOut(self, time, false, () => {
+						// フェードアウトのコールバックでresolve
+						if(String(pm.wait) == "true") resolver();
+					});
+					// resolve重複してしまうので、フェードアウト時はここで処理終了
+					return;
+				}
+			}
+			if(String(pm.wait) == "true") resolver();
+		});
+
+		// クリック時のイベント追加
+		ningloid.video.setClickable($video, pm.clickskip, pm.clickremove);
+
+		// フェードイン
+		if(pm.fade !== null){
+			ningloid.video.fadeIn($video, parseInt(pm.fade), () => {
+				// 再生フラグを立てる
+				ningloid.flag.playingVideo = true;
+			});
+		}
+		else{
+			// 再生フラグを立てる
+			ningloid.flag.playingVideo = true;
+		}
 
 		// 次へ
-		resolver();
+		if(String(pm.wait) == "false") resolver();
 
 		return p;
 	}

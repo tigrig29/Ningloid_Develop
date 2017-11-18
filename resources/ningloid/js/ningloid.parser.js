@@ -454,7 +454,7 @@ ningloid.parser = {
 		 * @return {Boolean} inputedVitalFlag 必須属性が入力されているかの判定
 		 */
 		getExistanceOfVital(defaultTagObject, orderParam){
-			let existFlag = true;console.log(defaultTagObject)
+			let existFlag = true;
 			// vital記述ありのタグだけ判定（vitalの中身が空の場合は判定しない）
 			if(defaultTagObject.vital && defaultTagObject.vital.length > 0){
 					

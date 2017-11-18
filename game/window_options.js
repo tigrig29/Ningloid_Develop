@@ -1,5 +1,5 @@
 module.exports = {
-  width: 1280,
-  height: 720,
+  width: 960,
+  height: 540,
   useContentSize: true
 };
