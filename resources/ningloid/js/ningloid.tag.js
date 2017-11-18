@@ -197,7 +197,7 @@ ningloid.tag.playmovie = {
 ningloid.tag.stopmovie = {
 	vital: ["layer"],
 	pm: {
-		layer: "", skip: false, remove: true, wait: true,
+		layer: "", skip: false, remove: false, wait: true,
 	},
 	start: (pm) => {
 		// Promise
@@ -238,6 +238,86 @@ ningloid.tag.stopmovie = {
 		}
 		// 一時停止
 		else ningloid.video.pause($video);
+
+		// 次へ
+		resolver();
+
+		return p;
+	}
+};
+
+// 動画再開
+ningloid.tag.resumemovie = {
+	vital: ["layer"],
+	pm: {
+		layer: "", volume: 100,
+		clickskip: false, clickremove: false, wait: true,
+	},
+	start: (pm) => {
+		// Promise
+		let [resolver, rejecter] = [null, null];
+		const p = new Promise((resolve, reject) => resolver = resolve);
+
+		// フラグ
+		ningloid.flag.playingVideo = true;
+
+		// Video要素選択
+		const $video = ningloid.video.getVideo(pm.layer);
+
+		// 再開
+		ningloid.video.resume($video, () => {
+			// Video再生フラグ消去
+			ningloid.flag.playingVideo = false;
+			if(String(pm.wait) == "true") resolver();
+		});
+
+		// クリック時のイベント追加
+		ningloid.video.setClickable($video, pm.clickskip, pm.clickremove);
+
+		// 次へ
+		if(String(pm.wait) == "false") resolver();
+
+		return p;
+	}
+};
+
+// 動画消去
+ningloid.tag.removemovie = {
+	vital: ["layer"],
+	pm: {
+		layer: "", fade: 0, skip: false, wait: true,
+	},
+	start: (pm) => {
+		// Promise
+		let [resolver, rejecter] = [null, null];
+		const p = new Promise((resolve, reject) => resolver = resolve);
+
+		// フラグ消去
+		ningloid.flag.playingVideo = false;
+
+		// Video要素選択
+		const $video = ningloid.video.getVideo(pm.layer);
+
+		// スキップ
+		if(pm.skip == "true"){
+			// スキップ処理
+			ningloid.video.skipToEnd($video, true);
+		}
+		// フェードアウト時間
+		const time = parseInt(pm.fade);
+		// 即時消去（その後、エンドファンクション呼び出し）
+		if(time == 0 || isNaN(time)) ningloid.video.remove($video, true);
+		// フェードアウト→消去（その後、エンドファンクション呼び出し）
+		else{
+			ningloid.video.fadeOut($video, time, true, () => {
+				// 次へ
+				if(String(pm.wait) == "true") resolver();
+			});
+			// 次へ
+			if(String(pm.wait) == "false") resolver();
+			// resolve重複してしまうので、フェードアウト時はここで処理終了
+			return p;
+		}
 
 		// 次へ
 		resolver();
@@ -771,6 +851,21 @@ ningloid.tag.endif = {
 // ================================================================
 // ● システム関連
 // ================================================================
+
+ningloid.tag.wait = {
+	vital: ["time"],
+	pm: {time: null},
+	start: (pm) => {
+		// Promise
+		let resolver = null;
+		const p = new Promise((resolve, reject) => resolver = resolve);
+		setTimeout(() => {
+			resolver();
+		}, parseInt(pm.time))
+		return p;
+	}
+};
+
 
 ningloid.tag.save = {
 	start: () => {

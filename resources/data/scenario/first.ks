@@ -17,10 +17,12 @@
 [l]
 
 [playmovie layer=fore0 storage="3.webm" wait=false]
-
+[wait time=3000]
+[stopmovie layer=fore0]
 [l]
+[removemovie layer=fore0 skip=true fade=3000]
 
-[stopmovie layer=fore0 remove=5000]
+[s]
 
 [hidemessage method="lightSpeedOut"]
 

@@ -125,6 +125,18 @@ ningloid.video = {
 	pause($video){
 		$video[0].pause();
 	},
+	/**
+	 * VideoをcurrentTimeから再開する
+	 * @param  {$Object}  $video  対象のVideo要素
+	 * @param  {Function} onEnded Video再生終了時の実行処理
+	 */
+	resume($video, onEnded){
+		const videoObj = $video.get(0);
+		videoObj.onended = () => {
+			if(onEnded) onEnded();
+		};
+		videoObj.play();
+	},
 
 	// ================================================================
 	// ● ビデオ要素系
