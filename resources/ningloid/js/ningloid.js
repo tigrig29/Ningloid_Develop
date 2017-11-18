@@ -92,18 +92,26 @@ const ningloid = {
 		if(this.flag.playingVideo === true){
 			// クリッカブルなvideoオブジェクトを全取得
 			for(let clickableVideoObj of nv.queue){
-				// ※以下両方のフラグが立っている場合は、リムーブを優先
 				const $video = clickableVideoObj.target;
+				const clickremove = clickableVideoObj.clickremove;
+				const clickskip = clickableVideoObj.clickskip;
+
+				if(String(clickskip) == "true"){
+					let cancelEnd = false;
+					// スキップ、リムーブ両方のフラグが立っている場合
+					if(String(clickremove) != "false") cancelEnd = true;
+					// スキップ処理
+					nv.skipToEnd($video, cancelEnd);
+				}
 				// クリックリムーブ
-				if(clickableVideoObj.clickremove){
-					const time = parseInt(clickableVideoObj.clickremove);
+				if(String(clickremove) != "false"){
+					// フェードアウト時間
+					const time = parseInt(clickremove);
 					// 即時消去（その後、エンドファンクション呼び出し）
 					if(time == 0 || isNaN(time)) ningloid.video.remove($video, true);
 					// フェードアウト→消去（その後、エンドファンクション呼び出し）
 					else ningloid.video.fadeOut($video, time, true);
 				}
-				// クリックスキップ
-				else if(clickableVideoObj.clickskip) nv.skipToEnd($video);
 			}
 			nv.clearQueue();
 			return;

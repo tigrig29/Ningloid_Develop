@@ -145,7 +145,7 @@ ningloid.tag.playmovie = {
 	pm: {
 		storage: "", layer: "",
 		fade: null, loop: false, volume: 100,
-		endremove: true, clickskip: false, clickremove: false, wait: true,
+		clickskip: false, clickremove: false, wait: true,
 	},
 	start: (pm) => {
 		// Promise
@@ -168,21 +168,6 @@ ningloid.tag.playmovie = {
 
 			// Video再生フラグ消去
 			ningloid.flag.playingVideo = false;
-			// 終了時消去
-			if(String(pm.endremove) != "false"){
-				const time = parseInt(pm.endremove);
-				// 即時消去（フラグ管理やresolveは消去以外の時と同じ）
-				if(time == 0 || isNaN(time)) ningloid.video.remove(self, false);
-				// フェードアウト→消去
-				else{
-					ningloid.video.fadeOut(self, time, false, () => {
-						// フェードアウトのコールバックでresolve
-						if(String(pm.wait) == "true") resolver();
-					});
-					// resolve重複してしまうので、フェードアウト時はここで処理終了
-					return;
-				}
-			}
 			if(String(pm.wait) == "true") resolver();
 		});
 
@@ -203,6 +188,59 @@ ningloid.tag.playmovie = {
 
 		// 次へ
 		if(String(pm.wait) == "false") resolver();
+
+		return p;
+	}
+};
+
+// 動画停止
+ningloid.tag.stopmovie = {
+	vital: ["layer"],
+	pm: {
+		layer: "", skip: false, remove: true, wait: true,
+	},
+	start: (pm) => {
+		// Promise
+		let [resolver, rejecter] = [null, null];
+		const p = new Promise((resolve, reject) => resolver = resolve);
+
+		// フラグ消去
+		ningloid.flag.playingVideo = false;
+
+		// Video要素選択
+		const $video = ningloid.video.getVideo(pm.layer);
+
+		// スキップ
+		if(pm.skip == "true"){
+			let cancelEnd = false;
+			// スキップ、リムーブ両方のフラグが立っている場合
+			if(pm.remove != "false") cancelEnd = true;
+			// スキップ処理
+			ningloid.video.skipToEnd($video, cancelEnd);
+		}
+		// 消去
+		if(String(pm.remove) != "false"){
+			// フェードアウト時間
+			const time = parseInt(pm.remove);
+			// 即時消去（その後、エンドファンクション呼び出し）
+			if(time == 0 || isNaN(time)) ningloid.video.remove($video, true);
+			// フェードアウト→消去（その後、エンドファンクション呼び出し）
+			else{
+				ningloid.video.fadeOut($video, time, true, () => {
+					// 次へ
+					if(String(pm.wait) == "true") resolver();
+				});
+				// 次へ
+				if(String(pm.wait) == "false") resolver();
+				// resolve重複してしまうので、フェードアウト時はここで処理終了
+				return p;
+			}
+		}
+		// 一時停止
+		else ningloid.video.pause($video);
+
+		// 次へ
+		resolver();
 
 		return p;
 	}

@@ -16,8 +16,11 @@
 
 [l]
 
-[playmovie layer=fore0 storage="3.webm" fade=1000 clickskip=true clickremove=1000]
+[playmovie layer=fore0 storage="3.webm" wait=false]
 
+[l]
+
+[stopmovie layer=fore0 remove=5000]
 
 [hidemessage method="lightSpeedOut"]
 

@@ -32,22 +32,15 @@ tag_data.kind_of_effect = {
 					description: "再生動画の音量を指定します。"
 				},
 				{
-					name: "endremove", required: "×", default: "500", type: "false<br>or<br>数値[ms]",
-					description: "動画が終端に達した際に、自動的に動画を画面から消去するかを指定します。<br>" +
-									"false：消去しません。<br>" +
-									"数値[ms]：指定した数値[ms]のフェードアウトを実行して、動画を消去します。<br>" +
-									"※0を指定すると、フェードアウトではなく、即時消去が実行されます。"
-				},
-				{
 					name: "clickskip", required: "×", default: "false", type: "真偽値",
 					description: "クリックされた際に動画を終端までスキップするかを指定します。スキップする場合true、しない場合falseを指定して下さい。"
 				},
 				{
-					name: "clickremove", required: "×", default: "500", type: "false<br>or<br>数値[ms]",
+					name: "clickremove", required: "×", default: "false", type: "false<br>or<br>数値[ms]",
 					description: "クリックされた際に動画を画面から消去するかを指定します。<br>" +
 									"false：消去しません。<br>" +
 									"数値[ms]：指定した数値[ms]のフェードアウトを実行して、動画を消去します。<br>" +
-									"※0を指定すると、フェードアウトではなく、即時消去が実行されます。"
+									"※0やtrueを指定すると、フェードアウトではなく、即時消去が実行されます。"
 				},
 				{
 					name: "wait", required: "×", default: "true", type: "真偽値",
@@ -75,14 +68,22 @@ tag_data.kind_of_effect = {
 					description: "動画再生${skip}"
 				},
 				{
-					name: "remove", required: "×", default: "0", type: "数値[ms]",
-					description: "動画終了時のフェードアウト${time}<br>0を指定すると、フェードアウトしません。"
+					name: "remove", required: "×", default: "true", type: "false<br>or<br>数値[ms]",
+					description: "動画を画面から消去するかを指定します。<br>" +
+									"false：消去しません。<br>" +
+									"数値[ms]：指定した数値[ms]のフェードアウトを実行して、動画を消去します。<br>" +
+									"※0やtrueを指定すると、フェードアウトではなく、即時消去が実行されます。"
+				},
+				{
+					name: "wait", required: "×", default: "true", type: "真偽値",
+					description: "※removeに数値を指定した場合のみ意味を持ちます。<br>" +
+									"フェードアウト${wait}"
 				},
 			],
 			example: ""
 		},
 		resumemovie:{
-			name: "",
+			name: "resumemovie",
 			overview: "",
 			description: "",
 			develop_info: [
@@ -97,7 +98,7 @@ tag_data.kind_of_effect = {
 			example: "@"
 		},
 		removemovie:{
-			name: "",
+			name: "removemovie",
 			overview: "",
 			description: "",
 			develop_info: [

@@ -111,12 +111,19 @@ ningloid.video = {
 	 */
 	skipToEnd($video, cancelEnd){
 		const videoObj = $video.get(0);
-		// エンドファンクションを呼び出さないパターン（使わない？）
+		// エンドファンクションを呼び出さないパターン（skipとremoveを同時に行う場合に必要）
 		if(cancelEnd){
 			videoObj.pause();
 			videoObj.currentTime = videoObj.duration - 0.001;
 		}
 		else videoObj.currentTime = videoObj.duration;
+	},
+	/**
+	 * 再生中のVideoを停止する
+	 * @param  {$Object} $video 対象のVideo要素
+	 */
+	pause($video){
+		$video[0].pause();
 	},
 
 	// ================================================================
