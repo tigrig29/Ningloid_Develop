@@ -91,6 +91,12 @@ div{
 	word-wrap: break-word;
 }
 
+/* フリーレイヤ */
+#freeLayer{
+	width: 100%;
+	height: 100%;
+}
+
 /* メニューラッパー */
 #menuWrapper{
 	z-index: 1000000;
@@ -126,4 +132,18 @@ div{
 	-webkit-transform-origin:left top;
 	transform-origin:left top;
 	display: none;
+}
+
+
+
+/*================================================================*/
+/* 各種追加エレメント */
+/*================================================================*/
+
+video{
+	left:0;
+	top:0;
+	width: 100%;
+	height: 100%;
+	position:absolute;
 }

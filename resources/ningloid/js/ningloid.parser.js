@@ -356,7 +356,7 @@ ningloid.parser = {
 			$.orderLog();
 
 			// タグVitalチェックで引っかかったら停止
-			if(!this.getExistanceOfVital(tagObject)){
+			if(!this.getExistanceOfVital(ningloid.tag[orderName], orderParam)){
 				// エラー
 				throw new Error(`タグの必須属性[${ningloid.tag[orderName].vital}]が入力されていません。`);
 			}
@@ -457,6 +457,7 @@ ningloid.parser = {
 			let existFlag = true;
 			// vital記述ありのタグだけ判定（vitalの中身が空の場合は判定しない）
 			if(defaultTagObject.vital && defaultTagObject.vital.length > 0){
+					
 				// Vitalに記述されているバラメータ名を取り出す
 				for(let pm of defaultTagObject.vital){
 					existFlag = false;

@@ -66,6 +66,7 @@ ningloid.keyMouse = {
 	next(){
 		ningloid.messageSkip();
 		ningloid.animSkip();
+		ningloid.videoClick();
 		ningloid.resolve();
 		// console.log(ningloid.parser.label)
 	},
