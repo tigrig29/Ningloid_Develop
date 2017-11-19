@@ -31,6 +31,8 @@ ningloid.video = {
 		$video[0].onended = () => {
 			if(onEnded) onEnded($video);
 		};
+
+		this.play($video);
 		return $video;
 	},
 	/**
@@ -41,7 +43,15 @@ ningloid.video = {
 	 */
 	setClickable($video, clickskip, clickremove){
 		if(!clickskip && !clickremove) return;
-		this.pushQueue(this.createClickableVideoObject($video, clickskip, clickremove));
+
+		// システムスキップ時
+		if(ningloid.flag.systemSkipMode === true){
+			if(String(clickremove) != "false") this.remove($video, true);
+			else if(String(clickskip) == "true"){
+				$video[0].addEventListener("loadeddata", (e) => this.skipToEnd($video));
+			}
+		}
+		else this.pushQueue(this.createClickableVideoObject($video, clickskip, clickremove));
 	},
 
 	// ================================================================
@@ -119,6 +129,13 @@ ningloid.video = {
 		else videoObj.currentTime = videoObj.duration;
 	},
 	/**
+	 * Videoを再生する
+	 * @param  {$Object} $video 対象のVideo要素
+	 */
+	play($video){
+		$video[0].play($video);
+	},
+	/**
 	 * 再生中のVideoを停止する
 	 * @param  {$Object} $video 対象のVideo要素
 	 */
@@ -135,7 +152,7 @@ ningloid.video = {
 		videoObj.onended = () => {
 			if(onEnded) onEnded();
 		};
-		videoObj.play();
+		this.play($video);
 	},
 
 	// ================================================================
@@ -149,11 +166,12 @@ ningloid.video = {
 	 */
 	fadeIn($video, time, cb){
 		$video.css("opacity", 0);
-		ningloid.animate.velocity($video, {opacity: 1}, {
+		ningloid.animate.ext.play($video, {
+			method: "fadeIn",
 			duration: parseInt(time),
 			easing: "linear",
 			skippable: "true",
-		}, () => {if(cb) cb();});
+		}, null, () => {if(cb) cb();});
 	},
 	/**
 	 * Video要素を消去する
@@ -175,11 +193,12 @@ ningloid.video = {
 	fadeOut($video, time, endFlag, cb){
 		// フェードアウトが終わったらRemoveを実行
 		// Remove後にエンドファンクションを呼ぶかは引数に従う
-		ningloid.animate.velocity($video, {opacity: 0}, {
+		ningloid.animate.ext.play($video, {
+			method: "fadeOut",
 			duration: parseInt(time),
 			easing: "linear",
 			skippable: "true",
-		}, () => {
+		}, null, () => {
 			this.remove($video, endFlag);
 			if(cb) cb();
 		});

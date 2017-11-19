@@ -155,9 +155,7 @@ ningloid.tag.playmovie = {
 		// 動画ファイル選択
 		const storage = `../resources/data/movie/${pm.storage}`;
 		// オプション
-		const options = {
-			autoplay: "autoplay",
-		};
+		const options = {};
 		if(pm.loop == "true") options.loop = "loop";
 		// レイヤ選択
 		const $target = ningloid.layer.getLayer(pm.layer);
@@ -187,7 +185,9 @@ ningloid.tag.playmovie = {
 		}
 
 		// 次へ
-		if(String(pm.wait) == "false") resolver();
+		$video[0].addEventListener("loadeddata", (e) => {
+			if(String(pm.wait) == "false") resolver();
+		});
 
 		return p;
 	}
