@@ -26,6 +26,14 @@ ningloidEditor.parser = {
 		// 現在のフォーカス行
 		const newLine = Editor.getCursorPosition().row;
 
+		// 停止フラグ
+		if(NLE.flag.stop !== false){
+			// 停止が実行された行数よりも前の行数をフォーカスした場合のみ、停止解除
+			if(newLine <= NLE.flag.stop) NLE.flag.stop = false;
+			// 停止時は処理しない
+			else return;
+		}
+
 		// エディタのフォーカス行数を更新
 		this.currentLine = newLine;
 
@@ -128,7 +136,7 @@ ningloidEditor.parser = {
 				if(ningloid.config.develop.mode === true) console.error(e);
 				return "stop";
 			});
-			if(stopFlag === "stop") return;
+			if(stopFlag === "stop") return "stop";
 		}
 	},
 	/**
@@ -139,9 +147,14 @@ ningloidEditor.parser = {
 	highSpeedProceedOrder: async function(startLine, endLine){
 		ningloid.flag.systemSkipMode = true;
 		// フォーカス行までの命令の実行（ここまではシステムスキップ＝即時進行）
-		await this.playSectionScenario(ningloid.parser.orderArray, startLine, endLine - 1);
+		const stopFlag = await this.playSectionScenario(ningloid.parser.orderArray, startLine, endLine - 1);
 
+		// 即時実行解除
 		ningloid.flag.systemSkipMode = false;
+
+		// 停止時は処理しない
+		if(stopFlag == "stop") return;
+
 		// フォーカス行の命令の実行（ここだけ通常速度で実行）
 		await this.playSectionScenario(ningloid.parser.orderArray, endLine, endLine);
 	},

@@ -14,6 +14,8 @@ const ningloidEditor = {
 		error: false,
 		// 編集状態（未保存状態）を管理する
 		edit: false,
+		// [s]タグ等による処理停止状態
+		stop: false,
 	},
 	init(){
 		const windowOption = require("./window_options.js");
@@ -34,6 +36,9 @@ const ningloidEditor = {
 		// エディタデザインの初期化
 		this.editor.init();
 		this.design.init();
+
+		// エディタ用タグ上書き
+		this.tag.init();
 	},
 	reset(){
 		// ゲーム画面のリセット
