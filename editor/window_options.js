@@ -5,7 +5,7 @@ module.exports = {
 		useContentSize: true
 	},
 	game: {
-		width: 1280 * 0.7,
-		height: 720 * 0.7
+		width: 640,
+		height: 360
 	},
 };

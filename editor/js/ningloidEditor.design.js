@@ -2,10 +2,7 @@
 
 ningloidEditor.design = {
 	init(){
-		// エディタエリアのleft固定
-		$("#editor").css("left", $("#game").width());
-			// エディタエリアのwidthを画面サイズ追従させる
-			$("#editor").css("width", $("body").width() - $("#game").width());
+		this.setEditorPosition();
 		// リソースマネージャーエリアのtop, width固定
 		$("#resourceManager").css("top", $("#game").height());
 		$("#resourceManager").css("width", $("#game").width());
@@ -22,7 +19,7 @@ ningloidEditor.design = {
 		});
 
 		// エディタのテーマset
-		this.changeTheme("dark");
+		this.changeEditorTheme("dark");
 	},
 	gameResize(width){
 		$("#game").css({
@@ -34,7 +31,13 @@ ningloidEditor.design = {
 			"transform": `scale(${scale})`
 		});
 	},
-	changeTheme(themeName){
+	setEditorPosition(){
+		const gameWidth = $("#game").width();
+
+		$("#editor").css("left", gameWidth);
+		$("#editor").css("width", $("body").width() - gameWidth);
+	},
+	changeEditorTheme(themeName){
 		Editor.setTheme(`ace/theme/kag-${themeName}`);
 	}
 };

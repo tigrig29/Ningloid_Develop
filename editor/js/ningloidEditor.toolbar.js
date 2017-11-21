@@ -142,7 +142,7 @@ const template = [
 								label: "シンプル",
 								type: "radio",
 								click(){
-									NLE.design.changeTheme("simple");
+									NLE.design.changeEditorTheme("simple");
 								}
 							},
 							{
@@ -150,7 +150,7 @@ const template = [
 								type: "radio",
 								checked: true,
 								click(){
-									NLE.design.changeTheme("dark");
+									NLE.design.changeEditorTheme("dark");
 								}
 							}
 						]

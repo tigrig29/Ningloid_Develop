@@ -21,6 +21,10 @@ const ningloidEditor = {
 		const windowOption = require("./window_options.js");
 		$("#game").css(windowOption.game);
 
+		// エディタデザインの初期化
+		this.editor.init();
+		this.design.init();
+
 		// 基本レイヤの準備
 		ningloid.layer.init();
 		// キー・マウスイベントの初期化処理
@@ -32,10 +36,6 @@ const ningloidEditor = {
 		ningloid.menu.init();
 
 		document.title = "Ningloid Editor";
-
-		// エディタデザインの初期化
-		this.editor.init();
-		this.design.init();
 
 		// エディタ用タグ上書き
 		this.tag.init();
