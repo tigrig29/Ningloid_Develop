@@ -19,7 +19,6 @@ ningloidEditor.editor = {
 		// syntax highlight
 		const KAGMode = ace.require("ace/mode/kag").Mode;
 		Editor.getSession().setMode(new KAGMode());
-		Editor.setTheme("ace/theme/kag-dark");
 
 		// エディタの初期状態はfirst.ks
 		ningloid.parser.url = "../resources/data/scenario/first.ks";

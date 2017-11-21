@@ -1,4 +1,4 @@
-/* global NLE: true */
+/* global NLE: true, Editor: true */
 
 ningloidEditor.design = {
 	init(){
@@ -20,5 +20,21 @@ ningloidEditor.design = {
 			// リソースマネージャーエリアのheightを画面サイズ追従させる
 			$("#resourceManager").css("height", $("body").height() - $("#game").height());
 		});
+
+		// エディタのテーマset
+		this.changeTheme("dark");
 	},
+	gameResize(width){
+		$("#game").css({
+			width, height: width * 9 / 16,
+		});
+		const scale = width / ningloid.config.display.width;
+		$("#ningloidBase").css({
+			"-webkit-transform": `scale(${scale})`,
+			"transform": `scale(${scale})`
+		});
+	},
+	changeTheme(themeName){
+		Editor.setTheme(`ace/theme/kag-${themeName}`);
+	}
 };

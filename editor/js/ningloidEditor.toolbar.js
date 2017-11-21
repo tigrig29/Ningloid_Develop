@@ -1,3 +1,5 @@
+/* global NLE: true */
+
 const {remote} = require("electron");
 const {Menu, MenuItem, BrowserWindow} = remote;
 
@@ -109,21 +111,21 @@ const template = [
 								label: "640×360",
 								type: "radio",
 								click(){
-
+									NLE.design.gameResize(640);
 								}
 							},
 							{
 								label: "960×540",
 								type: "radio",
 								click(){
-
+									NLE.design.gameResize(960);
 								}
 							},
 							{
 								label: "1280×720",
 								type: "radio",
 								click(){
-
+									NLE.design.gameResize(1280);
 								}
 							},
 						]
@@ -140,14 +142,15 @@ const template = [
 								label: "シンプル",
 								type: "radio",
 								click(){
-
+									NLE.design.changeTheme("simple");
 								}
 							},
 							{
 								label: "ダーク",
 								type: "radio",
+								checked: true,
 								click(){
-
+									NLE.design.changeTheme("dark");
 								}
 							}
 						]
