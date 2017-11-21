@@ -154,6 +154,9 @@ ningloidEditor.editor = {
 
 		// 保存ボタンのクリックイベント
 		$("#editSave").on("click", () => {
+			// エラーフラグは消す
+			NLE.flag.error = false;
+
 			// テキストデータの保存
 			this.saveFile(ningloid.parser.url, () => {
 				// 時限式ゲーム実行が行われた場合は、以下のゲーム実行処理を行わない
@@ -176,9 +179,6 @@ ningloidEditor.editor = {
 	// ================================================================
 	setAceEvent(){
 		Editor.on("change", (e) => {
-			// 編集されたらエラーフラグは消す
-			NLE.flag.error = false;
-
 			// 編集が繰り返されるうちは、↓のタイマーをリセットする
 			if(this.timer !== "done") clearTimeout(this.timer);
 

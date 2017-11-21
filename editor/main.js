@@ -29,7 +29,7 @@ app.on("ready", () => {
 	*/
 	const window_options = require("./window_options.js");
 	mainWindow = new BrowserWindow(window_options.browser);
-	mainWindow.loadURL(`file://${__dirname}/editor-with-game.html`);
+	mainWindow.loadURL(`file://${__dirname}/index.html`);
 
 	// ウィンドウが閉じられたらアプリも終了
 	mainWindow.on("closed", () => {
