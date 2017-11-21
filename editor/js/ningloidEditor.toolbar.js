@@ -108,24 +108,31 @@ const template = [
 						label: "画面サイズ",
 						submenu: [
 							{
+								label: "480×270",
+								type: "radio",
+								click(){
+									setGameSize(480);
+								}
+							},
+							{
 								label: "640×360",
 								type: "radio",
 								click(){
-									NLE.design.gameResize(640);
+									setGameSize(640);
+								}
+							},
+							{
+								label: "800×450",
+								type: "radio",
+								click(){
+									setGameSize(800);
 								}
 							},
 							{
 								label: "960×540",
 								type: "radio",
 								click(){
-									NLE.design.gameResize(960);
-								}
-							},
-							{
-								label: "1280×720",
-								type: "radio",
-								click(){
-									NLE.design.gameResize(1280);
+									setGameSize(960);
 								}
 							},
 						]
@@ -142,7 +149,7 @@ const template = [
 								label: "シンプル",
 								type: "radio",
 								click(){
-									NLE.design.changeEditorTheme("simple");
+									NLE.editor.changeTheme("simple");
 								}
 							},
 							{
@@ -150,7 +157,7 @@ const template = [
 								type: "radio",
 								checked: true,
 								click(){
-									NLE.design.changeEditorTheme("dark");
+									NLE.editor.changeTheme("dark");
 								}
 							}
 						]
@@ -217,3 +224,8 @@ const template = [
 // ツールバーセット
 const menu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(menu);
+
+function setGameSize(width){
+	NLE.design.gameResize(width);
+	NLE.design.setEditorPosition();
+}

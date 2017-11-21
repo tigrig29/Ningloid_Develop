@@ -17,9 +17,6 @@ ningloidEditor.design = {
 			// リソースマネージャーエリアのheightを画面サイズ追従させる
 			$("#resourceManager").css("height", $("body").height() - $("#game").height());
 		});
-
-		// エディタのテーマset
-		this.changeEditorTheme("dark");
 	},
 	gameResize(width){
 		$("#game").css({
@@ -37,7 +34,4 @@ ningloidEditor.design = {
 		$("#editor").css("left", gameWidth);
 		$("#editor").css("width", $("body").width() - gameWidth);
 	},
-	changeEditorTheme(themeName){
-		Editor.setTheme(`ace/theme/kag-${themeName}`);
-	}
 };

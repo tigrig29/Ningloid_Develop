@@ -32,6 +32,9 @@ ningloidEditor.editor = {
 
 		// エディタの内部状態に関するイベントをセット
 		this.setAceEvent();
+
+		// エディタのテーマset
+		this.changeTheme("dark");
 	},
 
 	// ================================================================
@@ -85,6 +88,14 @@ ningloidEditor.editor = {
 	},
 	editSaveDone(){
 		$("#editSaveCondition").removeClass("not-saved").addClass("saved");
+	},
+
+
+	// ================================================================
+	// ● シンタックスハイライト
+	// ================================================================
+	changeTheme(themeName){
+		Editor.setTheme(`ace/theme/kag-${themeName}`);
 	},
 
 	// ================================================================

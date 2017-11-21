@@ -47,7 +47,6 @@ body{
 	margin: 5px;
 	font-weight: bold;
 	float: left;
-	cursor: pointer;
 }
 #editCondition:after{
 	content: "";

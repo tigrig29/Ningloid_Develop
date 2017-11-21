@@ -22,8 +22,8 @@ const ningloidEditor = {
 		$("#game").css(windowOption.game);
 
 		// エディタデザインの初期化
-		this.editor.init();
 		this.design.init();
+		this.editor.init();
 
 		// 基本レイヤの準備
 		ningloid.layer.init();
