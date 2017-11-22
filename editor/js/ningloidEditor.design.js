@@ -49,4 +49,15 @@ ningloidEditor.design = {
 		// ファイルタブエリアは個別で横幅調整が必要（ウィンドウサイズ変更時）
 		$("#editFileTab").css("width", bodyWidth - gameWidth - 55);// 55は左の要素の合計width
 	},
+	/**
+	 * カラーテーマを設定する
+	 * @param {String} themeName テーマ名称（simple, dark, ...）
+	 */
+	setTheme(themeName){
+		// エディタ上部のテーマ変更
+		$("#editFileTabArrowArea").attr("class", "").addClass(`editorTheme-${themeName}`);
+		$("#editFileTab").attr("class", "").addClass(`editorTheme-${themeName}`);
+		// Aceエディタのテーマ変更
+		NLE.editor.changeTheme(themeName);
+	},
 };

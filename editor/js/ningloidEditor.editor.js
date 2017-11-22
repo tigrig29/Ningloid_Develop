@@ -34,7 +34,7 @@ ningloidEditor.editor = {
 		this.setAceEvent();
 
 		// エディタのテーマset
-		this.changeTheme("dark");
+		NLE.design.setTheme("dark");
 	},
 
 	// ================================================================

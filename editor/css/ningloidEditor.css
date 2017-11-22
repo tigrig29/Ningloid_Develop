@@ -85,6 +85,14 @@ body{
 /*==================================*/
 /* ● ファイルタブ */
 /*==================================*/
+.editorTheme-dark{
+	color: #BBB;
+	background: #465258;
+}
+.editorTheme-simple{
+	color: #888;
+	background: #EEE;
+}
 /* 左右ボタン */
 #editFileTabArrowArea{
 	top: 55px;
@@ -93,10 +101,6 @@ body{
 	height: 35px;
 	margin: 0px;
 	position: absolute;
-}
-#editFileTabArrowArea.editFileTab-dark{
-	color: #BBB;
-	background: #465258;
 }
 #editFileTabArrowArea > div{
 	float: left;
@@ -110,7 +114,11 @@ body{
 	float: left;
 	padding: 1px 8px;
 }
-.editFileTab-dark > .editFileTabArrow:hover{
+/*ここからカラーテーマ*/
+.editorTheme-dark > .editFileTabArrow:hover{
+	color: #55BCD4;
+}
+.editorTheme-simple > .editFileTabArrow:hover{
 	color: #55BCD4;
 }
 
@@ -124,10 +132,6 @@ body{
 	white-space: nowrap;
 	overflow-x: scroll;
 }
-#editFileTab.editFileTab-dark{
-	color: #BBB;
-	background: #465258;
-}
 #editFileTab::-webkit-scrollbar{
 	width: 0;
 	height: 0;
@@ -138,11 +142,19 @@ body{
 	cursor: default;
 	position: relative;
 }
-.editFileTab-dark > .fileTab:hover{
+/*ここからカラーテーマ*/
+.editorTheme-dark > .fileTab:hover{
 	border-bottom: 2px #258CA4 solid;
 }
-.editFileTab-dark > .fileTab.active{
+.editorTheme-dark > .fileTab.active{
 	color: #FFF;
+	border-bottom: 2px #00BCD4 solid;
+}
+.editorTheme-simple > .fileTab:hover{
+	border-bottom: 2px #258CA4 solid;
+}
+.editorTheme-simple > .fileTab.active{
+	color: #000;
 	border-bottom: 2px #00BCD4 solid;
 }
 
