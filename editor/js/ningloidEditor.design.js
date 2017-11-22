@@ -1,6 +1,7 @@
 /* global NLE: true, Editor: true */
 
 ningloidEditor.design = {
+	$editActive: null,
 	init(){
 		this.setEditorStyle();
 		// リソースマネージャーエリアのtop, width固定
@@ -17,6 +18,23 @@ ningloidEditor.design = {
 			// リソースマネージャーエリアのheightを画面サイズ追従させる
 			$("#resourceManager").css("height", $("body").height() - $("#game").height());
 		});
+
+		// ファイルタブスクローラーのイベント
+		$(".editFileTabArrow").on({
+			click: (self) => {
+				const $self = $(self.currentTarget);
+				this.scrollFileTab($self.data("direction"));
+			},
+		});
+		// ファイルタブのイベント
+		$("#editFileTab").on({
+			click: (self) => {
+				const $self = $(self.currentTarget);
+				// 変数からデータを読み取って、エディタエリアに表示する
+				// activeの更新
+				this.activateFileTab($self);
+			}
+		}, ".fileTab");
 	},
 	/**
 	 * ゲーム画面をリサイズする
@@ -32,6 +50,21 @@ ningloidEditor.design = {
 			"transform": `scale(${scale})`
 		});
 	},
+	/**
+	 * カラーテーマを設定する
+	 * @param {String} themeName テーマ名称（simple, dark, ...）
+	 */
+	setTheme(themeName){
+		// エディタ上部のテーマ変更
+		$("#editFileTabArrowArea").attr("class", "").addClass(`editorTheme-${themeName}`);
+		$("#editFileTab").attr("class", "").addClass(`editorTheme-${themeName}`);
+		// Aceエディタのテーマ変更
+		NLE.editor.changeTheme(themeName);
+	},
+
+	// ================================================================
+	// ● エディタ系
+	// ================================================================
 	/**
 	 * エディタの位置・サイズを、ゲームエリア・ウィンドウサイズに応じて調整する
 	 */
@@ -49,15 +82,52 @@ ningloidEditor.design = {
 		// ファイルタブエリアは個別で横幅調整が必要（ウィンドウサイズ変更時）
 		$("#editFileTab").css("width", bodyWidth - gameWidth - 55);// 55は左の要素の合計width
 	},
+
+	// ================================================================
+	// ● エディタ系 - ファイルタブ
+	// ================================================================
 	/**
-	 * カラーテーマを設定する
-	 * @param {String} themeName テーマ名称（simple, dark, ...）
+	 * ファイルタブをスクロールする
+	 * @param  {String} direction スクロール方向を指定する（left or right）
 	 */
-	setTheme(themeName){
-		// エディタ上部のテーマ変更
-		$("#editFileTabArrowArea").attr("class", "").addClass(`editorTheme-${themeName}`);
-		$("#editFileTab").attr("class", "").addClass(`editorTheme-${themeName}`);
-		// Aceエディタのテーマ変更
-		NLE.editor.changeTheme(themeName);
+	scrollFileTab(direction){
+		const $fileTab = $("#editFileTab");
+		if(direction == "left") scrollAnimate(-80);
+		else if(direction == "right") scrollAnimate(80);
+		function scrollAnimate(value){
+			let i = 0;
+			const id = setInterval(() => {
+				$fileTab[0].scrollLeft += value / 10;
+				if(++i == 10) clearInterval(id);
+			}, 10);
+		}
 	},
+	/**
+	 * 指定したファイルタブをアクティブ化する
+	 * @param  {$Object} $target アクティブ化するファイルタブのjQueryオブジェクト
+	 */
+	activateFileTab($target){
+		if(this.$editActive) this.$editActive.removeClass("active");
+		this.$editActive = $target.addClass("active");
+		// エディタエリアを該当ファイルのテキストで更新（未実装）
+	},
+	/**
+	 * ファイルタブを新規挿入する
+	 * @param  {String} fileName ファイル名
+	 */
+	appendFileTab(fileName){
+		const fileTabId = `${fileName.split(".")[0]}KS`;
+		// 既に開いている場合
+		if($(`#${fileTabId}`).length !== 0){
+			// タブのアクティブ化
+			NLE.design.activateFileTab($(`#${fileTabId}`));
+		}
+		else{
+			// タブの生成
+			const $fileTab = $(`<span id="${fileTabId}" class="fileTab">${fileName}</span>`);
+			$("#editFileTab").append($fileTab);
+			// タブのアクティブ化
+			NLE.design.activateFileTab($fileTab);
+		}
+	}
 };

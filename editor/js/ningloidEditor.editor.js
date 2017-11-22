@@ -42,9 +42,12 @@ ningloidEditor.editor = {
 	// ================================================================
 	// シナリオファイルを開き、エディタコンテンツ欄にテキストを出力する
 	openFile(url, cb){
+		const fileName = url.split("scenario/")[1];
 		$.ajax({
 			url: url,
 			success: (data) => {
+				// ファイル名をタブに表示する
+				NLE.design.appendFileTab(fileName);
 				// 取得したテキストをエディタに表示
 				Editor.setValue(data, -1);
 				// 編集中フラグをfalse、保存済み状態とする
