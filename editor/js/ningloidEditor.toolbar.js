@@ -227,5 +227,5 @@ Menu.setApplicationMenu(menu);
 
 function setGameSize(width){
 	NLE.design.gameResize(width);
-	NLE.design.setEditorPosition();
+	NLE.design.setEditorStyle();
 }

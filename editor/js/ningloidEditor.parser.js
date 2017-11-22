@@ -132,6 +132,7 @@ ningloidEditor.parser = {
 			const stopFlag = await parser.executePluralOrders(order).catch((e) => {
 				// エラーフラグを立てることで、強制的に次の実行を止める（次の実行がなされるとエラーが重複する）
 				NLE.flag.error = true;
+				$("#previewCondition").removeClass("editing playing").addClass("error");
 				$.tagError(e);
 				if(ningloid.config.develop.mode === true) console.error(e);
 				return "stop";

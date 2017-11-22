@@ -56,6 +56,7 @@
 
 <body style="overflow:hidden">
 	<div id="game">
+		<div id="previewCondition"></div>
 		<div id="ningloidBase" unselectable="on" >
 			<div id="dummyWrapper" class="wrapper"></div>
 			<div id="canvasWrapper" class="wrapper"></div>
@@ -74,9 +75,17 @@
 				<i class="fa fa-floppy-o fa-2x" aria-hidden="true"></i>
 			</div>
 		</div>
-		<div id="editCondition">
-			<div id="editNowCondition"></div>
-			<div id="editSaveCondition"></div>
+		<div id="editFileTabArrowArea" class="editFileTab-dark">
+			<div class="editFileTabArrow" data-direction="left">
+				<i class="fa fa-angle-left fa-2x" aria-hidden="true"></i>
+			</div>
+			<div class="editFileTabArrow" data-direction="right">
+				<i class="fa fa-angle-right fa-2x" aria-hidden="true"></i>
+			</div>
+		</div>
+		<div id="editFileTab" class="editFileTab-dark">
+			<!-- <span id="firstKS" class="fileTab active">first.ks</span> -->
+			<!-- <span id="secondKS" class="fileTab">second.ks</span> -->
 		</div>
 		<div id="editInputArea"></div>
 	</div>

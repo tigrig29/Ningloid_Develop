@@ -79,15 +79,15 @@ ningloidEditor.editor = {
 	// ================================================================
 	editStart(){
 		NLE.flag.edit = true;
-		$("#editNowCondition").removeClass("edited").addClass("editing");
-		$("#editSaveCondition").removeClass("saved").addClass("not-saved");
+		$("#previewCondition").removeClass("playing error").addClass("editing");
+		// $("#editSaveCondition").removeClass("saved").addClass("not-saved");
 	},
 	editEnd(){
 		NLE.flag.edit = false;
-		$("#editNowCondition").removeClass("editing").addClass("edited");
+		$("#previewCondition").removeClass("editing error").addClass("playing");
 	},
 	editSaveDone(){
-		$("#editSaveCondition").removeClass("not-saved").addClass("saved");
+		// $("#editSaveCondition").removeClass("not-saved").addClass("saved");
 	},
 
 
