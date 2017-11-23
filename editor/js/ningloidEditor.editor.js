@@ -53,6 +53,8 @@ ningloidEditor.editor = {
 				// 編集中フラグをfalse、保存済み状態とする
 				this.editEnd();
 				this.editSaveDone();
+				// 初回表示時のエディタundoスタックは不要なので消す
+				setTimeout(() => this.resetUndoStack(), 100);
 				// コールバック
 				if(cb) cb();
 			},
@@ -82,15 +84,27 @@ ningloidEditor.editor = {
 	// ================================================================
 	editStart(){
 		NLE.flag.edit = true;
+		// 実行中/編集中 表示切り替え
 		$("#previewCondition").removeClass("playing error").addClass("editing");
-		// $("#editSaveCondition").removeClass("saved").addClass("not-saved");
+		// ファイルタブの編集中設定
+		NLE.design.showEditMarkOnActiveFileTab();
 	},
 	editEnd(){
 		NLE.flag.edit = false;
+		// 実行中/編集中 表示切り替え
 		$("#previewCondition").removeClass("editing error").addClass("playing");
 	},
 	editSaveDone(){
-		// $("#editSaveCondition").removeClass("not-saved").addClass("saved");
+		// ファイルタブの編集中設定
+		NLE.design.removeEditMarkOnActiveFileTab();
+	},
+
+	/**
+	 * Undoのスタックを消去する
+	 */
+	resetUndoStack(){
+		const manager = Editor.getSession().getUndoManager();
+		manager.reset();
 	},
 
 

@@ -33,8 +33,25 @@ ningloidEditor.design = {
 				// 変数からデータを読み取って、エディタエリアに表示する
 				// activeの更新
 				this.activateFileTab($self);
+			},
+			mouseenter: (e) => {
+				// 編集中マークを隠す
+				const $target = $(e.currentTarget);
+				this.hideEditMarkOnFileTab($target);
+			},
+			mouseleave: (e) => {
+				// 編集中フラグを持っているならば、編集中マークを表示する
+				const $target = $(e.currentTarget);
+				if($target.attr("editing") == "true") this.showEditMarkOnFileTab($target);
 			}
 		}, ".fileTab");
+		// ファイルタブの閉じるボタンイベント
+		$("#editFileTab").on({
+			click: (e) => {
+				// ファイル閉じる処理
+				e.stopPropagation();
+			}
+		}, ".fileTabCloseButton");
 	},
 	/**
 	 * ゲーム画面をリサイズする
@@ -87,6 +104,30 @@ ningloidEditor.design = {
 	// ● エディタ系 - ファイルタブ
 	// ================================================================
 	/**
+	 * ファイルタブを新規挿入する
+	 * @param  {String} fileName ファイル名
+	 */
+	appendFileTab(fileName){
+		const fileTabId = `${fileName.split(".")[0]}KS`;
+		// 既に開いている場合
+		if($(`#${fileTabId}`).length !== 0){
+			// タブのアクティブ化
+			NLE.design.activateFileTab($(`#${fileTabId}`));
+		}
+		else{
+			// タブの生成
+			const $fileTab = $(`<span id="${fileTabId}" class="fileTab">${fileName}</span>`);
+			// 編集中/× ボタン
+			const $fileTabCloseButton = $("<span class='fileTabCloseButton'><i class='fa fa-close'></i></span>");
+			const $fileTabEditButton = $("<span class='fileTabEditButton'><i class='fa fa-pencil'></i></span>");
+			$fileTab.append($fileTabCloseButton, $fileTabEditButton);
+			// タブをタブエリアに追加
+			$("#editFileTab").append($fileTab);
+			// タブのアクティブ化
+			NLE.design.activateFileTab($fileTab);
+		}
+	},
+	/**
 	 * ファイルタブをスクロールする
 	 * @param  {String} direction スクロール方向を指定する（left or right）
 	 */
@@ -111,23 +152,32 @@ ningloidEditor.design = {
 		this.$editActive = $target.addClass("active");
 		// エディタエリアを該当ファイルのテキストで更新（未実装）
 	},
-	/**
-	 * ファイルタブを新規挿入する
-	 * @param  {String} fileName ファイル名
-	 */
-	appendFileTab(fileName){
-		const fileTabId = `${fileName.split(".")[0]}KS`;
-		// 既に開いている場合
-		if($(`#${fileTabId}`).length !== 0){
-			// タブのアクティブ化
-			NLE.design.activateFileTab($(`#${fileTabId}`));
-		}
-		else{
-			// タブの生成
-			const $fileTab = $(`<span id="${fileTabId}" class="fileTab">${fileName}</span>`);
-			$("#editFileTab").append($fileTab);
-			// タブのアクティブ化
-			NLE.design.activateFileTab($fileTab);
-		}
-	}
+
+	// ファイルタブに編集中マークを表示する
+	showEditMarkOnFileTab($target){
+		$target.attr("editing", "true");
+		$target.find(".fileTabCloseButton").hide();
+		$target.find(".fileTabEditButton").show();
+	},
+	// ファイルタブの編集中マークを隠す（ホバー時用）
+	hideEditMarkOnFileTab($target){
+		$target.find(".fileTabCloseButton").show();
+		$target.find(".fileTabEditButton").hide();
+	},
+	// ファイルタブの編集中マークを消す（保存完了時用）
+	removeEditMarkOnFileTab($target){
+		$target.attr("editing", "false");
+		$target.find(".fileTabCloseButton").show();
+		$target.find(".fileTabEditButton").hide();
+	},
+	// 現在アクティブのファイルタブに編集中マークを表示する
+	showEditMarkOnActiveFileTab(){
+		const $target = this.$editActive;
+		this.showEditMarkOnFileTab($target);
+	},
+	// 現在アクティブのファイルタブの編集中マークを消去する
+	removeEditMarkOnActiveFileTab(){
+		const $target = this.$editActive;
+		this.removeEditMarkOnFileTab($target);
+	},
 };

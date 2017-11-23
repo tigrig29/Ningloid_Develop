@@ -142,6 +142,20 @@ body{
 	cursor: default;
 	position: relative;
 }
+/* ファイルタブの右側ボタン（編集中/×） */
+.fileTabCloseButton{
+	margin-left: 5px;
+}
+.fileTabCloseButton > .fa{
+	font-size: 10px;
+}
+.fileTabEditButton{
+	margin-left: 5px;
+	display: none;
+}
+.fileTabEditButton > .fa{
+	font-size: 10px;
+}
 /*ここからカラーテーマ*/
 .editorTheme-dark > .fileTab:hover{
 	border-bottom: 2px #258CA4 solid;
