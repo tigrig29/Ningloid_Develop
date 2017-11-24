@@ -1,9 +1,8 @@
 
-
 [l]
 [messageConfig left=5% top=75% width=90% height=20% opacity=0.8 margin=10px]
 [bg storage="room.jpg" time=5000 method="fadeIn" rotate=10 rotateX=0 skew=10 skewY=4 skippable=true]
-
+firstfirst
 
 [button layer=message0 name=save_button x=100px y=100px text=Save font-size=100px role=save]
 [button layer=message0 name=load_button x=500px y=100px text=Load font-size=100px role=load]

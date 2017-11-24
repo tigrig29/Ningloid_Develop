@@ -24,7 +24,8 @@ ningloidEditor.parser = {
 		// 以前のフォーカス行
 		const oldLine = this.currentLine;
 		// 現在のフォーカス行
-		const newLine = Editor.getCursorPosition().row;
+		const activeEditor = NLE.editor.getActiveEditor();
+		const newLine = activeEditor.getCursorPosition().row;
 
 		// 停止フラグ
 		if(NLE.flag.stop !== false){

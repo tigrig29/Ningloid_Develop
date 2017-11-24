@@ -21,10 +21,6 @@ const ningloidEditor = {
 		const windowOption = require("./window_options.js");
 		$("#game").css(windowOption.game);
 
-		// エディタデザインの初期化
-		this.design.init();
-		this.editor.init();
-
 		// 基本レイヤの準備
 		ningloid.layer.init();
 		// キー・マウスイベントの初期化処理
@@ -37,14 +33,23 @@ const ningloidEditor = {
 
 		document.title = "Ningloid Editor";
 
+
+		// エディタデザインの初期化
+		this.design.init();
+		this.editor.init();
 		// エディタ用タグ上書き
 		this.tag.init();
 	},
 	reset(){
 		// ゲーム画面のリセット
 		ningloid.resetGame();
-		// シナリオ全文を取得 → 命令配列化
-		ningloid.parser.loadScenario($.cloneArray(Editor.getSession().getDocument().$lines));
+		// シナリオリセット（シナリオ全文を取得 → 命令配列化）
+		const activeEditor = this.editor.getActiveEditor();
+		ningloid.parser.loadScenario($.cloneArray(activeEditor.getSession().getDocument().$lines));
+		// 実行行数のリセット
+		NLE.parser.currentLine = -1;
+		NLE.editor.editEnd();
+		clearTimeout(NLE.editor.timer)
 		// オートセーブデータを削除
 		ningloid.system.autoSave.clear();
 	},

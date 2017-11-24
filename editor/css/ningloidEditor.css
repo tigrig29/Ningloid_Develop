@@ -64,6 +64,15 @@ body{
 	height: 100%;
 	position: absolute;
 }
+#editorArea{
+	top: 90px;/* 上の要素の合計height */
+	width: 100%;
+	position: absolute;
+}
+.editorInputArea{
+	width: 100%;
+	height: 100%;
+}
 
 /*==================================*/
 /* ● ボタン配置エリア */
@@ -94,7 +103,7 @@ body{
 	background: #EEE;
 }
 /* 左右ボタン */
-#editFileTabArrowArea{
+#editTabLabelArrowArea{
 	top: 55px;
 	left: 0px;
 	width: 55px;
@@ -102,28 +111,28 @@ body{
 	margin: 0px;
 	position: absolute;
 }
-#editFileTabArrowArea > div{
+#editTabLabelArrowArea > div{
 	float: left;
 }
-#editFileTabArrowArea:after{
+#editTabLabelArrowArea:after{
 	content: "";
 	clear: both;
 	display: block;
 }
-.editFileTabArrow{
+.editTabLabelArrow{
 	float: left;
 	padding: 1px 8px;
 }
 /*ここからカラーテーマ*/
-.editorTheme-dark > .editFileTabArrow:hover{
+.editorTheme-dark > .editTabLabelArrow:hover{
 	color: #55BCD4;
 }
-.editorTheme-simple > .editFileTabArrow:hover{
+.editorTheme-simple > .editTabLabelArrow:hover{
 	color: #55BCD4;
 }
 
 /* ファイルタブ本体 */
-#editFileTab{
+#editTabLabel{
 	left: 55px;
 	top: 55px;
 	height: 35px;
@@ -132,54 +141,49 @@ body{
 	white-space: nowrap;
 	overflow-x: scroll;
 }
-#editFileTab::-webkit-scrollbar{
+#editTabLabel::-webkit-scrollbar{
 	width: 0;
 	height: 0;
 }
-.fileTab{
+.tabLabel{
 	top: 7.5px;
 	padding: 7.5px 10px;
 	cursor: default;
 	position: relative;
 }
 /* ファイルタブの右側ボタン（編集中/×） */
-.fileTabCloseButton{
+.tabLabelCloseButton{
 	margin-left: 5px;
 }
-.fileTabCloseButton > .fa{
+.tabLabelCloseButton > .fa{
 	font-size: 10px;
 }
-.fileTabEditButton{
+.tabLabelEditButton{
 	margin-left: 5px;
 	display: none;
 }
-.fileTabEditButton > .fa{
+.tabLabelEditButton > .fa{
 	font-size: 10px;
 }
 /*ここからカラーテーマ*/
-.editorTheme-dark > .fileTab:hover{
+.editorTheme-dark > .tabLabel:hover{
 	border-bottom: 2px #258CA4 solid;
 }
-.editorTheme-dark > .fileTab.active{
+.editorTheme-dark > .tabLabel.active{
 	color: #FFF;
 	border-bottom: 2px #00BCD4 solid;
 }
-.editorTheme-simple > .fileTab:hover{
+.editorTheme-simple > .tabLabel:hover{
 	border-bottom: 2px #258CA4 solid;
 }
-.editorTheme-simple > .fileTab.active{
+.editorTheme-simple > .tabLabel.active{
 	color: #000;
 	border-bottom: 2px #00BCD4 solid;
 }
 
-/*==================================*/
-/* ● 入力エリア */
-/*==================================*/
-#editInputArea{
-	top: 90px;/* 上の要素の合計height */
-	width: 100%;
-	position: absolute;
-}
+
+
+
 
 #resourceManager{
 	top: 70%;

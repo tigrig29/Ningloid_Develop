@@ -2,6 +2,7 @@
 
 ningloidEditor.design = {
 	$editActive: null,
+	colorTheme: "dark",
 	init(){
 		this.setEditorStyle();
 		// リソースマネージャーエリアのtop, width固定
@@ -20,38 +21,53 @@ ningloidEditor.design = {
 		});
 
 		// ファイルタブスクローラーのイベント
-		$(".editFileTabArrow").on({
+		$(".editTabLabelArrow").on({
 			click: (self) => {
 				const $self = $(self.currentTarget);
-				this.scrollFileTab($self.data("direction"));
+				this.scrollTabLabel($self.data("direction"));
 			},
 		});
 		// ファイルタブのイベント
-		$("#editFileTab").on({
+		$("#editTabLabel").on({
 			click: (self) => {
 				const $self = $(self.currentTarget);
-				// 変数からデータを読み取って、エディタエリアに表示する
-				// activeの更新
-				this.activateFileTab($self);
+				// activeの更新（タブラベルのデザイン）
+				this.activateTabLabel($self);
+				// activeの更新（エディタエリアの表示）
+				const key = $self.attr("class").replace(/tabLabel|active|\s/g, "");
+				NLE.editor.tabObjects[key].activate();
 			},
 			mouseenter: (e) => {
 				// 編集中マークを隠す
 				const $target = $(e.currentTarget);
-				this.hideEditMarkOnFileTab($target);
+				this.hideEditMarkOnTabLabel($target);
 			},
 			mouseleave: (e) => {
 				// 編集中フラグを持っているならば、編集中マークを表示する
 				const $target = $(e.currentTarget);
-				if($target.attr("editing") == "true") this.showEditMarkOnFileTab($target);
+				if($target.attr("editing") == "true") this.showEditMarkOnTabLabel($target);
 			}
-		}, ".fileTab");
+		}, ".tabLabel");
 		// ファイルタブの閉じるボタンイベント
-		$("#editFileTab").on({
+		$("#editTabLabel").on({
 			click: (e) => {
-				// ファイル閉じる処理
+				const $target = $(e.currentTarget).parent();
+				const key = $target.attr("class").replace(/tabLabel|active|\s/g, "");
+				// エディタの削除
+				NLE.editor.tabObjects[key].remove();
+				// タブラベルの削除
+				$target.remove();
+				if(Object.keys(NLE.editor.tabObjects).length == 0){
+					// リセット
+					NLE.reset();
+				}
+				else{
+					// 他のタブが存在しているならばフォーカスする
+					$("#editTabLabel").find(`.${Object.keys(NLE.editor.tabObjects)[0]}`).click();
+				}
 				e.stopPropagation();
 			}
-		}, ".fileTabCloseButton");
+		}, ".tabLabelCloseButton");
 	},
 	/**
 	 * ゲーム画面をリサイズする
@@ -72,9 +88,11 @@ ningloidEditor.design = {
 	 * @param {String} themeName テーマ名称（simple, dark, ...）
 	 */
 	setTheme(themeName){
-		// エディタ上部のテーマ変更
-		$("#editFileTabArrowArea").attr("class", "").addClass(`editorTheme-${themeName}`);
-		$("#editFileTab").attr("class", "").addClass(`editorTheme-${themeName}`);
+		this.colorTheme = themeName;
+		// エディタ各エリアのテーマ変更
+		$("#editTabLabelArrowArea").attr("class", "").addClass(`editorTheme-${themeName}`);
+		$("#editTabLabel").attr("class", "").addClass(`editorTheme-${themeName}`);
+		$("#editorArea").attr("class", "").addClass(`editorTheme-${themeName}`);
 		// Aceエディタのテーマ変更
 		NLE.editor.changeTheme(themeName);
 	},
@@ -95,9 +113,9 @@ ningloidEditor.design = {
 		$("#editor").css("width", bodyWidth - gameWidth);
 
 		// エディタエリアは個別で高さ調整が必要（ウィンドウサイズ変更時）
-		$("#editInputArea").css("height", $("body").height() - 90);// 90は上の要素の合計height
+		$("#editorArea").css("height", $("body").height() - 90);// 90は上の要素の合計height
 		// ファイルタブエリアは個別で横幅調整が必要（ウィンドウサイズ変更時）
-		$("#editFileTab").css("width", bodyWidth - gameWidth - 55);// 55は左の要素の合計width
+		$("#editTabLabel").css("width", bodyWidth - gameWidth - 55);// 55は左の要素の合計width
 	},
 
 	// ================================================================
@@ -107,38 +125,38 @@ ningloidEditor.design = {
 	 * ファイルタブを新規挿入する
 	 * @param  {String} fileName ファイル名
 	 */
-	appendFileTab(fileName){
-		const fileTabId = `${fileName.split(".")[0]}KS`;
+	appendTabLabel(fileName){
+		const tabLabelId = `${fileName.split(".")[0]}KS`;
 		// 既に開いている場合
-		if($(`#${fileTabId}`).length !== 0){
+		if($("#editTabLabel").find(`.${tabLabelId}`).length !== 0){
 			// タブのアクティブ化
-			NLE.design.activateFileTab($(`#${fileTabId}`));
+			NLE.design.activateTabLabel($("#editTabLabel").find(`.${tabLabelId}`));
 		}
 		else{
 			// タブの生成
-			const $fileTab = $(`<span id="${fileTabId}" class="fileTab">${fileName}</span>`);
+			const $tabLabel = $(`<span id="" class="tabLabel ${tabLabelId}">${fileName}</span>`);
 			// 編集中/× ボタン
-			const $fileTabCloseButton = $("<span class='fileTabCloseButton'><i class='fa fa-close'></i></span>");
-			const $fileTabEditButton = $("<span class='fileTabEditButton'><i class='fa fa-pencil'></i></span>");
-			$fileTab.append($fileTabCloseButton, $fileTabEditButton);
+			const $tabLabelCloseButton = $("<span class='tabLabelCloseButton'><i class='fa fa-close'></i></span>");
+			const $tabLabelEditButton = $("<span class='tabLabelEditButton'><i class='fa fa-pencil'></i></span>");
+			$tabLabel.append($tabLabelCloseButton, $tabLabelEditButton);
 			// タブをタブエリアに追加
-			$("#editFileTab").append($fileTab);
+			$("#editTabLabel").append($tabLabel);
 			// タブのアクティブ化
-			NLE.design.activateFileTab($fileTab);
+			NLE.design.activateTabLabel($tabLabel);
 		}
 	},
 	/**
 	 * ファイルタブをスクロールする
 	 * @param  {String} direction スクロール方向を指定する（left or right）
 	 */
-	scrollFileTab(direction){
-		const $fileTab = $("#editFileTab");
+	scrollTabLabel(direction){
+		const $tabLabel = $("#editTabLabel");
 		if(direction == "left") scrollAnimate(-80);
 		else if(direction == "right") scrollAnimate(80);
 		function scrollAnimate(value){
 			let i = 0;
 			const id = setInterval(() => {
-				$fileTab[0].scrollLeft += value / 10;
+				$tabLabel[0].scrollLeft += value / 10;
 				if(++i == 10) clearInterval(id);
 			}, 10);
 		}
@@ -147,37 +165,37 @@ ningloidEditor.design = {
 	 * 指定したファイルタブをアクティブ化する
 	 * @param  {$Object} $target アクティブ化するファイルタブのjQueryオブジェクト
 	 */
-	activateFileTab($target){
+	activateTabLabel($target){
 		if(this.$editActive) this.$editActive.removeClass("active");
 		this.$editActive = $target.addClass("active");
 		// エディタエリアを該当ファイルのテキストで更新（未実装）
 	},
 
 	// ファイルタブに編集中マークを表示する
-	showEditMarkOnFileTab($target){
+	showEditMarkOnTabLabel($target){
 		$target.attr("editing", "true");
-		$target.find(".fileTabCloseButton").hide();
-		$target.find(".fileTabEditButton").show();
+		$target.find(".tabLabelCloseButton").hide();
+		$target.find(".tabLabelEditButton").show();
 	},
 	// ファイルタブの編集中マークを隠す（ホバー時用）
-	hideEditMarkOnFileTab($target){
-		$target.find(".fileTabCloseButton").show();
-		$target.find(".fileTabEditButton").hide();
+	hideEditMarkOnTabLabel($target){
+		$target.find(".tabLabelCloseButton").show();
+		$target.find(".tabLabelEditButton").hide();
 	},
 	// ファイルタブの編集中マークを消す（保存完了時用）
-	removeEditMarkOnFileTab($target){
+	removeEditMarkOnTabLabel($target){
 		$target.attr("editing", "false");
-		$target.find(".fileTabCloseButton").show();
-		$target.find(".fileTabEditButton").hide();
+		$target.find(".tabLabelCloseButton").show();
+		$target.find(".tabLabelEditButton").hide();
 	},
 	// 現在アクティブのファイルタブに編集中マークを表示する
-	showEditMarkOnActiveFileTab(){
+	showEditMarkOnActiveTabLabel(){
 		const $target = this.$editActive;
-		this.showEditMarkOnFileTab($target);
+		this.showEditMarkOnTabLabel($target);
 	},
 	// 現在アクティブのファイルタブの編集中マークを消去する
-	removeEditMarkOnActiveFileTab(){
+	removeEditMarkOnActiveTabLabel(){
 		const $target = this.$editActive;
-		this.removeEditMarkOnFileTab($target);
+		this.removeEditMarkOnTabLabel($target);
 	},
 };
