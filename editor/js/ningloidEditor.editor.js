@@ -117,7 +117,7 @@ ningloidEditor.editor = {
 			const fileName = filePath.split("scenario/")[1];
 			const key = `${fileName.split(".")[0]}KS`;
 			if(NLE.editor.tabObjects[key]){
-				$("#editTabLabel").find(`.${key}`).click();
+				$("#editTabLabel").find(`.${key}`).mousedown();
 			}
 			else NLE.editor.tabObjects[key] = new EditorTab(filePath);
 		});

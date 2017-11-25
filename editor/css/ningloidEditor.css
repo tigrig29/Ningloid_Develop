@@ -146,8 +146,6 @@ body{
 	height: 0;
 }
 .tabLabel{
-	top: 7.5px;
-	padding: 7.5px 10px;
 	cursor: default;
 	position: relative;
 }
@@ -155,32 +153,31 @@ body{
 .tabLabelCloseButton{
 	margin-left: 5px;
 }
-.tabLabelCloseButton > .fa{
+.tabLabelCloseButton .fa{
 	font-size: 10px;
 }
 .tabLabelEditButton{
 	margin-left: 5px;
 	display: none;
 }
-.tabLabelEditButton > .fa{
+.tabLabelEditButton .fa{
 	font-size: 10px;
 }
 /*ここからカラーテーマ*/
-.editorTheme-dark > .tabLabel:hover{
+.editorTheme-dark .tabLabel:hover{
 	border-bottom: 2px #258CA4 solid;
 }
-.editorTheme-dark > .tabLabel.active{
+.editorTheme-dark .tabLabel.active{
 	color: #FFF;
 	border-bottom: 2px #00BCD4 solid;
 }
-.editorTheme-simple > .tabLabel:hover{
+.editorTheme-simple .tabLabel:hover{
 	border-bottom: 2px #258CA4 solid;
 }
-.editorTheme-simple > .tabLabel.active{
+.editorTheme-simple .tabLabel.active{
 	color: #000;
 	border-bottom: 2px #00BCD4 solid;
 }
-
 
 
 

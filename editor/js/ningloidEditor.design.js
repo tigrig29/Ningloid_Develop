@@ -22,7 +22,7 @@ ningloidEditor.design = {
 
 		// ファイルタブスクローラーのイベント
 		$(".editTabLabelArrow").on({
-			click: (self) => {
+			mousedown: (self) => {
 				const $self = $(self.currentTarget);
 				this.scrollTabLabel($self.data("direction"));
 			},
@@ -30,16 +30,15 @@ ningloidEditor.design = {
 		// タブラベルエリアのスクロールイベント
         const mousewheelevent = "onwheel" in document ? "wheel" : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
 		$("#editTabLabel").on(mousewheelevent, (e) => {
-			const $editTabLabelArrow = $("#editTabLabelArrowArea").find(".editTabLabelArrow");
 			const delta = e.originalEvent.deltaY;
 			// 上スクロール
-			if(delta < 0) $editTabLabelArrow[0].click();
+			if(delta < 0) $("#editTabLabelArrowLeft").mousedown();
 			// 下スクロール
-			else $editTabLabelArrow[1].click();
+			else $("#editTabLabelArrowRight").mousedown();
 		});
 		// タブラベル本体のイベント
 		$("#editTabLabel").on({
-			click: (self) => {
+			mousedown: (self) => {
 				const $self = $(self.currentTarget);
 				// activeの更新（タブラベルのデザイン）
 				this.activateTabLabel($self);
@@ -73,11 +72,24 @@ ningloidEditor.design = {
 				}
 				else{
 					// 他のタブが存在しているならばフォーカスする
-					$("#editTabLabel").find(`.${Object.keys(NLE.editor.tabObjects)[0]}`).click();
+					$("#editTabLabel").find(`.${Object.keys(NLE.editor.tabObjects)[0]}`).mousedown();
 				}
 				e.stopPropagation();
 			}
 		}, ".tabLabelCloseButton");
+		// タブラベルのドラッグイベント
+		$("#editTabLabel").find("table").sortable({
+			axis: "x",
+			revert: 100,
+			opacity: 0.5,
+			change: (e, ui) => {
+				// ドロップ先を紫色にハイライト
+				ui.placeholder.css({
+					background: "rgba(128, 0, 128, 0.3)",
+					visibility: "visible",
+				});
+			}
+		});
 	},
 	/**
 	 * ゲーム画面をリサイズする
@@ -144,7 +156,7 @@ ningloidEditor.design = {
 		}
 		else{
 			// タブの生成
-			const $tabLabel = $(`<span id="" class="tabLabel ${tabLabelId}">${fileName}</span>`);
+			const $tabLabel = $(`<td class="tabLabel ${tabLabelId}">${fileName}</td>`);
 			// 編集中/× ボタン
 			const $tabLabelCloseButton = $("<span class='tabLabelCloseButton'><i class='fa fa-close'></i></span>");
 			const $tabLabelEditButton = $("<span class='tabLabelEditButton'><i class='fa fa-pencil'></i></span>");
@@ -154,7 +166,7 @@ ningloidEditor.design = {
 				// アクティブなタブが存在する場合は、その隣に追加する
 				$("#editTabLabel").find(".active").after($tabLabel);
 			}
-			else $("#editTabLabel").append($tabLabel);
+			else $("#editTabLabel").find("table").append($tabLabel);
 			// タブのアクティブ化
 			NLE.design.activateTabLabel($tabLabel);
 		}
