@@ -27,7 +27,17 @@ ningloidEditor.design = {
 				this.scrollTabLabel($self.data("direction"));
 			},
 		});
-		// ファイルタブのイベント
+		// タブラベルエリアのスクロールイベント
+        const mousewheelevent = "onwheel" in document ? "wheel" : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
+		$("#editTabLabel").on(mousewheelevent, (e) => {
+			const $editTabLabelArrow = $("#editTabLabelArrowArea").find(".editTabLabelArrow");
+			const delta = e.originalEvent.deltaY;
+			// 上スクロール
+			if(delta < 0) $editTabLabelArrow[0].click();
+			// 下スクロール
+			else $editTabLabelArrow[1].click();
+		});
+		// タブラベル本体のイベント
 		$("#editTabLabel").on({
 			click: (self) => {
 				const $self = $(self.currentTarget);
@@ -48,7 +58,7 @@ ningloidEditor.design = {
 				if($target.attr("editing") == "true") this.showEditMarkOnTabLabel($target);
 			}
 		}, ".tabLabel");
-		// ファイルタブの閉じるボタンイベント
+		// タブラベルの閉じるボタンイベント
 		$("#editTabLabel").on({
 			click: (e) => {
 				const $target = $(e.currentTarget).parent();
@@ -140,7 +150,11 @@ ningloidEditor.design = {
 			const $tabLabelEditButton = $("<span class='tabLabelEditButton'><i class='fa fa-pencil'></i></span>");
 			$tabLabel.append($tabLabelCloseButton, $tabLabelEditButton);
 			// タブをタブエリアに追加
-			$("#editTabLabel").append($tabLabel);
+			if($("#editTabLabel").find(".active").length != 0){
+				// アクティブなタブが存在する場合は、その隣に追加する
+				$("#editTabLabel").find(".active").after($tabLabel);
+			}
+			else $("#editTabLabel").append($tabLabel);
 			// タブのアクティブ化
 			NLE.design.activateTabLabel($tabLabel);
 		}
@@ -168,7 +182,13 @@ ningloidEditor.design = {
 	activateTabLabel($target){
 		if(this.$editActive) this.$editActive.removeClass("active");
 		this.$editActive = $target.addClass("active");
-		// エディタエリアを該当ファイルのテキストで更新（未実装）
+		// 対象のタブがエリアの端からはみ出している場合、見える位置までスクロールする
+		// 左はみ出し
+		const leftOverPixel = $target.offset().left - ($("#game").width() + $("#editTabLabelArrowArea").width());
+		if(leftOverPixel < 0) $("#editTabLabel")[0].scrollLeft += leftOverPixel;
+		// 右はみ出し（数値「20」はpaddingの値）
+		const rightOverPixel = $target.offset().left + $target.width() + 20 - $("body").width();
+		if(rightOverPixel > 0) $("#editTabLabel")[0].scrollLeft += rightOverPixel;
 	},
 
 	// ファイルタブに編集中マークを表示する
