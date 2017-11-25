@@ -150,7 +150,11 @@ ningloidEditor.design = {
 			const $tabLabelEditButton = $("<span class='tabLabelEditButton'><i class='fa fa-pencil'></i></span>");
 			$tabLabel.append($tabLabelCloseButton, $tabLabelEditButton);
 			// タブをタブエリアに追加
-			$("#editTabLabel").append($tabLabel);
+			if($("#editTabLabel").find(".active").length != 0){
+				// アクティブなタブが存在する場合は、その隣に追加する
+				$("#editTabLabel").find(".active").after($tabLabel);
+			}
+			else $("#editTabLabel").append($tabLabel);
 			// タブのアクティブ化
 			NLE.design.activateTabLabel($tabLabel);
 		}
@@ -178,7 +182,13 @@ ningloidEditor.design = {
 	activateTabLabel($target){
 		if(this.$editActive) this.$editActive.removeClass("active");
 		this.$editActive = $target.addClass("active");
-		// エディタエリアを該当ファイルのテキストで更新（未実装）
+		// 対象のタブがエリアの端からはみ出している場合、見える位置までスクロールする
+		// 左はみ出し
+		const leftOverPixel = $target.offset().left - ($("#game").width() + $("#editTabLabelArrowArea").width());
+		if(leftOverPixel < 0) $("#editTabLabel")[0].scrollLeft += leftOverPixel;
+		// 右はみ出し（数値「20」はpaddingの値）
+		const rightOverPixel = $target.offset().left + $target.width() + 20 - $("body").width();
+		if(rightOverPixel > 0) $("#editTabLabel")[0].scrollLeft += rightOverPixel;
 	},
 
 	// ファイルタブに編集中マークを表示する
