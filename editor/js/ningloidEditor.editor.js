@@ -1,91 +1,58 @@
 /* global NLE: true, Editor: true */
 
 ningloidEditor.editor = {
-	// ace.editで作成したエディターオブジェクト
-	aceObject: null,
+	// 使用中のエディタオブジェクト一覧
+	tabObjects: {},
+	// 現在操作中のエディタオブジェクト
+	activeTabObject: null,
 	// 編集から一定時間経過でゲーム実行処理を行うタイマー
 	timer: "done",
 	// ================================================================
 	// ● 初期処理系
 	// ================================================================
 	init(){
-		// エディタ作成
-		window.Editor = this.aceObject = ace.edit("editInputArea");
-		// 警告消去
-		Editor.$blockScrolling = Infinity;
-		// 右端折り返し
-		Editor.getSession().setUseWrapMode(true);
-
-		// syntax highlight
-		const KAGMode = ace.require("ace/mode/kag").Mode;
-		Editor.getSession().setMode(new KAGMode());
-		Editor.setTheme("ace/theme/kag-dark");
-
-		// エディタの初期状態はfirst.ks
-		ningloid.parser.url = "../resources/data/scenario/first.ks";
-		this.openFile(ningloid.parser.url, () => {
-			// ゲーム画面と、シナリオデータのリセット
-			NLE.reset();
-		});
-
+		NLE.editor.tabObjects.firstKS = new EditorTab("../resources/data/scenario/first.ks");
 		// エディターのリアルタイム反映用イベントをセット
 		this.setKeyMouseEvent();
 
-		// エディタの内部状態に関するイベントをセット
-		this.setAceEvent();
+		// エディタのテーマset
+		NLE.design.setTheme("dark");
 	},
-
 	// ================================================================
-	// ● ファイル操作系
+	// ● 取得系
 	// ================================================================
-	// シナリオファイルを開き、エディタコンテンツ欄にテキストを出力する
-	openFile(url, cb){
-		$.ajax({
-			url: url,
-			success: (data) => {
-				// 取得したテキストをエディタに表示
-				Editor.setValue(data, -1);
-				// 編集中フラグをfalse、保存済み状態とする
-				this.editEnd();
-				this.editSaveDone();
-				// コールバック
-				if(cb) cb();
-			},
-			error: () => {
-				// Error
-				alert(`ファイル[${url}]の読み込みに失敗しました。<br>${url}が実際に存在するかを確認して下さい。`);
-			}
-		});
-	},
-	/**
-	 * エディタ上のテキストをファイルに保存する
-	 * @param  {String}   url ファイル名（パス）
-	 * @param  {Function} cb  コールバック
-	 */
-	saveFile(url, cb){
-		const fs = require("fs");
-		// ファイルに保存
-		fs.writeFile(url, Editor.getValue(), () => {
-			// 編集中フラグをfalse、保存済み状態とする
-			this.editEnd();
-			this.editSaveDone();
-			if(cb) cb();
-		});
+	getActiveEditor(){
+		return this.activeTabObject.getEditor();
 	},
 	// ================================================================
 	// ● 編集状態管理
 	// ================================================================
 	editStart(){
 		NLE.flag.edit = true;
-		$("#editNowCondition").removeClass("edited").addClass("editing");
-		$("#editSaveCondition").removeClass("saved").addClass("not-saved");
+		// 実行中/編集中 表示切り替え
+		$("#previewCondition").removeClass("playing error").addClass("editing");
+		// ファイルタブの編集中設定
+		NLE.design.showEditMarkOnActiveTabLabel();
 	},
 	editEnd(){
 		NLE.flag.edit = false;
-		$("#editNowCondition").removeClass("editing").addClass("edited");
+		// 実行中/編集中 表示切り替え
+		$("#previewCondition").removeClass("editing error").addClass("playing");
 	},
 	editSaveDone(){
-		$("#editSaveCondition").removeClass("not-saved").addClass("saved");
+		// ファイルタブの編集中設定
+		NLE.design.removeEditMarkOnActiveTabLabel();
+	},
+
+
+	// ================================================================
+	// ● シンタックスハイライト
+	// ================================================================
+	changeTheme(themeName){
+		for(let url in this.tabObjects){
+			const editor = this.tabObjects[url].getEditor();
+			editor.setTheme(`ace/theme/kag-${themeName}`);
+		}
 	},
 
 	// ================================================================
@@ -115,7 +82,8 @@ ningloidEditor.editor = {
 					case 38:
 					case 39:
 					case 40: {
-						const newLine = Editor.getCursorPosition().row;
+						const activeEditor = this.getActiveEditor();
+						const newLine = activeEditor.getCursorPosition().row;
 						if(NLE.parser.currentLine != newLine){
 							NLE.parser.playFocusSectionOrder();
 						}
@@ -127,11 +95,11 @@ ningloidEditor.editor = {
 				e.stopPropagation();
 			}
 		});
-		$("#editInputArea").find(".ace_scroller").on({
+		$("#editorArea").on({
 			mousedown: () => {
 				NLE.parser.playFocusSectionOrder();
 			},
-		});
+		}, ".ace_scroller");
 
 		// ファイルオープンボタンのクリックイベント
 		$("#editLoad").on("click", () => {
@@ -145,18 +113,22 @@ ningloidEditor.editor = {
 			filePath = filePath.replace(/\\/g, "/");
 			filePath = `../resources${filePath.split("/resources")[1]}`;
 
-			// 開いたファイルのシナリオテキストをエディタ上に展開する
-			ningloid.parser.url = filePath;
-			NLE.editor.openFile(filePath, () => {
-				// ゲーム画面と、シナリオデータのリセット
-				NLE.reset();
-			});
+			// 既に存在する場合
+			const fileName = filePath.split("scenario/")[1];
+			const key = `${fileName.split(".")[0]}KS`;
+			if(NLE.editor.tabObjects[key]){
+				$("#editTabLabel").find(`.${key}`).click();
+			}
+			else NLE.editor.tabObjects[key] = new EditorTab(filePath);
 		});
 
 		// 保存ボタンのクリックイベント
 		$("#editSave").on("click", () => {
+			// エラーフラグは消す
+			NLE.flag.error = false;
+
 			// テキストデータの保存
-			this.saveFile(ningloid.parser.url, () => {
+			this.activeTabObject.save(() => {
 				// 時限式ゲーム実行が行われた場合は、以下のゲーム実行処理を行わない
 				if(this.timer == "done") return;
 				// 時限式ゲーム実行のタイマーが待機状態ならば、タイマーを消す
@@ -171,34 +143,157 @@ ningloidEditor.editor = {
 			});
 		});
 	},
+};
 
-	// ================================================================
-	// ● ace（エディタ）イベント系
-	// ================================================================
-	setAceEvent(){
-		Editor.on("change", (e) => {
-			// 編集されたらエラーフラグは消す
-			NLE.flag.error = false;
-
+class EditorTab{
+	constructor(url){
+		// 保存時など、ファイルアクセスのためのURLを保管
+		this.url = url;
+		// 新規タブ作成
+		this.createNewTabByFile(url);
+		// 編集時のイベント付与
+		this.onChange(() => {
 			// 編集が繰り返されるうちは、↓のタイマーをリセットする
-			if(this.timer !== "done") clearTimeout(this.timer);
+			if(NLE.editor.timer !== "done") clearTimeout(NLE.editor.timer);
 
 			// 編集中フラグをtrueにし、ゲームの実行を止める
-			this.editStart();
+			NLE.editor.editStart();
 			// 編集から一定時間が経過したらシナリオ実行
-			this.timer = setTimeout(() => {
+			NLE.editor.timer = setTimeout(() => {
 				if(NLE.flag.edit === false || NLE.flag.error === true) return;
-				this.editEnd();
 				// ゲーム画面と、シナリオデータのリセット
 				NLE.reset();
 
 				// 命令実行（行数などが変わるので、初期ロードから実行させるため、currentLineを更新する）
-				NLE.parser.currentLine = this.aceObject.getCursorPosition().row;
+				NLE.parser.currentLine = this.Editor.getCursorPosition().row;
 				NLE.parser.playFocusSectionOrder();
 
 				// タイマーを消す
-				this.timer = "done";
+				NLE.editor.timer = "done";
 			}, 2000);
 		});
-	},
-};
+	}
+	// ================================================================
+	// ● 初期処理系
+	// ================================================================
+	// エディタを作成する
+	createNewTab(){
+		// エディタエリア作成
+		const $target = this.$parent = $("<div class='newEditorTab editorInputArea'></div>");
+		$("#editorArea").append($target);
+		// エディタ作成
+		const Editor = this.Editor = ace.edit($target.get(0));
+		// 警告消去
+		Editor.$blockScrolling = Infinity;
+		// 右端折り返し
+		Editor.getSession().setUseWrapMode(true);
+
+		// syntax highlight
+		const KAGMode = ace.require("ace/mode/kag").Mode;
+		Editor.getSession().setMode(new KAGMode());
+		Editor.setTheme(`ace/theme/kag-${NLE.design.colorTheme}`);
+	}
+	// シナリオファイルを読み取って、エディタに表示する
+	createNewTabByFile(url){
+		// タブの生成
+		this.createNewTab();
+		// エディタエリアに判別クラスを与える
+		const fileName = url.split("scenario/")[1];
+		const key = `${fileName.split(".")[0]}KS`;
+		this.$parent.removeClass("newEditorTab").addClass(key);
+
+		// ファイル名をタブに表示する
+		NLE.design.appendTabLabel(fileName);
+		// ファイルリード
+		$.ajax({
+			url: url,
+			success: (data) => {
+				// 取得したテキストをエディタに表示
+				this.Editor.setValue(data, -1);
+				// 編集中フラグをfalse、保存済み状態とする
+				NLE.editor.editEnd();
+				NLE.editor.editSaveDone();
+				// アクティブなエディタとして設定
+				this.activate();
+				// 初回表示時のエディタundoスタックは不要なので消す
+				setTimeout(() => this.resetUndoStack(), 100);
+			},
+			error: () => {
+				// Error
+				alert(`ファイル[${url}]の読み込みに失敗しました。<br>${url}が実際に存在するかを確認して下さい。`);
+			}
+		});
+	}
+
+	// ================================================================
+	// ● 取得系
+	// ================================================================
+	// エディタオブジェクトを返す
+	getEditor(){
+		return this.Editor;
+	}
+	// エディタセッションを返す
+	getSession(){
+		return this.Editor.getSession();
+	}
+	getFileUrl(){
+		return this.url;
+	}
+
+	// ================================================================
+	// ● 編集処理系
+	// ================================================================
+	// undoスタック消去
+	resetUndoStack(){
+		const manager = this.Editor.getSession().getUndoManager();
+		manager.reset();
+	}
+	// 変更イベント設定
+	onChange(func){
+		this.Editor.on("change", (e) => func(e));
+	}
+	// 保存完了
+	save(cb){
+		const fs = require("fs");
+		// ファイルに保存
+		fs.writeFile(this.url, this.Editor.getValue(), () => {
+			// 編集中フラグをfalse、保存済み状態とする
+			NLE.editor.editEnd();
+			NLE.editor.editSaveDone();
+			if(cb) cb();
+		});
+	}
+
+	// ================================================================
+	// ● 表示処理系
+	// ================================================================
+	// タブのアクティブ化（ファイルタブエリアのデザイン変化、エディタエリアの更新
+	activate(){
+		// activeTabObject更新
+		if(NLE.editor.activeTabObject) NLE.editor.activeTabObject.unactivate();
+		NLE.editor.activeTabObject = this;
+		// シナリオ更新
+		ningloid.parser.url = this.url;
+		// ゲーム画面と、シナリオデータのリセット
+		NLE.reset();
+		// 表示
+		this.$parent.show();
+
+		// エディタをフォーカスする
+		this.$parent.find("textarea")[0].focus();
+	}
+	// アクティブ解除（他のタブをアクティブにするため、ここのエディタタブを隠す）
+	unactivate(){
+		this.$parent.hide();
+	}
+	// 消去（閉じる）
+	remove(){
+		this.Editor.destroy();
+		this.$parent.remove();
+		// タブ一覧オブジェクトから消去
+		const fileName = this.url.split("scenario/")[1];
+		const key = `${fileName.split(".")[0]}KS`;
+		delete NLE.editor.tabObjects[key];
+	}
+
+}

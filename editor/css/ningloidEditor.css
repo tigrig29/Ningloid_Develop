@@ -7,30 +7,79 @@ body{
 	background-color: white;
 }
 
+/*================================================================*/
+/* ● ゲームエリア*/
+/*================================================================*/
 #game{
-	width: 70%;
-	height: 70%;
 	position: absolute;
 	overflow: hidden;
 	background: black;
 }
 
+/*==================================*/
+/* ● リアルタイムプレビュー実行状態表示エリア */
+/*==================================*/
+#previewCondition{
+	top: 0;
+	right: 0;
+	width: 70px;
+	height: 40px;
+	margin: 5px;
+	border-radius: 20px;
+	font-weight: bold;
+	position: absolute;
+}
+#previewCondition.editing{
+	background: orange;
+}
+#previewCondition.editing:after{
+	left: 12px;
+	top: 9px;
+	content: "編集中";
+	position: relative;
+}
+#previewCondition.playing{
+	background: #69F;
+}
+#previewCondition.playing:after{
+	left: 12px;
+	top: 9px;
+	content: "実行中";
+	position: relative;
+}
+#previewCondition.error{
+	background: #F33;
+}
+#previewCondition.error:after{
+	left: 12px;
+	top: 9px;
+	content: "エラー";
+	position: relative;
+}
+
+/*================================================================*/
+/* ● エディタエリア */
+/*================================================================*/
 #editor{
-	left: 70%;
-	width: 30%;
 	height: 100%;
 	position: absolute;
 }
-#editFileLabel{
-	left: 0%;
-	height: 3%;
-	width: 30%;
-	margin: 0px;
-	background: #ccc;
-	border-radius: 10px 10px 0px 0px;
-	display: none;
+#editorArea{
+	top: 90px;/* 上の要素の合計height */
+	width: 100%;
+	position: absolute;
+}
+.editorInputArea{
+	width: 100%;
+	height: 100%;
 }
 
+/*==================================*/
+/* ● ボタン配置エリア */
+/*==================================*/
+#editButton{
+	height: 55px;
+}
 #editButton > div{
 	float: left;
 	margin: 10px;
@@ -42,80 +91,103 @@ body{
 	display: block;
 }
 
-#editCondition{
-	top: 0px;
-	right: 0px;
+/*==================================*/
+/* ● ファイルタブ */
+/*==================================*/
+.editorTheme-dark{
+	color: #BBB;
+	background: #465258;
+}
+.editorTheme-simple{
+	color: #888;
+	background: #EEE;
+}
+/* 左右ボタン */
+#editTabLabelArrowArea{
+	top: 55px;
+	left: 0px;
+	width: 55px;
+	height: 35px;
+	margin: 0px;
 	position: absolute;
 }
-#editCondition > div{
-	margin: 5px;
-	font-weight: bold;
+#editTabLabelArrowArea > div{
 	float: left;
-	cursor: pointer;
 }
-#editCondition:after{
+#editTabLabelArrowArea:after{
 	content: "";
 	clear: both;
 	display: block;
 }
-#editNowCondition{
-	width: 70px;
-	height: 40px;
-	margin-top: 5px;
-	border-radius: 20px;
+.editTabLabelArrow{
+	float: left;
+	padding: 1px 8px;
 }
-.editing{
-	background: orange;
+/*ここからカラーテーマ*/
+.editorTheme-dark > .editTabLabelArrow:hover{
+	color: #55BCD4;
 }
-.editing:after{
-	left: 12px;
-	top: 9px;
-	content: "編集中";
-	position: relative;
-}
-.edited{
-	background: #69F;
-}
-.edited:after{
-	left: 12px;
-	top: 9px;
-	content: "実行中";
-	position: relative;
-}
-#editSaveCondition{
-	width: 70px;
-	height: 40px;
-	margin-top: 5px;
-	border-radius: 20px;
-}
-.not-saved{
-	background: orange;
-}
-.not-saved:after{
-	left: 12px;
-	top: 9px;
-	content: "未保存";
-	position: relative;
-}
-.saved{
-	background: #69F;
-}
-.saved:after{
-	left: 12px;
-	top: 9px;
-	content: "保存済";
-	position: relative;
+.editorTheme-simple > .editTabLabelArrow:hover{
+	color: #55BCD4;
 }
 
-#editInputArea{
-	width: 100%;
-	height: 93%;
+/* ファイルタブ本体 */
+#editTabLabel{
+	left: 55px;
+	top: 55px;
+	height: 35px;
+	margin: 0px;
+	position: absolute;
+	white-space: nowrap;
+	overflow-x: scroll;
 }
+#editTabLabel::-webkit-scrollbar{
+	width: 0;
+	height: 0;
+}
+.tabLabel{
+	top: 7.5px;
+	padding: 7.5px 10px;
+	cursor: default;
+	position: relative;
+}
+/* ファイルタブの右側ボタン（編集中/×） */
+.tabLabelCloseButton{
+	margin-left: 5px;
+}
+.tabLabelCloseButton > .fa{
+	font-size: 10px;
+}
+.tabLabelEditButton{
+	margin-left: 5px;
+	display: none;
+}
+.tabLabelEditButton > .fa{
+	font-size: 10px;
+}
+/*ここからカラーテーマ*/
+.editorTheme-dark > .tabLabel:hover{
+	border-bottom: 2px #258CA4 solid;
+}
+.editorTheme-dark > .tabLabel.active{
+	color: #FFF;
+	border-bottom: 2px #00BCD4 solid;
+}
+.editorTheme-simple > .tabLabel:hover{
+	border-bottom: 2px #258CA4 solid;
+}
+.editorTheme-simple > .tabLabel.active{
+	color: #000;
+	border-bottom: 2px #00BCD4 solid;
+}
+
+
+
+
 
 #resourceManager{
 	top: 70%;
 	width: 70%;
 	height: 30%;
 	position: absolute;
-	border: 1px solid black;
 }

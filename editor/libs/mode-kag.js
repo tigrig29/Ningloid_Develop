@@ -36,7 +36,6 @@ ace.define("ace/mode/kag_highlight_rules",["require","exports","module","ace/lib
 "use strict";
 
 var oop = require("../lib/oop");
-var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules;
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var JavaScriptHighlightRules = require("./javascript_highlight_rules").JavaScriptHighlightRules;
 
@@ -46,11 +45,31 @@ var identifierRe = "[a-zA-Z\\$_\u00a1-\uffff][a-zA-Z\\d\\$_\u00a1-\uffff]*";
 
 var KAGHighlightRules = function() {
     this.$rules = {
-        "normal" : [
-            DocCommentHighlightRules.getStartRule("doc-start"),
-            comments("normal"),
+        "start": [
             {
-                // [iscript]内の記述＝JS
+                // 空白行
+                token : "text",
+                regex : "\\s+|^$",
+                next : "start"
+            }, {
+                // その他
+                token: "empty",
+                regex: "",
+                next: "KAGScenario"
+            }
+        ],
+        "KAGScenario" : [
+            {
+                // 「;」のコメントアウト
+                token : "kag.comment",
+                regex : "\\;",
+                next: [
+                    {token : "kag.comment", regex : "$|^", next : "start"},
+                    {defaultToken : "kag.comment", caseInsensitive: true}
+                ]
+            },
+            {
+                // [iscript]内の記述→JS
                 token: ["paren.lparen", "keyword", "text", "kag.tag.parameter", "keyword.operator", "kag.tag.value", "paren.rparen"],
                 regex: "(\\[?)((?:\\s*iscript)|(?:@iscript))(\\s*)((?:cond)?)((?:=)?)(.*?)(\\]?)",
                 next: "javascript-start"
@@ -59,13 +78,13 @@ var KAGHighlightRules = function() {
                 // []式のタグ
                 token : ["paren.lparen", "text", "kag.tag.name", "text"],
                 regex : "(\\[)(\\s*)(" + identifierRe + ")(\\s*)",
-                next  : "NLparam"
+                next  : "KAGParam"
             },
             {
                 // @式のタグ
                 token : ["kag.tag.name", "text"],
                 regex : "(@" + identifierRe + ")(\\s*)",
-                next  : "NLparam_@"
+                next  : "KAGParam"
             },
             {
                 // ラベル
@@ -74,83 +93,29 @@ var KAGHighlightRules = function() {
                 next  : "start"
             }
         ],
-        // regular expressions are only allowed after certain tokens. This
-        // makes sure we don't mix up regexps with the divison operator
-        "start": [
-            DocCommentHighlightRules.getStartRule("doc-start"),
-            comments("start"),
+        "KAGParam":[
             {
-                token : "text",
-                regex : "\\s+|^$",
+                // 1.「パラメータ名＝パラメータ値」の後に空白 → 再度パラメータ記述へ
+                token: ["kag.tag.parameter", "keyword.operator", "kag.tag.value", "text"],
+                regex: "(.+?)(=)(.+?)(\\s+)",
+                next : "KAGParam"
+            }, {
+                // 2.「パラメータ名＝パラメータ値」の後に閉じ句 → タグ記述終了
+                token: ["kag.tag.parameter", "keyword.operator", "kag.tag.value", "paren.rparen"],
+                regex: "(.+?)(=)(.+?)(\\]|$)",
                 next : "start"
             }, {
-                // immediately return to the start mode without matching
-                // anything
+                // パターン1を通過したが、その空白の後にパラメータ記述がなかった場合 → タグ記述終了
+                token : "paren.rparen",
+                regex : "\\]|$",
+                next : "start"
+            }, {
+                // その他 → startに戻る
                 token: "empty",
                 regex: "",
-                next: "normal"
+                next: "start"
             }
         ],
-        // []式のタグ：パラメータキー部分
-        "NLparam":[
-            {
-                token: ["kag.tag.parameter", "keyword.operator"],
-                regex: "(.+?)(=)",
-                next : "NLvalue"
-            }, {
-                token: "paren.rparen",
-                regex: "\\]",
-                next: "normal"
-            }, {
-                token: "empty",
-                regex: "",
-                next: "normal"
-            }
-        ],
-        // []式のタグ：パラメータバリュー部分
-        "NLvalue":[
-            {
-                token: ["kag.tag.value", "text"],
-                regex: "(.*?)(\\s+)",
-                next: "NLparam"
-            }, {
-                token: ["kag.tag.value", "paren.rparen"],
-                regex: "(.*?)(\\])",
-                next: "normal"
-            }, {
-                token: "empty",
-                regex: "",
-                next: "normal"
-            }
-        ],
-        // @式のタグ：パラメータキー部分
-        "NLparam_@":[
-            {
-                token: ["kag.tag.parameter", "keyword.operator"],
-                regex: "(.+?)(=)",
-                next : "NLvalue_@"
-            }, {
-                token: "empty",
-                regex: "",
-                next: "normal"
-            }
-        ],
-        // @式のタグ：パラメータバリュー部分
-        "NLvalue_@":[
-            {
-                token: ["kag.tag.value", "text"],
-                regex: "(.*?)(\\s+)",
-                next: "NLparam"
-            }, {
-                token: ["kag.tag.value"],
-                regex: "(.*?)$",
-                next: "normal"
-            }, {
-                token: "empty",
-                regex: "",
-                next: "normal"
-            }
-        ]
     };
 
     this.embedRules(JavaScriptHighlightRules, "javascript-", [
@@ -161,28 +126,11 @@ var KAGHighlightRules = function() {
         }
     ]);
 
-
-    this.embedRules(DocCommentHighlightRules, "doc-",
-        [ DocCommentHighlightRules.getEndRule("normal") ]);
-
     this.normalizeRules();
 };
 
 oop.inherits(KAGHighlightRules, TextHighlightRules);
 
-function comments(next) {
-    return [
-        {
-            token : "kag.comment",
-            regex : "\\;",
-            next: [
-                DocCommentHighlightRules.getTagRule(),
-                {token : "kag.comment", regex : "$|^", next : next || "pop"},
-                {defaultToken : "kag.comment", caseInsensitive: true}
-            ]
-        }
-    ];
-}
 exports.KAGHighlightRules = KAGHighlightRules;
 });
 
