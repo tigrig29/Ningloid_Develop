@@ -27,7 +27,17 @@ ningloidEditor.design = {
 				this.scrollTabLabel($self.data("direction"));
 			},
 		});
-		// ファイルタブのイベント
+		// タブラベルエリアのスクロールイベント
+        const mousewheelevent = "onwheel" in document ? "wheel" : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
+		$("#editTabLabel").on(mousewheelevent, (e) => {
+			const $editTabLabelArrow = $("#editTabLabelArrowArea").find(".editTabLabelArrow");
+			const delta = e.originalEvent.deltaY;
+			// 上スクロール
+			if(delta < 0) $editTabLabelArrow[0].click();
+			// 下スクロール
+			else $editTabLabelArrow[1].click();
+		});
+		// タブラベル本体のイベント
 		$("#editTabLabel").on({
 			click: (self) => {
 				const $self = $(self.currentTarget);
@@ -48,7 +58,7 @@ ningloidEditor.design = {
 				if($target.attr("editing") == "true") this.showEditMarkOnTabLabel($target);
 			}
 		}, ".tabLabel");
-		// ファイルタブの閉じるボタンイベント
+		// タブラベルの閉じるボタンイベント
 		$("#editTabLabel").on({
 			click: (e) => {
 				const $target = $(e.currentTarget).parent();
