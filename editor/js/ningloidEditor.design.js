@@ -126,19 +126,6 @@ ningloidEditor.design = {
 			"transform": `scale(${scale})`
 		});
 	},
-	/**
-	 * カラーテーマを設定する
-	 * @param {String} themeName テーマ名称（simple, dark, ...）
-	 */
-	setTheme(themeName){
-		this.colorTheme = themeName;
-		// エディタ各エリアのテーマ変更
-		$("#editTabLabelArrowArea").attr("class", "").addClass(`editorTheme-${themeName}`);
-		$("#editTabLabel").attr("class", "").addClass(`editorTheme-${themeName}`);
-		$("#editorArea").attr("class", "").addClass(`editorTheme-${themeName}`);
-		// Aceエディタのテーマ変更
-		NLE.editor.changeTheme(themeName);
-	},
 
 	// ================================================================
 	// ● エディタ系
@@ -156,9 +143,22 @@ ningloidEditor.design = {
 		$("#editor").css("width", bodyWidth - gameWidth);
 
 		// エディタエリアは個別で高さ調整が必要（ウィンドウサイズ変更時）
-		$("#editorArea").css("height", $("body").height() - 90);// 90は上の要素の合計height
+		$("#editorArea").css("height", $("body").height() - $("#editButtonArea").height() - $("#editTabLabel").height());
 		// ファイルタブエリアは個別で横幅調整が必要（ウィンドウサイズ変更時）
-		$("#editTabLabel").css("width", bodyWidth - gameWidth - 55);// 55は左の要素の合計width
+		$("#editTabLabel").css("width", bodyWidth - gameWidth - $("#editTabLabelArrowArea").width());// 55は左の要素の合計width
+	},
+	/**
+	 * カラーテーマを設定する
+	 * @param {String} themeName テーマ名称（simple, dark, ...）
+	 */
+	setTheme(themeName){
+		this.colorTheme = themeName;
+		// エディタ各エリアのテーマ変更
+		$("#editTabLabelArrowArea").attr("class", "").addClass(`editorTheme-${themeName}`);
+		$("#editTabLabel").attr("class", "").addClass(`editorTheme-${themeName}`);
+		$("#editorArea").attr("class", "").addClass(`editorTheme-${themeName}`);
+		// Aceエディタのテーマ変更
+		NLE.editor.changeTheme(themeName);
 	},
 
 	// ================================================================

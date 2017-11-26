@@ -39,7 +39,7 @@ ningloidEditor.editor = {
 		// 実行中/編集中 表示切り替え
 		$("#previewCondition").removeClass("editing error").addClass("playing");
 	},
-	editSaveDone(){
+	editButtonFileSaveDone(){
 		// ファイルタブの編集中設定
 		NLE.design.removeEditMarkOnActiveTabLabel();
 	},
@@ -68,7 +68,7 @@ ningloidEditor.editor = {
 						// Ctrl + S
 						case 83:
 							// 保存
-							$("#editSave").click();
+							$("#editButtonFileSave").click();
 							break;
 					}
 				}
@@ -102,12 +102,12 @@ ningloidEditor.editor = {
 		}, ".ace_scroller");
 
 		// ファイルオープンボタンのクリックイベント
-		$("#editLoad").on("click", () => {
+		$("#editButtonFileOpen").on("click", () => {
 			// input要素をクリック
-			$("#editFileOpener").get(0).click();
+			$("#fileOpener").get(0).click();
 		});
 		// input:file要素にて、ファイル選択が行われたときのイベント
-		$("#editFileOpener").on("change", (e) => {
+		$("#fileOpener").on("change", (e) => {
 			const fileOpener = e.currentTarget;
 			// 選択されたファイルの絶対パス
 			let filePath = fileOpener.files[0].path;
@@ -126,7 +126,7 @@ ningloidEditor.editor = {
 		});
 
 		// 保存ボタンのクリックイベント
-		$("#editSave").on("click", () => {
+		$("#editButtonFileSave").on("click", () => {
 			// エラーフラグは消す
 			NLE.flag.error = false;
 
@@ -215,7 +215,7 @@ class EditorTab{
 				this.Editor.setValue(data, -1);
 				// 編集中フラグをfalse、保存済み状態とする
 				NLE.editor.editEnd();
-				NLE.editor.editSaveDone();
+				NLE.editor.editButtonFileSaveDone();
 				// アクティブなエディタとして設定
 				this.activate();
 				// 初回表示時のエディタundoスタックは不要なので消す
@@ -262,7 +262,7 @@ class EditorTab{
 		fs.writeFile(this.url, this.Editor.getValue(), () => {
 			// 編集中フラグをfalse、保存済み状態とする
 			NLE.editor.editEnd();
-			NLE.editor.editSaveDone();
+			NLE.editor.editButtonFileSaveDone();
 			if(cb) cb();
 		});
 	}

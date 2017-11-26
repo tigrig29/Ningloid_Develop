@@ -65,7 +65,7 @@ body{
 	position: absolute;
 }
 #editorArea{
-	top: 90px;/* 上の要素の合計height */
+	top: 75px;/* 上の要素の合計height */
 	width: 100%;
 	position: absolute;
 }
@@ -77,18 +77,12 @@ body{
 /*==================================*/
 /* ● ボタン配置エリア */
 /*==================================*/
-#editButton{
-	height: 55px;
+#editButtonArea{
+	height: 40px;
+	font-size: 23px;
 }
-#editButton > div{
-	float: left;
-	margin: 10px;
+#editButtonArea i{
 	cursor: pointer;
-}
-#editButton:after{
-	content: "";
-	clear: both;
-	display: block;
 }
 
 /*==================================*/
@@ -104,7 +98,7 @@ body{
 }
 /* 左右ボタン */
 #editTabLabelArrowArea{
-	top: 55px;
+	top: 40px;
 	left: 0px;
 	width: 55px;
 	height: 35px;
@@ -134,7 +128,7 @@ body{
 /* ファイルタブ本体 */
 #editTabLabel{
 	left: 55px;
-	top: 55px;
+	top: 40px;
 	height: 35px;
 	margin: 0px;
 	position: absolute;
