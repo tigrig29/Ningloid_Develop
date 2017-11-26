@@ -12,6 +12,7 @@
 
 	<link href="../resources/ningloid/css/ningloid.css" rel="stylesheet" type="text/css"/>
 	<link href="./css/ningloidEditor.css" rel="stylesheet" type="text/css"/>
+	<link href="./libs/jqery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
 
 	<script id="firstScript" type="text/javascript" src="./js/ningloidEditor.toolbar.js" ></script>
 
@@ -25,6 +26,7 @@
 	<script type="text/javascript" src="./libs/ace.js"></script>
 	<script type="text/javascript" src="./libs/mode-javascript.js"></script>
 	<script type="text/javascript" src="./libs/mode-kag.js"></script>
+	<script type="text/javascript" src="./libs/jqery-ui/jquery-ui.min.js"></script>
 
 	<script type="text/javascript" src="../resources/libs/janimate.min.js"></script>
 	<script type="text/javascript" src="../resources/libs/velocity.min.js"></script>
@@ -66,32 +68,33 @@
 		<div id="blind">Now Loading ...</div>
 	</div>
 	<div id="editor">
-		<div id="editButton">
-			<div id="editLoad">
-				<input id="editFileOpener" type="file" style="display: none">
-				<i class="fa fa-folder-open fa-2x" aria-hidden="true"></i>
-			</div>
-			<div id="editSave">
-				<i class="fa fa-floppy-o fa-2x" aria-hidden="true"></i>
-			</div>
+		<div id="editButtonArea">
+			<table border="0" cellspacing="0" cellpadding="7.5">
+				<td id="editButtonFileOpen">
+					<input id="fileOpener" type="file" style="display: none">
+					<i class="fa fa-folder-open" aria-hidden="true" title="開く(Ctrl+O)"></i>
+				</td>
+				<td id="editButtonFileSave">
+					<i class="fa fa-floppy-o" aria-hidden="true" title="上書き保存(Ctrl+S)"></i>
+				</td>
+				<td id="editButtonUndo">
+					<i class="fa fa-undo" aria-hidden="true" title="元に戻す(Ctrl+Z)"></i>
+				</td>
+				<td id="editButtonRedo">
+					<i class="fa fa-repeat" aria-hidden="true" title="やり直し(Ctrl+Y)"></i>
+				</td>
+			</table>
 		</div>
 		<div id="editTabLabelArrowArea">
-			<div class="editTabLabelArrow" data-direction="left">
+			<div id="editTabLabelArrowLeft" class="editTabLabelArrow" data-direction="left">
 				<i class="fa fa-angle-left fa-2x" aria-hidden="true"></i>
 			</div>
-			<div class="editTabLabelArrow" data-direction="right">
+			<div id="editTabLabelArrowRight" class="editTabLabelArrow" data-direction="right">
 				<i class="fa fa-angle-right fa-2x" aria-hidden="true"></i>
 			</div>
 		</div>
 		<div id="editTabLabel">
-			<!-- <span id="firstKS" class="tabLabel active" editing="true">first.ks
-				<span class="tabLabelEditButton"><i class="fa fa-pencil"></i></span>
-				<span class="tabLabelCloseButton"><i class="fa fa-close"></i></span>
-			</span>
-			<span id="secondKS" class="tabLabel" editing="false">second.ks
-				<span class="tabLabelEditButton"><i class="fa fa-pencil"></i></span>
-				<span class="tabLabelCloseButton"><i class="fa fa-close"></i></span>
-			</span> -->
+			<table border="0" cellspacing="0" cellpadding="7.5"></table>
 		</div>
 		<div id="editorArea"></div>
 	</div>

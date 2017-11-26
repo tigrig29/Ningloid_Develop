@@ -22,7 +22,7 @@ ningloidEditor.design = {
 
 		// ファイルタブスクローラーのイベント
 		$(".editTabLabelArrow").on({
-			click: (self) => {
+			mousedown: (self) => {
 				const $self = $(self.currentTarget);
 				this.scrollTabLabel($self.data("direction"));
 			},
@@ -30,16 +30,15 @@ ningloidEditor.design = {
 		// タブラベルエリアのスクロールイベント
         const mousewheelevent = "onwheel" in document ? "wheel" : "onmousewheel" in document ? "mousewheel" : "DOMMouseScroll";
 		$("#editTabLabel").on(mousewheelevent, (e) => {
-			const $editTabLabelArrow = $("#editTabLabelArrowArea").find(".editTabLabelArrow");
 			const delta = e.originalEvent.deltaY;
 			// 上スクロール
-			if(delta < 0) $editTabLabelArrow[0].click();
+			if(delta < 0) $("#editTabLabelArrowLeft").mousedown();
 			// 下スクロール
-			else $editTabLabelArrow[1].click();
+			else $("#editTabLabelArrowRight").mousedown();
 		});
 		// タブラベル本体のイベント
 		$("#editTabLabel").on({
-			click: (self) => {
+			mousedown: (self) => {
 				const $self = $(self.currentTarget);
 				// activeの更新（タブラベルのデザイン）
 				this.activateTabLabel($self);
@@ -63,21 +62,55 @@ ningloidEditor.design = {
 			click: (e) => {
 				const $target = $(e.currentTarget).parent();
 				const key = $target.attr("class").replace(/tabLabel|active|\s/g, "");
-				// エディタの削除
-				NLE.editor.tabObjects[key].remove();
-				// タブラベルの削除
-				$target.remove();
-				if(Object.keys(NLE.editor.tabObjects).length == 0){
-					// リセット
-					NLE.reset();
+				// 編集中の場合
+				if($target.attr("editing") == "true"){
+					$.confirm({
+						icon: "fa fa-warning",
+						title: "",
+						content: `"${key.replace("KS", ".ks")}"に対する変更を保存しますか？`,
+						smoothContent: false,
+						type: "orange",
+						boxWidth: "50%",
+						useBootstrap: false,
+						buttons: {
+							save: {
+								text: "保存(<u>S</u>)",
+								keys: ["s"],
+								action: () => {
+									NLE.editor.activeTabObject.save(() => this.removeTabLabel($target));
+								}
+							},
+							unsave: {
+								text: "保存しない(<u>N</u>)",
+								keys: ["n"],
+								action: () => this.removeTabLabel($target)
+							},
+							cancel: {
+								text: "キャンセル(<u>ESC</u>)",
+								keys: ["esc"],
+								action: () => {}
+							},
+						}
+					});
 				}
-				else{
-					// 他のタブが存在しているならばフォーカスする
-					$("#editTabLabel").find(`.${Object.keys(NLE.editor.tabObjects)[0]}`).click();
-				}
+				else this.removeTabLabel($target);
+
 				e.stopPropagation();
 			}
 		}, ".tabLabelCloseButton");
+		// タブラベルのドラッグイベント
+		$("#editTabLabel").find("table").sortable({
+			axis: "x",
+			revert: 100,
+			opacity: 0.5,
+			change: (e, ui) => {
+				// ドロップ先を紫色にハイライト
+				ui.placeholder.css({
+					background: "rgba(128, 0, 128, 0.3)",
+					visibility: "visible",
+				});
+			}
+		});
 	},
 	/**
 	 * ゲーム画面をリサイズする
@@ -92,19 +125,6 @@ ningloidEditor.design = {
 			"-webkit-transform": `scale(${scale})`,
 			"transform": `scale(${scale})`
 		});
-	},
-	/**
-	 * カラーテーマを設定する
-	 * @param {String} themeName テーマ名称（simple, dark, ...）
-	 */
-	setTheme(themeName){
-		this.colorTheme = themeName;
-		// エディタ各エリアのテーマ変更
-		$("#editTabLabelArrowArea").attr("class", "").addClass(`editorTheme-${themeName}`);
-		$("#editTabLabel").attr("class", "").addClass(`editorTheme-${themeName}`);
-		$("#editorArea").attr("class", "").addClass(`editorTheme-${themeName}`);
-		// Aceエディタのテーマ変更
-		NLE.editor.changeTheme(themeName);
 	},
 
 	// ================================================================
@@ -123,9 +143,22 @@ ningloidEditor.design = {
 		$("#editor").css("width", bodyWidth - gameWidth);
 
 		// エディタエリアは個別で高さ調整が必要（ウィンドウサイズ変更時）
-		$("#editorArea").css("height", $("body").height() - 90);// 90は上の要素の合計height
+		$("#editorArea").css("height", $("body").height() - $("#editButtonArea").height() - $("#editTabLabel").height());
 		// ファイルタブエリアは個別で横幅調整が必要（ウィンドウサイズ変更時）
-		$("#editTabLabel").css("width", bodyWidth - gameWidth - 55);// 55は左の要素の合計width
+		$("#editTabLabel").css("width", bodyWidth - gameWidth - $("#editTabLabelArrowArea").width());// 55は左の要素の合計width
+	},
+	/**
+	 * カラーテーマを設定する
+	 * @param {String} themeName テーマ名称（simple, dark, ...）
+	 */
+	setTheme(themeName){
+		this.colorTheme = themeName;
+		// エディタ各エリアのテーマ変更
+		$("#editTabLabelArrowArea").attr("class", "").addClass(`editorTheme-${themeName}`);
+		$("#editTabLabel").attr("class", "").addClass(`editorTheme-${themeName}`);
+		$("#editorArea").attr("class", "").addClass(`editorTheme-${themeName}`);
+		// Aceエディタのテーマ変更
+		NLE.editor.changeTheme(themeName);
 	},
 
 	// ================================================================
@@ -144,7 +177,7 @@ ningloidEditor.design = {
 		}
 		else{
 			// タブの生成
-			const $tabLabel = $(`<span id="" class="tabLabel ${tabLabelId}">${fileName}</span>`);
+			const $tabLabel = $(`<td class="tabLabel ${tabLabelId}">${fileName}</td>`);
 			// 編集中/× ボタン
 			const $tabLabelCloseButton = $("<span class='tabLabelCloseButton'><i class='fa fa-close'></i></span>");
 			const $tabLabelEditButton = $("<span class='tabLabelEditButton'><i class='fa fa-pencil'></i></span>");
@@ -154,7 +187,7 @@ ningloidEditor.design = {
 				// アクティブなタブが存在する場合は、その隣に追加する
 				$("#editTabLabel").find(".active").after($tabLabel);
 			}
-			else $("#editTabLabel").append($tabLabel);
+			else $("#editTabLabel").find("table").append($tabLabel);
 			// タブのアクティブ化
 			NLE.design.activateTabLabel($tabLabel);
 		}
@@ -189,6 +222,20 @@ ningloidEditor.design = {
 		// 右はみ出し（数値「20」はpaddingの値）
 		const rightOverPixel = $target.offset().left + $target.width() + 20 - $("body").width();
 		if(rightOverPixel > 0) $("#editTabLabel")[0].scrollLeft += rightOverPixel;
+	},
+	removeTabLabel($target){
+		const key = $target.attr("class").replace(/tabLabel|active|\s/g, "");
+		// エディタの削除
+		NLE.editor.tabObjects[key].remove();
+		// タブラベルの削除
+		$target.remove();
+		// 他のタブが存在している場合
+		if(Object.keys(NLE.editor.tabObjects).length != 0){
+			// フォーカスする（フォーカスによりリセット実行される）
+			$("#editTabLabel").find(`.${Object.keys(NLE.editor.tabObjects)[0]}`).mousedown();
+		}
+		// リセットのみ実行
+		else NLE.reset();
 	},
 
 	// ファイルタブに編集中マークを表示する

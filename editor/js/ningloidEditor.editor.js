@@ -39,7 +39,7 @@ ningloidEditor.editor = {
 		// 実行中/編集中 表示切り替え
 		$("#previewCondition").removeClass("editing error").addClass("playing");
 	},
-	editSaveDone(){
+	editButtonFileSaveDone(){
 		// ファイルタブの編集中設定
 		NLE.design.removeEditMarkOnActiveTabLabel();
 	},
@@ -68,7 +68,7 @@ ningloidEditor.editor = {
 						// Ctrl + S
 						case 83:
 							// 保存
-							$("#editSave").click();
+							$("#editButtonFileSave").click();
 							break;
 					}
 				}
@@ -101,29 +101,36 @@ ningloidEditor.editor = {
 			},
 		}, ".ace_scroller");
 
+		// = = = = = = = = = = = = = = =
 		// ファイルオープンボタンのクリックイベント
-		$("#editLoad").on("click", () => {
+		// = = = = = = = = = = = = = = =
+		$("#editButtonFileOpen").on("click", () => {
 			// input要素をクリック
-			$("#editFileOpener").get(0).click();
+			$("#fileOpener").get(0).click();
 		});
 		// input:file要素にて、ファイル選択が行われたときのイベント
-		$("#editFileOpener").on("change", function(){
+		$("#fileOpener").on("change", (e) => {
+			const fileOpener = e.currentTarget;
 			// 選択されたファイルの絶対パス
-			let filePath = this.files[0].path;
+			let filePath = fileOpener.files[0].path;
 			filePath = filePath.replace(/\\/g, "/");
 			filePath = `../resources${filePath.split("/resources")[1]}`;
-
-			// 既に存在する場合
+			// ファイル名と、タブに与えるクラス名
 			const fileName = filePath.split("scenario/")[1];
 			const key = `${fileName.split(".")[0]}KS`;
-			if(NLE.editor.tabObjects[key]){
-				$("#editTabLabel").find(`.${key}`).click();
+			// 既に存在する場合
+			if(this.tabObjects[key]){
+				$("#editTabLabel").find(`.${key}`).mousedown();
 			}
-			else NLE.editor.tabObjects[key] = new EditorTab(filePath);
+			else this.tabObjects[key] = new EditorTab(filePath);
+			// 同じファイルを連続で指定すると"change"イベントが反応しなくなるので、履歴を消しておく
+			fileOpener.value = "";
 		});
 
+		// = = = = = = = = = = = = = = =
 		// 保存ボタンのクリックイベント
-		$("#editSave").on("click", () => {
+		// = = = = = = = = = = = = = = =
+		$("#editButtonFileSave").on("click", () => {
 			// エラーフラグは消す
 			NLE.flag.error = false;
 
@@ -141,6 +148,22 @@ ningloidEditor.editor = {
 				// 命令実行
 				NLE.parser.playFocusSectionOrder();
 			});
+		});
+
+		// = = = = = = = = = = = = = = =
+		// 元に戻すボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonUndo").on("click", () => {
+			this.activeTabObject.undo();
+			this.activeTabObject.focus();
+		});
+
+		// = = = = = = = = = = = = = = =
+		// やり直しボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonRedo").on("click", () => {
+			this.activeTabObject.redo();
+			this.activeTabObject.focus();
 		});
 	},
 };
@@ -212,7 +235,7 @@ class EditorTab{
 				this.Editor.setValue(data, -1);
 				// 編集中フラグをfalse、保存済み状態とする
 				NLE.editor.editEnd();
-				NLE.editor.editSaveDone();
+				NLE.editor.editButtonFileSaveDone();
 				// アクティブなエディタとして設定
 				this.activate();
 				// 初回表示時のエディタundoスタックは不要なので消す
@@ -243,6 +266,14 @@ class EditorTab{
 	// ================================================================
 	// ● 編集処理系
 	// ================================================================
+	// undo
+	undo(){
+		this.Editor.undo();
+	}
+	// undo
+	redo(){
+		this.Editor.redo();
+	}
 	// undoスタック消去
 	resetUndoStack(){
 		const manager = this.Editor.getSession().getUndoManager();
@@ -252,14 +283,14 @@ class EditorTab{
 	onChange(func){
 		this.Editor.on("change", (e) => func(e));
 	}
-	// 保存完了
+	// 保存
 	save(cb){
 		const fs = require("fs");
 		// ファイルに保存
 		fs.writeFile(this.url, this.Editor.getValue(), () => {
 			// 編集中フラグをfalse、保存済み状態とする
 			NLE.editor.editEnd();
-			NLE.editor.editSaveDone();
+			NLE.editor.editButtonFileSaveDone();
 			if(cb) cb();
 		});
 	}
@@ -280,11 +311,15 @@ class EditorTab{
 		this.$parent.show();
 
 		// エディタをフォーカスする
-		this.$parent.find("textarea")[0].focus();
+		this.focus();
 	}
 	// アクティブ解除（他のタブをアクティブにするため、ここのエディタタブを隠す）
 	unactivate(){
 		this.$parent.hide();
+	}
+	// エディタをフォーカスする
+	focus(){
+		this.$parent.find("textarea")[0].focus();
 	}
 	// 消去（閉じる）
 	remove(){
