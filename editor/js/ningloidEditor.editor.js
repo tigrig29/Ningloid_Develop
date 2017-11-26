@@ -107,19 +107,22 @@ ningloidEditor.editor = {
 			$("#editFileOpener").get(0).click();
 		});
 		// input:file要素にて、ファイル選択が行われたときのイベント
-		$("#editFileOpener").on("change", function(){
+		$("#editFileOpener").on("change", (e) => {
+			const fileOpener = e.currentTarget;
 			// 選択されたファイルの絶対パス
-			let filePath = this.files[0].path;
+			let filePath = fileOpener.files[0].path;
 			filePath = filePath.replace(/\\/g, "/");
 			filePath = `../resources${filePath.split("/resources")[1]}`;
-
-			// 既に存在する場合
+			// ファイル名と、タブに与えるクラス名
 			const fileName = filePath.split("scenario/")[1];
 			const key = `${fileName.split(".")[0]}KS`;
-			if(NLE.editor.tabObjects[key]){
+			// 既に存在する場合
+			if(this.tabObjects[key]){
 				$("#editTabLabel").find(`.${key}`).mousedown();
 			}
-			else NLE.editor.tabObjects[key] = new EditorTab(filePath);
+			else this.tabObjects[key] = new EditorTab(filePath);
+			// 同じファイルを連続で指定すると"change"イベントが反応しなくなるので、履歴を消しておく
+			fileOpener.value = "";
 		});
 
 		// 保存ボタンのクリックイベント

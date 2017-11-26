@@ -62,18 +62,39 @@ ningloidEditor.design = {
 			click: (e) => {
 				const $target = $(e.currentTarget).parent();
 				const key = $target.attr("class").replace(/tabLabel|active|\s/g, "");
-				// エディタの削除
-				NLE.editor.tabObjects[key].remove();
-				// タブラベルの削除
-				$target.remove();
-				if(Object.keys(NLE.editor.tabObjects).length == 0){
-					// リセット
-					NLE.reset();
+				// 編集中の場合
+				if($target.attr("editing") == "true"){
+					$.confirm({
+						icon: "fa fa-warning",
+						title: "",
+						content: `"${key.replace("KS", ".ks")}"に対する変更を保存しますか？`,
+						smoothContent: false,
+						type: "orange",
+						boxWidth: "50%",
+						useBootstrap: false,
+						buttons: {
+							save: {
+								text: "保存(<u>S</u>)",
+								keys: ["s"],
+								action: () => {
+									NLE.editor.activeTabObject.save(() => this.removeTabLabel($target));
+								}
+							},
+							unsave: {
+								text: "保存しない(<u>N</u>)",
+								keys: ["n"],
+								action: () => this.removeTabLabel($target)
+							},
+							cancel: {
+								text: "キャンセル(<u>ESC</u>)",
+								keys: ["esc"],
+								action: () => {}
+							},
+						}
+					});
 				}
-				else{
-					// 他のタブが存在しているならばフォーカスする
-					$("#editTabLabel").find(`.${Object.keys(NLE.editor.tabObjects)[0]}`).mousedown();
-				}
+				else this.removeTabLabel($target);
+
 				e.stopPropagation();
 			}
 		}, ".tabLabelCloseButton");
@@ -201,6 +222,20 @@ ningloidEditor.design = {
 		// 右はみ出し（数値「20」はpaddingの値）
 		const rightOverPixel = $target.offset().left + $target.width() + 20 - $("body").width();
 		if(rightOverPixel > 0) $("#editTabLabel")[0].scrollLeft += rightOverPixel;
+	},
+	removeTabLabel($target){
+		const key = $target.attr("class").replace(/tabLabel|active|\s/g, "");
+		// エディタの削除
+		NLE.editor.tabObjects[key].remove();
+		// タブラベルの削除
+		$target.remove();
+		// 他のタブが存在している場合
+		if(Object.keys(NLE.editor.tabObjects).length != 0){
+			// フォーカスする（フォーカスによりリセット実行される）
+			$("#editTabLabel").find(`.${Object.keys(NLE.editor.tabObjects)[0]}`).mousedown();
+		}
+		// リセットのみ実行
+		else NLE.reset();
 	},
 
 	// ファイルタブに編集中マークを表示する
