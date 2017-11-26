@@ -84,6 +84,9 @@ body{
 #editButtonArea i{
 	cursor: pointer;
 }
+#editButtonArea .separator{
+	border: dotted 1px black;
+}
 
 /*==================================*/
 /* ● ファイルタブ */
