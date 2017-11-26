@@ -101,7 +101,9 @@ ningloidEditor.editor = {
 			},
 		}, ".ace_scroller");
 
+		// = = = = = = = = = = = = = = =
 		// ファイルオープンボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
 		$("#editButtonFileOpen").on("click", () => {
 			// input要素をクリック
 			$("#fileOpener").get(0).click();
@@ -125,7 +127,9 @@ ningloidEditor.editor = {
 			fileOpener.value = "";
 		});
 
+		// = = = = = = = = = = = = = = =
 		// 保存ボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
 		$("#editButtonFileSave").on("click", () => {
 			// エラーフラグは消す
 			NLE.flag.error = false;
@@ -144,6 +148,22 @@ ningloidEditor.editor = {
 				// 命令実行
 				NLE.parser.playFocusSectionOrder();
 			});
+		});
+
+		// = = = = = = = = = = = = = = =
+		// 元に戻すボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonUndo").on("click", () => {
+			this.activeTabObject.undo();
+			this.activeTabObject.focus();
+		});
+
+		// = = = = = = = = = = = = = = =
+		// やり直しボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonRedo").on("click", () => {
+			this.activeTabObject.redo();
+			this.activeTabObject.focus();
 		});
 	},
 };
@@ -246,6 +266,14 @@ class EditorTab{
 	// ================================================================
 	// ● 編集処理系
 	// ================================================================
+	// undo
+	undo(){
+		this.Editor.undo();
+	}
+	// undo
+	redo(){
+		this.Editor.redo();
+	}
 	// undoスタック消去
 	resetUndoStack(){
 		const manager = this.Editor.getSession().getUndoManager();
@@ -255,7 +283,7 @@ class EditorTab{
 	onChange(func){
 		this.Editor.on("change", (e) => func(e));
 	}
-	// 保存完了
+	// 保存
 	save(cb){
 		const fs = require("fs");
 		// ファイルに保存
@@ -283,11 +311,15 @@ class EditorTab{
 		this.$parent.show();
 
 		// エディタをフォーカスする
-		this.$parent.find("textarea")[0].focus();
+		this.focus();
 	}
 	// アクティブ解除（他のタブをアクティブにするため、ここのエディタタブを隠す）
 	unactivate(){
 		this.$parent.hide();
+	}
+	// エディタをフォーカスする
+	focus(){
+		this.$parent.find("textarea")[0].focus();
 	}
 	// 消去（閉じる）
 	remove(){
