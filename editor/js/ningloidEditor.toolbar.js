@@ -10,25 +10,25 @@ const template = [
 	{
 		label: "ファイル",
 		submenu: [
-			{
-				label: "新規作成",
-				accelerator: "CommandOrControl+N",
-				click(){
+			// {
+			// 	label: "新規作成",
+			// 	accelerator: "CommandOrControl+N",
+			// 	click(){
 
-				}
-			},
+			// 	}
+			// },
 			{
 				label: "開く",
 				accelerator: "CommandOrControl+O",
 				click(){
-
+					$("#editButtonFileOpen").click();
 				}
 			},
 			{
 				label: "閉じる",
 				accelerator: "CommandOrControl+W",
 				click(){
-
+					$("#editTabLabel").find(".active").find(".tabLabelCloseButton").click();
 				}
 			},
 			{type: "separator"},
@@ -36,16 +36,16 @@ const template = [
 				label: "上書き保存",
 				accelerator: "CommandOrControl+S",
 				click(){
-
+					$("#editButtonFileSave").click();
 				}
 			},
-			{
-				label: "名前をつけて保存",
-				accelerator: "CommandOrControl+Shift+S",
-				click(){
+			// {
+			// 	label: "別名で保存",
+			// 	accelerator: "CommandOrControl+Shift+S",
+			// 	click(){
 
-				}
-			},
+			// 	}
+			// },
 		]
 	},
 	{
@@ -53,11 +53,17 @@ const template = [
 		submenu: [
 			{
 				label: "元に戻す",
-				role: "undo"
+				role: "undo",
+				click(){
+					$("#editButtonUndo").click();
+				}
 			},
 			{
 				label: "やり直す",
-				role: "redo"
+				role: "redo",
+				click(){
+					$("#editButtonRedo").click();
+				}
 			},
 			{type: "separator"},
 			{

@@ -63,15 +63,6 @@ ningloidEditor.editor = {
 		// エディタ操作のキーバインド
 		$("#editor").on({
 			keydown: (e) => {
-				if(e.ctrlKey){
-					switch(e.keyCode){
-						// Ctrl + S
-						case 83:
-							// 保存
-							$("#editButtonFileSave").click();
-							break;
-					}
-				}
 				// 伝播を止めて、ゲームのキーバインドを実行させないようにする
 				e.stopPropagation();
 			},
@@ -105,26 +96,27 @@ ningloidEditor.editor = {
 		// ファイルオープンボタンのクリックイベント
 		// = = = = = = = = = = = = = = =
 		$("#editButtonFileOpen").on("click", () => {
-			// input要素をクリック
-			$("#fileOpener").get(0).click();
-		});
-		// input:file要素にて、ファイル選択が行われたときのイベント
-		$("#fileOpener").on("change", (e) => {
-			const fileOpener = e.currentTarget;
-			// 選択されたファイルの絶対パス
-			let filePath = fileOpener.files[0].path;
-			filePath = filePath.replace(/\\/g, "/");
-			filePath = `../resources${filePath.split("/resources")[1]}`;
-			// ファイル名と、タブに与えるクラス名
-			const fileName = filePath.split("scenario/")[1];
-			const key = `${fileName.split(".")[0]}KS`;
-			// 既に存在する場合
-			if(this.tabObjects[key]){
-				$("#editTabLabel").find(`.${key}`).mousedown();
-			}
-			else this.tabObjects[key] = new EditorTab(filePath);
-			// 同じファイルを連続で指定すると"change"イベントが反応しなくなるので、履歴を消しておく
-			fileOpener.value = "";
+			const Dialog = remote.dialog;
+			Dialog.showOpenDialog(null, {
+				properties: ["openFile"],
+				title: "開く",
+				defaultPath: ".",
+				filters: [
+					{name: "シナリオファイル", extensions: ["ks"]},
+				]
+			}, (filePaths) => {
+				// 選択されたファイルの絶対パス
+				let filePath = filePaths[0].replace(/\\/g, "/");
+				filePath = `../resources${filePath.split("/resources")[1]}`;
+				// ファイル名と、タブに与えるクラス名
+				const fileName = filePath.split("scenario/")[1];
+				const key = `${fileName.split(".")[0]}KS`;
+				// 既に存在する場合
+				if(this.tabObjects[key]){
+					$("#editTabLabel").find(`.${key}`).mousedown();
+				}
+				else this.tabObjects[key] = new EditorTab(filePath);
+			});
 		});
 
 		// = = = = = = = = = = = = = = =
