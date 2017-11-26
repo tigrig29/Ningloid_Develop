@@ -43,7 +43,16 @@ const template = [
 			// 	label: "別名で保存",
 			// 	accelerator: "CommandOrControl+Shift+S",
 			// 	click(){
-
+			// 		const Dialog = remote.dialog;
+			// 		Dialog.showSaveDialog(null, {
+			// 			title: "保存",
+			// 			defaultPath: ".",
+			// 			filters: [
+			// 				{name: "シナリオファイル", extensions: ["ks"]},
+			// 			]
+			// 		}, (savedFiles) => {
+			// 			console.log(savedFiles);
+			// 		});
 			// 	}
 			// },
 		]

@@ -1,4 +1,4 @@
-/* global NLE: true, Editor: true */
+/* global NLE: true, Editor: true, remote: true */
 
 ningloidEditor.editor = {
 	// 使用中のエディタオブジェクト一覧
@@ -105,9 +105,8 @@ ningloidEditor.editor = {
 					{name: "シナリオファイル", extensions: ["ks"]},
 				]
 			}, (filePaths) => {
-				// 選択されたファイルの絶対パス
-				let filePath = filePaths[0].replace(/\\/g, "/");
-				filePath = `../resources${filePath.split("/resources")[1]}`;
+				// 選択されたファイルの相対パス
+				const filePath = `../resources${filePaths[0].replace(/\\/g, "/").split("/resources")[1]}`;
 				// ファイル名と、タブに与えるクラス名
 				const fileName = filePath.split("scenario/")[1];
 				const key = `${fileName.split(".")[0]}KS`;
@@ -140,6 +139,8 @@ ningloidEditor.editor = {
 				// 命令実行
 				NLE.parser.playFocusSectionOrder();
 			});
+			// focus
+			this.activeTabObject.focus();
 		});
 
 		// = = = = = = = = = = = = = = =
