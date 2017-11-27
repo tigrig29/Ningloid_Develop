@@ -43,7 +43,7 @@ ningloidEditor.design = {
 				// activeの更新（タブラベルのデザイン）
 				this.activateTabLabel($self);
 				// activeの更新（エディタエリアの表示）
-				const key = $self.attr("class").replace(/tabLabel|active|\s/g, "");
+				const key = $self.attr("class").replace(/tabLabel|old-active|active|\s/g, "");
 				NLE.editor.tabObjects[key].activate();
 			},
 			mouseenter: (e) => {
@@ -61,7 +61,7 @@ ningloidEditor.design = {
 		$("#editTabLabel").on({
 			click: (e) => {
 				const $target = $(e.currentTarget).parent();
-				const key = $target.attr("class").replace(/tabLabel|active|\s/g, "");
+				const key = $target.attr("class").replace(/tabLabel|old-active|active|\s/g, "");
 				// 編集中の場合
 				if($target.attr("editing") == "true"){
 					$.confirm({
@@ -180,7 +180,8 @@ ningloidEditor.design = {
 		}
 		else{
 			// タブの生成
-			const $tabLabel = $(`<td class="tabLabel ${tabLabelId}">${fileName}</td>`);
+			const $tabLabel = $(`<td class="tabLabel ${tabLabelId}"></td>`);
+			$tabLabel.append(`<span class="fileName">${fileName.includes(".ks") ? fileName : "untitled"}</span>`);
 			// 編集中/× ボタン
 			const $tabLabelCloseButton = $("<span class='tabLabelCloseButton'><i class='fa fa-close'></i></span>");
 			const $tabLabelEditButton = $("<span class='tabLabelEditButton'><i class='fa fa-pencil'></i></span>");
@@ -217,7 +218,6 @@ ningloidEditor.design = {
 	 */
 	activateTabLabel($target){
 		if(this.$editActive){
-			// this.$editActive.removeClass("active");
 			$("#editTabLabel").find(".old-active").removeClass("old-active");
 			this.$editActive.switchClass("active", "old-active", 0);
 		}
@@ -237,8 +237,8 @@ ningloidEditor.design = {
 		NLE.editor.tabObjects[key].remove();
 		// タブラベルの削除
 		$target.remove();
-		// 他のタブが存在している場合
-		if(Object.keys(NLE.editor.tabObjects).length != 0){
+		// 他のタブが存在していて、アクティブタグが存在しない場合
+		if(Object.keys(NLE.editor.tabObjects).length != 0 && $("#editTabLabel").find(".active").length == 0){
 			// フォーカスする（フォーカスによりリセット実行される）
 			if($("#editTabLabel").find(".old-active").length != 0) $("#editTabLabel").find(".old-active").mousedown();
 			else $("#editTabLabel").find(".tabLabel").eq(0).mousedown();

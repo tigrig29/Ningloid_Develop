@@ -117,6 +117,7 @@ ningloidEditor.editor = {
 					{name: "シナリオファイル", extensions: ["ks"]},
 				]
 			}, (filePaths) => {
+				if(!filePaths) return;
 				// 選択されたファイルの相対パス
 				const filePath = `../resources${filePaths[0].replace(/\\/g, "/").split("/resources")[1]}`;
 				// ファイル名と、タブに与えるクラス名
@@ -136,22 +137,48 @@ ningloidEditor.editor = {
 		$("#editButtonOverwriteSave").on("click", () => {
 			// エラーフラグは消す
 			NLE.flag.error = false;
-			// if(this.activeTabObject.url.includes("/"))
-
-			// テキストデータの保存
-			this.activeTabObject.save(() => {
-				// 時限式ゲーム実行が行われた場合は、以下のゲーム実行処理を行わない
-				if(this.timer == "done") return;
-				// 時限式ゲーム実行のタイマーが待機状態ならば、タイマーを消す
-				else if(this.timer){
-					clearTimeout(this.timer);
-					this.timer = "done";
-				}
-				// ゲーム画面と、シナリオデータのリセット
-				NLE.reset();
-				// 命令実行
-				NLE.parser.playFocusSectionOrder();
-			});
+			// 空白タブの保存時
+			if(!this.activeTabObject.url.includes("/")){
+				// 「名前をつけて保存」ダイアログ
+				const Dialog = remote.dialog;
+				Dialog.showSaveDialog(null, {
+					title: "名前をつけて保存",
+					defaultPath: ".",
+					filters: [
+						{name: "シナリオファイル", extensions: ["ks"]},
+					]
+				}, (savedFiles) => {
+					const Tab = this.activeTabObject;
+					// タブの対象ファイルURLを設定
+					const filePath = Tab.url = `../resources${savedFiles.replace(/\\/g, "/").split("/resources")[1]}`;
+					// タブラベルの表示切り替え
+					const fileName = filePath.split("scenario/")[1];
+					const oldKey = Tab.fileName;
+					const newKey = fileName.replace(".ks", "KS");
+					Tab.$parent.switchClass(oldKey, newKey, 0);
+					$("#editTabLabel").find(`.${oldKey}`).switchClass(oldKey, newKey, 0).find(".fileName").text(fileName);
+					Tab.fileName = fileName;
+					// タブオブジェクト保管（key変更）
+					this.tabObjects[newKey] = this.tabObjects[oldKey];
+				});
+			}
+			// 通常保存
+			else{
+				// テキストデータの保存
+				this.activeTabObject.save(() => {
+					// 時限式ゲーム実行が行われた場合は、以下のゲーム実行処理を行わない
+					if(this.timer == "done") return;
+					// 時限式ゲーム実行のタイマーが待機状態ならば、タイマーを消す
+					else if(this.timer){
+						clearTimeout(this.timer);
+						this.timer = "done";
+					}
+					// ゲーム画面と、シナリオデータのリセット
+					NLE.reset();
+					// 命令実行
+					NLE.parser.playFocusSectionOrder();
+				});
+			}
 			// focus
 			this.activeTabObject.focus();
 		});
@@ -160,7 +187,26 @@ ningloidEditor.editor = {
 		// 別名保存ボタンのクリックイベント
 		// = = = = = = = = = = = = = = =
 		$("#editButtonAnotherSave").on("click", () => {
-			
+			const Dialog = remote.dialog;
+			Dialog.showSaveDialog(null, {
+				title: "別名で保存",
+				defaultPath: ".",
+				filters: [
+					{name: "シナリオファイル", extensions: ["ks"]},
+				]
+			}, (savedFiles) => {
+				// キャンセル時
+				if(!savedFiles) return;
+				// タブの対象ファイルURLを設定
+				const filePath = `../resources${savedFiles.replace(/\\/g, "/").split("/resources")[1]}`;
+				// 別名保存
+				this.activeTabObject.save(() => {
+					// ファイルからタブ作成
+					const fileName = filePath.split("scenario/")[1];
+					const key = fileName.replace(".ks", "KS");
+					this.tabObjects[key] = new EditorTab(filePath);
+				}, filePath);
+			});
 		});
 
 		// = = = = = = = = = = = = = = =
@@ -315,13 +361,15 @@ class EditorTab{
 		this.Editor.on("change", (e) => func(e));
 	}
 	// 保存
-	save(cb){
+	save(cb, url){
 		const fs = require("fs");
 		// ファイルに保存
-		fs.writeFile(this.url, this.Editor.getValue(), () => {
+		fs.writeFile(url || this.url, this.Editor.getValue(), () => {
 			// 編集中フラグをfalse、保存済み状態とする
-			NLE.editor.editEnd();
-			NLE.editor.completeSave();
+			if(!url){
+				NLE.editor.editEnd();
+				NLE.editor.completeSave();
+			}
 			if(cb) cb();
 		});
 	}

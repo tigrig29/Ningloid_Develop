@@ -10,13 +10,13 @@ const template = [
 	{
 		label: "ファイル",
 		submenu: [
-			// {
-			// 	label: "新規作成",
-			// 	accelerator: "CommandOrControl+N",
-			// 	click(){
-
-			// 	}
-			// },
+			{
+				label: "新規作成",
+				accelerator: "CommandOrControl+N",
+				click(){
+					$("#editButtonNewTab").click();
+				}
+			},
 			{
 				label: "開く",
 				accelerator: "CommandOrControl+O",
@@ -39,22 +39,13 @@ const template = [
 					$("#editButtonOverwriteSave").click();
 				}
 			},
-			// {
-			// 	label: "別名で保存",
-			// 	accelerator: "CommandOrControl+Shift+S",
-			// 	click(){
-			// 		const Dialog = remote.dialog;
-			// 		Dialog.showSaveDialog(null, {
-			// 			title: "保存",
-			// 			defaultPath: ".",
-			// 			filters: [
-			// 				{name: "シナリオファイル", extensions: ["ks"]},
-			// 			]
-			// 		}, (savedFiles) => {
-			// 			console.log(savedFiles);
-			// 		});
-			// 	}
-			// },
+			{
+				label: "別名で保存",
+				accelerator: "CommandOrControl+Shift+S",
+				click(){
+					$("#editButtonAnotherSave").click();
+				}
+			},
 		]
 	},
 	{
