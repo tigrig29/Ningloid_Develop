@@ -36,7 +36,7 @@ const template = [
 				label: "上書き保存",
 				accelerator: "CommandOrControl+S",
 				click(){
-					$("#editButtonFileSave").click();
+					$("#editButtonOverwriteSave").click();
 				}
 			},
 			// {

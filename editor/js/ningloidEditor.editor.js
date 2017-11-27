@@ -11,7 +11,7 @@ ningloidEditor.editor = {
 	// ● 初期処理系
 	// ================================================================
 	init(){
-		NLE.editor.tabObjects.firstKS = new EditorTab("../resources/data/scenario/first.ks");
+		this.tabObjects.firstKS = new EditorTab("../resources/data/scenario/first.ks");
 		// エディターのリアルタイム反映用イベントをセット
 		this.setKeyMouseEvent();
 
@@ -39,8 +39,8 @@ ningloidEditor.editor = {
 		// 実行中/編集中 表示切り替え
 		$("#previewCondition").removeClass("editing error").addClass("playing");
 	},
-	editButtonFileSaveDone(){
-		// ファイルタブの編集中設定
+	completeSave(){
+		// ファイルタブの編集中解除
 		NLE.design.removeEditMarkOnActiveTabLabel();
 	},
 
@@ -93,6 +93,18 @@ ningloidEditor.editor = {
 		}, ".ace_scroller");
 
 		// = = = = = = = = = = = = = = =
+		// 新規タブボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonNewTab").on("click", () => {
+			for(let i = 0; ; i++){
+				if(!this.tabObjects[`untitled${i}`]){
+					this.tabObjects[`untitled${i}`] = new EditorTab(`untitled${i}`);
+					break;
+				}
+			}
+		});
+
+		// = = = = = = = = = = = = = = =
 		// ファイルオープンボタンのクリックイベント
 		// = = = = = = = = = = = = = = =
 		$("#editButtonFileOpen").on("click", () => {
@@ -109,7 +121,7 @@ ningloidEditor.editor = {
 				const filePath = `../resources${filePaths[0].replace(/\\/g, "/").split("/resources")[1]}`;
 				// ファイル名と、タブに与えるクラス名
 				const fileName = filePath.split("scenario/")[1];
-				const key = `${fileName.split(".")[0]}KS`;
+				const key = fileName.replace(".ks", "KS");
 				// 既に存在する場合
 				if(this.tabObjects[key]){
 					$("#editTabLabel").find(`.${key}`).mousedown();
@@ -121,9 +133,10 @@ ningloidEditor.editor = {
 		// = = = = = = = = = = = = = = =
 		// 保存ボタンのクリックイベント
 		// = = = = = = = = = = = = = = =
-		$("#editButtonFileSave").on("click", () => {
+		$("#editButtonOverwriteSave").on("click", () => {
 			// エラーフラグは消す
 			NLE.flag.error = false;
+			// if(this.activeTabObject.url.includes("/"))
 
 			// テキストデータの保存
 			this.activeTabObject.save(() => {
@@ -141,6 +154,13 @@ ningloidEditor.editor = {
 			});
 			// focus
 			this.activeTabObject.focus();
+		});
+
+		// = = = = = = = = = = = = = = =
+		// 別名保存ボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonAnotherSave").on("click", () => {
+			
 		});
 
 		// = = = = = = = = = = = = = = =
@@ -165,8 +185,11 @@ class EditorTab{
 	constructor(url){
 		// 保存時など、ファイルアクセスのためのURLを保管
 		this.url = url;
-		// 新規タブ作成
-		this.createNewTabByFile(url);
+		this.fileName = url.includes("scenario/") ? url.split("scenario/")[1] : url;
+		// シナリオファイルからタブ作成時
+		if(url.includes("/")) this.createNewTabByFile(url);
+		// 新規空白タブ生成時
+		else this.createNewBlankTab(url);
 		// 編集時のイベント付与
 		this.onChange(() => {
 			// 編集が繰り返されるうちは、↓のタイマーをリセットする
@@ -195,7 +218,7 @@ class EditorTab{
 	// エディタを作成する
 	createNewTab(){
 		// エディタエリア作成
-		const $target = this.$parent = $("<div class='newEditorTab editorInputArea'></div>");
+		const $target = this.$parent = $("<div class='editorInputArea'></div>");
 		$("#editorArea").append($target);
 		// エディタ作成
 		const Editor = this.Editor = ace.edit($target.get(0));
@@ -209,17 +232,32 @@ class EditorTab{
 		Editor.getSession().setMode(new KAGMode());
 		Editor.setTheme(`ace/theme/kag-${NLE.design.colorTheme}`);
 	}
+	// 空白の新規タブを作成する
+	createNewBlankTab(tabName){
+		// タブの生成
+		this.createNewTab();
+		// エディタエリアに判別クラスを与える
+		this.$parent.addClass(tabName);
+
+		// ファイル名をタブに表示する
+		NLE.design.appendTabLabel(tabName);
+
+		// 編集中フラグをfalse、保存済み状態とする
+		NLE.editor.editEnd();
+		NLE.editor.completeSave();
+		// アクティブなエディタとして設定
+		this.activate();
+	}
 	// シナリオファイルを読み取って、エディタに表示する
 	createNewTabByFile(url){
 		// タブの生成
 		this.createNewTab();
 		// エディタエリアに判別クラスを与える
-		const fileName = url.split("scenario/")[1];
-		const key = `${fileName.split(".")[0]}KS`;
-		this.$parent.removeClass("newEditorTab").addClass(key);
+		const key = this.fileName.replace(".ks", "KS");
+		this.$parent.addClass(key);
 
 		// ファイル名をタブに表示する
-		NLE.design.appendTabLabel(fileName);
+		NLE.design.appendTabLabel(this.fileName);
 		// ファイルリード
 		$.ajax({
 			url: url,
@@ -228,7 +266,7 @@ class EditorTab{
 				this.Editor.setValue(data, -1);
 				// 編集中フラグをfalse、保存済み状態とする
 				NLE.editor.editEnd();
-				NLE.editor.editButtonFileSaveDone();
+				NLE.editor.completeSave();
 				// アクティブなエディタとして設定
 				this.activate();
 				// 初回表示時のエディタundoスタックは不要なので消す
@@ -283,7 +321,7 @@ class EditorTab{
 		fs.writeFile(this.url, this.Editor.getValue(), () => {
 			// 編集中フラグをfalse、保存済み状態とする
 			NLE.editor.editEnd();
-			NLE.editor.editButtonFileSaveDone();
+			NLE.editor.completeSave();
 			if(cb) cb();
 		});
 	}
@@ -319,8 +357,7 @@ class EditorTab{
 		this.Editor.destroy();
 		this.$parent.remove();
 		// タブ一覧オブジェクトから消去
-		const fileName = this.url.split("scenario/")[1];
-		const key = `${fileName.split(".")[0]}KS`;
+		const key = this.fileName.replace(".ks", "KS");
 		delete NLE.editor.tabObjects[key];
 	}
 

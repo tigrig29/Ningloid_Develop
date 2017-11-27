@@ -169,7 +169,7 @@ ningloidEditor.design = {
 	 * @param  {String} fileName ファイル名
 	 */
 	appendTabLabel(fileName){
-		const tabLabelId = `${fileName.split(".")[0]}KS`;
+		const tabLabelId = fileName.replace(".ks", "KS");
 		// 既に開いている場合
 		if($("#editTabLabel").find(`.${tabLabelId}`).length !== 0){
 			// タブのアクティブ化
@@ -213,8 +213,13 @@ ningloidEditor.design = {
 	 * @param  {$Object} $target アクティブ化するファイルタブのjQueryオブジェクト
 	 */
 	activateTabLabel($target){
-		if(this.$editActive) this.$editActive.removeClass("active");
+		if(this.$editActive){
+			// this.$editActive.removeClass("active");
+			$("#editTabLabel").find(".old-active").removeClass("old-active");
+			this.$editActive.switchClass("active", "old-active", 0);
+		}
 		this.$editActive = $target.addClass("active");
+
 		// 対象のタブがエリアの端からはみ出している場合、見える位置までスクロールする
 		// 左はみ出し
 		const leftOverPixel = $target.offset().left - ($("#game").width() + $("#editTabLabelArrowArea").width());
@@ -232,7 +237,7 @@ ningloidEditor.design = {
 		// 他のタブが存在している場合
 		if(Object.keys(NLE.editor.tabObjects).length != 0){
 			// フォーカスする（フォーカスによりリセット実行される）
-			$("#editTabLabel").find(`.${Object.keys(NLE.editor.tabObjects)[0]}`).mousedown();
+			$("#editTabLabel").find(".old-active").mousedown();
 		}
 		// リセットのみ実行
 		else NLE.reset();
