@@ -1,4 +1,4 @@
-
+ff
 [l]
 [messageConfig left=5% top=75% width=90% height=20% opacity=0.8 margin=10px]
 [bg storage="room.jpg" time=5000 method="fadeIn" rotate=10 rotateX=0 skew=10 skewY=4 skippable=true]

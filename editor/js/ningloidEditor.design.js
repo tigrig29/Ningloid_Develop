@@ -96,6 +96,9 @@ ningloidEditor.design = {
 				else this.removeTabLabel($target);
 
 				e.stopPropagation();
+			},
+			mousedown: (e) => {
+				e.stopPropagation();
 			}
 		}, ".tabLabelCloseButton");
 		// タブラベルのドラッグイベント
@@ -229,7 +232,7 @@ ningloidEditor.design = {
 		if(rightOverPixel > 0) $("#editTabLabel")[0].scrollLeft += rightOverPixel;
 	},
 	removeTabLabel($target){
-		const key = $target.attr("class").replace(/tabLabel|active|\s/g, "");
+		const key = $target.attr("class").replace(/tabLabel|old-active|active|\s/g, "");
 		// エディタの削除
 		NLE.editor.tabObjects[key].remove();
 		// タブラベルの削除
@@ -237,7 +240,8 @@ ningloidEditor.design = {
 		// 他のタブが存在している場合
 		if(Object.keys(NLE.editor.tabObjects).length != 0){
 			// フォーカスする（フォーカスによりリセット実行される）
-			$("#editTabLabel").find(".old-active").mousedown();
+			if($("#editTabLabel").find(".old-active").length != 0) $("#editTabLabel").find(".old-active").mousedown();
+			else $("#editTabLabel").find(".tabLabel").eq(0).mousedown();
 		}
 		// リセットのみ実行
 		else NLE.reset();
