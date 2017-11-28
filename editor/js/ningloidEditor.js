@@ -41,6 +41,7 @@ const ningloidEditor = {
 		this.tag.init();
 	},
 	reset(){
+		if(NLE.flag.playing) return;
 		// ゲーム画面のリセット
 		ningloid.resetGame();
 		// シナリオリセット（シナリオ全文を取得 → 命令配列化）

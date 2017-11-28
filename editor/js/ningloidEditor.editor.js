@@ -30,14 +30,24 @@ ningloidEditor.editor = {
 	editStart(){
 		NLE.flag.edit = true;
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").removeClass("playing error").addClass("editing");
+		$("#previewCondition").switchClass("error preview", "editing", 0);
 		// ファイルタブの編集中設定
 		NLE.design.showEditMarkOnActiveTabLabel();
 	},
 	editEnd(){
 		NLE.flag.edit = false;
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").removeClass("editing error").addClass("playing");
+		$("#previewCondition").switchClass("editing error", "preview", 0);
+	},
+	playStart(){
+		NLE.flag.playing = true;
+		// 実行中/編集中 表示切り替え
+		$("#previewCondition").switchClass("preview editing error", "playing", 0);
+	},
+	playEnd(){
+		NLE.flag.playing = false;
+		// 実行中/編集中 表示切り替え
+		$("#previewCondition").switchClass("playing editing error", "preview", 0);
 	},
 	completeSave(){
 		// ファイルタブの編集中解除

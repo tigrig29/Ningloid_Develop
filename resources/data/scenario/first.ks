@@ -16,8 +16,7 @@ firstfirst
 [l]
 
 [playmovie layer=fore0 storage="3.webm" fade=1000 clickskip=true]
-
-[s]
+[removemovie layer=fore0]
 
 [hidemessage method="lightSpeedOut"]
 
@@ -63,6 +62,6 @@ firstfirst
 テスト[l][cm]
 
 [hidemessage]
-
+[s]
 
 [jump storage=second.ks]

@@ -13,7 +13,7 @@ ningloidEditor.parser = {
 	 */
 	playFocusSectionOrder(){
 		// 編集中、エラー発生中は処理をしない（保存で編集状態が解除される）
-		if(NLE.flag.edit || NLE.flag.error) return;
+		if(NLE.flag.edit || NLE.flag.error || NLE.flag.playing) return;
 
 		// 命令実行開始前に、残っているpromiseをクリアする
 		// ∵[l]タグなどが実行された後だとpromiseが残ってしまう
@@ -159,6 +159,15 @@ ningloidEditor.parser = {
 
 		// フォーカス行の命令の実行（ここだけ通常速度で実行）
 		await this.playSectionScenario(ningloid.parser.orderArray, endLine, endLine);
+	},
+
+	skipProceedScenario: async function(startLine, endLine){
+		ningloid.flag.systemSkipMode = true;
+		// フォーカス行までの命令の実行（ここまではシステムスキップ＝即時進行）
+		const stopFlag = await this.playSectionScenario(ningloid.parser.orderArray, startLine, endLine);
+
+		// 即時実行解除
+		ningloid.flag.systemSkipMode = false;
 	},
 
 

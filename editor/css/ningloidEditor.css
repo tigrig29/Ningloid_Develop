@@ -47,6 +47,16 @@ body{
 	content: "実行中";
 	position: relative;
 }
+#previewCondition.preview{
+	background: #2D2;
+}
+#previewCondition.preview:after{
+	left: 12px;
+	top: 9px;
+	font-size: 0.6em;
+	content: "プレビュー";
+	position: relative;
+}
 #previewCondition.error{
 	background: #F33;
 }

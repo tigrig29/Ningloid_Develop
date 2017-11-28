@@ -187,10 +187,25 @@ const template = [
 			{
 				label:"選択行以降を実行",
 				accelerator: "Shift+F5",
-				click(){
-					const Editor = NLE.editor.getActiveEditor();
-					const selectRange = Editor.getSelectionRange();
-					console.log(selectRange);
+				click: async () => {
+					if(NLE.flag.playing) return;
+					NLE.reset();
+					// フラグ立てる
+					NLE.editor.playStart();
+					const activeEditor = NLE.editor.getActiveEditor();
+					const newLine = activeEditor.getCursorPosition().row;
+
+					await NLE.parser.skipProceedScenario(0, newLine - 1);
+
+					await NLE.parser.playSectionScenario(ningloid.parser.orderArray, newLine, activeEditor.getSession().getLength() - 1).catch((e) => {
+						$.tagError(e);
+						if(ningloid.config.develop.mode === true) console.error(e);
+					});
+					console.log("aa")
+					// フラグ消す
+					NLE.editor.playEnd();
+					// リセット
+					NLE.reset();
 				},
 			},
 		]
