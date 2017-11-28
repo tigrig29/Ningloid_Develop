@@ -43,11 +43,13 @@ ningloidEditor.editor = {
 		NLE.flag.playing = true;
 		// 実行中/編集中 表示切り替え
 		$("#previewCondition").switchClass("preview editing error", "playing", 0);
+		$("body").append("<div id='wrapperOnPlayingGame'></div>");
 	},
 	playEnd(){
 		NLE.flag.playing = false;
 		// 実行中/編集中 表示切り替え
 		$("#previewCondition").switchClass("playing editing error", "preview", 0);
+		$("#wrapperOnPlayingGame").remove();
 	},
 	completeSave(){
 		// ファイルタブの編集中解除

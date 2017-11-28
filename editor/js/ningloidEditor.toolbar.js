@@ -197,11 +197,10 @@ const template = [
 
 					await NLE.parser.skipProceedScenario(0, newLine - 1);
 
-					await NLE.parser.playSectionScenario(ningloid.parser.orderArray, newLine, activeEditor.getSession().getLength() - 1).catch((e) => {
+					await ningloid.parser.playScenario(ningloid.parser.orderArray, newLine).catch((e) => {
 						$.tagError(e);
 						if(ningloid.config.develop.mode === true) console.error(e);
 					});
-					console.log("aa")
 					// フラグ消す
 					NLE.editor.playEnd();
 					// リセット
