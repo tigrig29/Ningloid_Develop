@@ -184,6 +184,15 @@ const template = [
 					win.loadURL(`file://${__dirname}/../game/index.html`);
 				},
 			},
+			{
+				label:"選択行以降を実行",
+				accelerator: "Shift+F5",
+				click(){
+					const Editor = NLE.editor.getActiveEditor();
+					const selectRange = Editor.getSelectionRange();
+					console.log(selectRange);
+				},
+			},
 		]
 	},
 	{

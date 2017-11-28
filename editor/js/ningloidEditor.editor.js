@@ -87,7 +87,7 @@ ningloidEditor.editor = {
 			}
 		});
 		$("#editorArea").on({
-			mousedown: () => {
+			click: () => {
 				NLE.parser.playFocusSectionOrder();
 			},
 		}, ".ace_scroller");
