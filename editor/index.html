@@ -57,18 +57,28 @@
 </head>
 
 <body style="overflow:hidden">
-	<div id="game">
-		<div id="previewCondition">
-			<div class="non-condition"></div>
-			<div class="playing" style="display:none"></div>
+	<div id="gameContainer">
+		<div id="gameControl">
+			<table border="0" cellspacing="0" cellpadding="7.5">
+				<td id="playGameOnThis">
+					<i class="fa fa-play" aria-hidden="true" title="選択行以降を実行(Shift+F5)" style="color: #00C;"></i>
+				</td>
+				<td id="stopGameOnThis">
+					<i class="fa fa-stop" aria-hidden="true" title="実行停止" style="color: #555; font-size: 32px"></i>
+				</td>
+			</table>
+			<div class="non-condition previewCondition"></div>
+			<div class="playing previewCondition" style="display:none"></div>
 		</div>
-		<div id="ningloidBase" unselectable="on" >
-			<div id="dummyWrapper" class="wrapper"></div>
-			<div id="canvasWrapper" class="wrapper"></div>
-			<div id="systemWrapper" class="wrapper"></div>
-			<div id="menuWrapper" class="wrapper" data-html2canvas-ignore="true"></div>
+		<div id="game">
+			<div id="ningloidBase" unselectable="on" >
+				<div id="dummyWrapper" class="wrapper"></div>
+				<div id="canvasWrapper" class="wrapper"></div>
+				<div id="systemWrapper" class="wrapper"></div>
+				<div id="menuWrapper" class="wrapper" data-html2canvas-ignore="true"></div>
+			</div>
+			<div id="blind">Now Loading ...</div>
 		</div>
-		<div id="blind">Now Loading ...</div>
 	</div>
 	<div id="editor">
 		<div id="editButtonArea">
@@ -93,6 +103,10 @@
 				<td id="editButtonRedo">
 					<i class="fa fa-mail-forward" aria-hidden="true" title="やり直し(Ctrl+Y)" style="font-size: 21px"></i>
 				</td>
+				<td><i class="separator"></i></td>
+				<td id="playGameOnAnother">
+					<i class="fa fa-play" aria-hidden="true" title="ゲーム起動(F5)" style="color: #4C4; font-size: 21px"></i>
+				</td>
 			</table>
 		</div>
 		<div id="editTabLabelArrowArea">
@@ -108,7 +122,6 @@
 		</div>
 		<div id="editorArea"></div>
 	</div>
-	<div id="resourceManager"></div>
 </body>
 
 </html>
