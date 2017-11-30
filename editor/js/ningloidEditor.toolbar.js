@@ -14,6 +14,7 @@ const template = [
 				label: "新規作成",
 				accelerator: "CommandOrControl+N",
 				click(){
+					if(NLE.flag.playing) return;
 					$("#editButtonNewTab").click();
 				}
 			},
@@ -21,6 +22,7 @@ const template = [
 				label: "開く",
 				accelerator: "CommandOrControl+O",
 				click(){
+					if(NLE.flag.playing) return;
 					$("#editButtonFileOpen").click();
 				}
 			},
@@ -28,6 +30,7 @@ const template = [
 				label: "閉じる",
 				accelerator: "CommandOrControl+W",
 				click(){
+					if(NLE.flag.playing) return;
 					$("#editTabLabel").find(".active").find(".tabLabelCloseButton").click();
 				}
 			},
@@ -36,6 +39,7 @@ const template = [
 				label: "上書き保存",
 				accelerator: "CommandOrControl+S",
 				click(){
+					if(NLE.flag.playing) return;
 					$("#editButtonOverwriteSave").click();
 				}
 			},
@@ -43,6 +47,7 @@ const template = [
 				label: "別名で保存",
 				accelerator: "CommandOrControl+Shift+S",
 				click(){
+					if(NLE.flag.playing) return;
 					$("#editButtonAnotherSave").click();
 				}
 			},
@@ -55,6 +60,7 @@ const template = [
 				label: "元に戻す",
 				role: "undo",
 				click(){
+					if(NLE.flag.playing) return;
 					$("#editButtonUndo").click();
 				}
 			},
@@ -62,6 +68,7 @@ const template = [
 				label: "やり直す",
 				role: "redo",
 				click(){
+					if(NLE.flag.playing) return;
 					$("#editButtonRedo").click();
 				}
 			},
@@ -87,26 +94,26 @@ const template = [
 	{
 		label: "表示",
 		submenu: [
-			{
-				label: "表示切り替え",
-				submenu: [
-					{
-						label: "ゲーム＋エディタ",
-						type: "radio",
-						click(){
+			// {
+			// 	label: "表示切り替え",
+			// 	submenu: [
+			// 		{
+			// 			label: "ゲーム＋エディタ",
+			// 			type: "radio",
+			// 			click(){
 
-						}
-					},
-					{
-						label: "エディタのみ",
-						type: "radio",
-						click(){
+			// 			}
+			// 		},
+			// 		{
+			// 			label: "エディタのみ",
+			// 			type: "radio",
+			// 			click(){
 
-						}
-					},
-				]
-			},
-			{type: "separator"},
+			// 			}
+			// 		},
+			// 	]
+			// },
+			// {type: "separator"},
 			{
 				label: "ゲーム",
 				submenu: [
@@ -123,6 +130,7 @@ const template = [
 							{
 								label: "640×360",
 								type: "radio",
+								checked: true,
 								click(){
 									setGameSize(640);
 								}
@@ -176,55 +184,45 @@ const template = [
 		label: "実行",
 		submenu: [
 			{
-				label:"ゲーム単体実行",
+				label:"ゲーム起動",
 				accelerator: "F5",
 				click(){
-					const windowOptions = require("../game/window_options.js");
-					let win = new BrowserWindow(windowOptions);
-					win.loadURL(`file://${__dirname}/../game/index.html`);
-				},
-			},
-			{
-				label:"選択行以降を実行",
-				accelerator: "Shift+F5",
-				click: async () => {
-					if(NLE.flag.playing) return;
-					NLE.reset();
-					// フラグ立てる
-					NLE.editor.playStart();
-					const activeEditor = NLE.editor.getActiveEditor();
-					const newLine = activeEditor.getCursorPosition().row;
-
-					await NLE.parser.skipProceedScenario(0, newLine - 1);
-
-					await ningloid.parser.playScenario(ningloid.parser.orderArray, newLine).catch((e) => {
-						$.tagError(e);
-						if(ningloid.config.develop.mode === true) console.error(e);
-					});
-					// フラグ消す
-					NLE.editor.playEnd();
-					// リセット
-					NLE.reset();
+					$("#playGameOnAnother").click();
 				},
 			},
 			{type: "separator"},
 			{
-				label:"リアルタイムプレビュー",
-				submenu: [
-					{
-						label: "オン",
-						type: "radio",
-						click(){
-						}
-					},
-					{
-						label: "オフ",
-						type: "radio",
-						click(){
-						}
-					}
-				]
+				label:"選択行以降を実行",
+				accelerator: "Shift+F5",
+				click(){
+					if(NLE.flag.playing) return;
+					$("#playGameOnThis").click();
+				}
 			},
+			{
+				label:"実行を停止",
+				click(){
+					$("#stopGameOnThis").click();
+				}
+			},
+			// {type: "separator"},
+			// {
+			// 	label:"リアルタイムプレビュー",
+			// 	submenu: [
+			// 		{
+			// 			label: "オン",
+			// 			type: "radio",
+			// 			click(){
+			// 			}
+			// 		},
+			// 		{
+			// 			label: "オフ",
+			// 			type: "radio",
+			// 			click(){
+			// 			}
+			// 		}
+			// 	]
+			// },
 		]
 	},
 	{
