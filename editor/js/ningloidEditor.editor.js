@@ -1,4 +1,4 @@
-/* global NLE: true, Editor: true */
+/* global NLE: true, Editor: true, remote: true */
 
 ningloidEditor.editor = {
 	// 使用中のエディタオブジェクト一覧
@@ -11,7 +11,7 @@ ningloidEditor.editor = {
 	// ● 初期処理系
 	// ================================================================
 	init(){
-		NLE.editor.tabObjects.firstKS = new EditorTab("../resources/data/scenario/first.ks");
+		this.tabObjects.firstKS = new EditorTab("../resources/data/scenario/first.ks");
 		// エディターのリアルタイム反映用イベントをセット
 		this.setKeyMouseEvent();
 
@@ -25,22 +25,61 @@ ningloidEditor.editor = {
 		return this.activeTabObject.getEditor();
 	},
 	// ================================================================
-	// ● 編集状態管理
+	// ● 実行状態管理
 	// ================================================================
 	editStart(){
 		NLE.flag.edit = true;
-		// 実行中/編集中 表示切り替え
-		$("#previewCondition").removeClass("playing error").addClass("editing");
+		// 編集中 表示切り替え
+		this.previewStop();
+		$("#previewCondition").find(".non-condition").switchClass("error", "editing", 0);
 		// ファイルタブの編集中設定
 		NLE.design.showEditMarkOnActiveTabLabel();
 	},
-	editEnd(){
+	editStop(){
 		NLE.flag.edit = false;
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").removeClass("editing error").addClass("playing");
+		$("#previewCondition").find(".non-condition").removeClass("editing");
 	},
-	editSaveDone(){
-		// ファイルタブの編集中設定
+	previewStart(){
+		// if(!NLE.flag.canPreview) return;
+		// 実行中/編集中 表示切り替え
+		$("#previewCondition").find(".non-condition").addClass("preview");
+	},
+	previewStop(){
+		// resolve解除
+		$("#clickLayer").click();
+		// 実行中/編集中 表示切り替え
+		$("#previewCondition").find(".non-condition").removeClass("preview");
+	},
+	errorStart(e){
+		NLE.flag.error = true;
+		$("#previewCondition").find(".non-condition").addClass("error");
+		// エラー出力
+		$.tagError(e);
+		if(ningloid.config.develop.mode === true) console.error(e);
+	},
+	errorEnd(e){
+		NLE.flag.error = false;
+		$("#previewCondition").find(".non-condition").removeClass("error");
+	},
+	playStart(){
+		NLE.flag.playing = true;
+		// 実行中/編集中 表示切り替え
+		$("#previewCondition").find(".playing").show();
+		$("body").append("<div id='wrapperOnPlayingGame'></div>");
+		$("#wrapperOnPlayingGame").on("click", () => {
+			ningloid.stopResolve();
+		});
+	},
+	playEnd(){
+		NLE.flag.playing = false;
+		// 実行中/編集中 表示切り替え
+		$("#previewCondition").find(".playing").hide();
+		$("#wrapperOnPlayingGame").remove();
+	},
+
+	completeSave(){
+		// ファイルタブの編集中解除
 		NLE.design.removeEditMarkOnActiveTabLabel();
 	},
 
@@ -63,15 +102,6 @@ ningloidEditor.editor = {
 		// エディタ操作のキーバインド
 		$("#editor").on({
 			keydown: (e) => {
-				if(e.ctrlKey){
-					switch(e.keyCode){
-						// Ctrl + S
-						case 83:
-							// 保存
-							$("#editSave").click();
-							break;
-					}
-				}
 				// 伝播を止めて、ゲームのキーバインドを実行させないようにする
 				e.stopPropagation();
 			},
@@ -82,10 +112,9 @@ ningloidEditor.editor = {
 					case 38:
 					case 39:
 					case 40: {
-						const activeEditor = this.getActiveEditor();
-						const newLine = activeEditor.getCursorPosition().row;
+						const newLine = this.activeTabObject.getLine();
 						if(NLE.parser.currentLine != newLine){
-							NLE.parser.playFocusSectionOrder();
+							this.activeTabObject.preview();
 						}
 						break;
 					}
@@ -96,51 +125,140 @@ ningloidEditor.editor = {
 			}
 		});
 		$("#editorArea").on({
-			mousedown: () => {
-				NLE.parser.playFocusSectionOrder();
+			click: () => {
+				this.activeTabObject.preview();
 			},
 		}, ".ace_scroller");
 
-		// ファイルオープンボタンのクリックイベント
-		$("#editLoad").on("click", () => {
-			// input要素をクリック
-			$("#editFileOpener").get(0).click();
-		});
-		// input:file要素にて、ファイル選択が行われたときのイベント
-		$("#editFileOpener").on("change", function(){
-			// 選択されたファイルの絶対パス
-			let filePath = this.files[0].path;
-			filePath = filePath.replace(/\\/g, "/");
-			filePath = `../resources${filePath.split("/resources")[1]}`;
-
-			// 既に存在する場合
-			const fileName = filePath.split("scenario/")[1];
-			const key = `${fileName.split(".")[0]}KS`;
-			if(NLE.editor.tabObjects[key]){
-				$("#editTabLabel").find(`.${key}`).click();
-			}
-			else NLE.editor.tabObjects[key] = new EditorTab(filePath);
-		});
-
-		// 保存ボタンのクリックイベント
-		$("#editSave").on("click", () => {
-			// エラーフラグは消す
-			NLE.flag.error = false;
-
-			// テキストデータの保存
-			this.activeTabObject.save(() => {
-				// 時限式ゲーム実行が行われた場合は、以下のゲーム実行処理を行わない
-				if(this.timer == "done") return;
-				// 時限式ゲーム実行のタイマーが待機状態ならば、タイマーを消す
-				else if(this.timer){
-					clearTimeout(this.timer);
-					this.timer = "done";
+		// = = = = = = = = = = = = = = =
+		// 新規タブボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonNewTab").on("click", () => {
+			for(let i = 0; ; i++){
+				if(!this.tabObjects[`untitled${i}`]){
+					this.tabObjects[`untitled${i}`] = new EditorTab(`untitled${i}`);
+					break;
 				}
-				// ゲーム画面と、シナリオデータのリセット
-				NLE.reset();
-				// 命令実行
-				NLE.parser.playFocusSectionOrder();
+			}
+		});
+
+		// = = = = = = = = = = = = = = =
+		// ファイルオープンボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonFileOpen").on("click", () => {
+			const Dialog = remote.dialog;
+			Dialog.showOpenDialog(null, {
+				properties: ["openFile"],
+				title: "開く",
+				defaultPath: ".",
+				filters: [
+					{name: "シナリオファイル", extensions: ["ks"]},
+				]
+			}, (filePaths) => {
+				if(!filePaths) return;
+				// 選択されたファイルの相対パス
+				const filePath = `../resources${filePaths[0].replace(/\\/g, "/").split("/resources")[1]}`;
+				// ファイル名と、タブに与えるクラス名
+				const fileName = filePath.split("scenario/")[1];
+				const key = fileName.replace(".ks", "KS");
+				// 既に存在する場合
+				if(this.tabObjects[key]){
+					$("#editTabLabel").find(`.${key}`).mousedown();
+				}
+				else this.tabObjects[key] = new EditorTab(filePath);
 			});
+		});
+
+		// = = = = = = = = = = = = = = =
+		// 保存ボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonOverwriteSave").on("click", () => {
+			// 空白タブの保存時
+			if(!this.activeTabObject.url.includes("/")){
+				// 「名前をつけて保存」ダイアログ
+				const Dialog = remote.dialog;
+				Dialog.showSaveDialog(null, {
+					title: "名前をつけて保存",
+					defaultPath: ".",
+					filters: [
+						{name: "シナリオファイル", extensions: ["ks"]},
+					]
+				}, (savedFiles) => {
+					const Tab = this.activeTabObject;
+					// タブの対象ファイルURLを設定
+					const filePath = Tab.url = `../resources${savedFiles.replace(/\\/g, "/").split("/resources")[1]}`;
+					// タブラベルの表示切り替え
+					const fileName = filePath.split("scenario/")[1];
+					const oldKey = Tab.fileName;
+					const newKey = fileName.replace(".ks", "KS");
+					Tab.$parent.switchClass(oldKey, newKey, 0);
+					$("#editTabLabel").find(`.${oldKey}`).switchClass(oldKey, newKey, 0).find(".fileName").text(fileName);
+					Tab.fileName = fileName;
+					// タブオブジェクト保管（key変更）
+					this.tabObjects[newKey] = this.tabObjects[oldKey];
+				});
+			}
+			// 通常保存
+			else{
+				// テキストデータの保存
+				this.activeTabObject.save(() => {
+					// 時限式ゲーム実行が行われた場合は、以下のゲーム実行処理を行わない
+					if(this.timer == "done") return;
+					// 時限式ゲーム実行のタイマーが待機状態ならば、タイマーを消す
+					else if(this.timer){
+						clearTimeout(this.timer);
+						this.timer = "done";
+					}
+					// ゲーム画面と、シナリオデータのリセット
+					NLE.reset();
+					// 命令実行
+					this.activeTabObject.preview();
+				});
+			}
+			// focus
+			this.activeTabObject.focus();
+		});
+
+		// = = = = = = = = = = = = = = =
+		// 別名保存ボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonAnotherSave").on("click", () => {
+			const Dialog = remote.dialog;
+			Dialog.showSaveDialog(null, {
+				title: "別名で保存",
+				defaultPath: ".",
+				filters: [
+					{name: "シナリオファイル", extensions: ["ks"]},
+				]
+			}, (savedFiles) => {
+				// キャンセル時
+				if(!savedFiles) return;
+				// タブの対象ファイルURLを設定
+				const filePath = `../resources${savedFiles.replace(/\\/g, "/").split("/resources")[1]}`;
+				// 別名保存
+				this.activeTabObject.save(() => {
+					// ファイルからタブ作成
+					const fileName = filePath.split("scenario/")[1];
+					const key = fileName.replace(".ks", "KS");
+					this.tabObjects[key] = new EditorTab(filePath);
+				}, filePath);
+			});
+		});
+
+		// = = = = = = = = = = = = = = =
+		// 元に戻すボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonUndo").on("click", () => {
+			this.activeTabObject.undo();
+			this.activeTabObject.focus();
+		});
+
+		// = = = = = = = = = = = = = = =
+		// やり直しボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#editButtonRedo").on("click", () => {
+			this.activeTabObject.redo();
+			this.activeTabObject.focus();
 		});
 	},
 };
@@ -149,24 +267,31 @@ class EditorTab{
 	constructor(url){
 		// 保存時など、ファイルアクセスのためのURLを保管
 		this.url = url;
-		// 新規タブ作成
-		this.createNewTabByFile(url);
+		this.fileName = url.includes("scenario/") ? url.split("scenario/")[1] : url;
+		// シナリオファイルからタブ作成時
+		if(url.includes("/")) this.createNewTabByFile(url);
+		// 新規空白タブ生成時
+		else this.createNewBlankTab(url);
 		// 編集時のイベント付与
 		this.onChange(() => {
 			// 編集が繰り返されるうちは、↓のタイマーをリセットする
 			if(NLE.editor.timer !== "done") clearTimeout(NLE.editor.timer);
 
-			// 編集中フラグをtrueにし、ゲームの実行を止める
+			// ■編集中フラグをtrueにし、ゲームの実行を止める
 			NLE.editor.editStart();
 			// 編集から一定時間が経過したらシナリオ実行
 			NLE.editor.timer = setTimeout(() => {
-				if(NLE.flag.edit === false || NLE.flag.error === true) return;
+				if(NLE.flag.edit === false) return;
+				if(NLE.flag.error === true){
+					NLE.editor.editStop();
+					return;
+				}
 				// ゲーム画面と、シナリオデータのリセット
 				NLE.reset();
 
 				// 命令実行（行数などが変わるので、初期ロードから実行させるため、currentLineを更新する）
-				NLE.parser.currentLine = this.Editor.getCursorPosition().row;
-				NLE.parser.playFocusSectionOrder();
+				NLE.parser.currentLine = 0;
+				this.preview();
 
 				// タイマーを消す
 				NLE.editor.timer = "done";
@@ -179,7 +304,7 @@ class EditorTab{
 	// エディタを作成する
 	createNewTab(){
 		// エディタエリア作成
-		const $target = this.$parent = $("<div class='newEditorTab editorInputArea'></div>");
+		const $target = this.$parent = $("<div class='editorInputArea'></div>");
 		$("#editorArea").append($target);
 		// エディタ作成
 		const Editor = this.Editor = ace.edit($target.get(0));
@@ -193,26 +318,39 @@ class EditorTab{
 		Editor.getSession().setMode(new KAGMode());
 		Editor.setTheme(`ace/theme/kag-${NLE.design.colorTheme}`);
 	}
+	// 空白の新規タブを作成する
+	createNewBlankTab(tabName){
+		// タブの生成
+		this.createNewTab();
+		// エディタエリアに判別クラスを与える
+		this.$parent.addClass(tabName);
+
+		// ファイル名をタブに表示する
+		NLE.design.appendTabLabel(tabName);
+
+		// 保存済み状態とする
+		NLE.editor.completeSave();
+		// アクティブなエディタとして設定
+		this.activate();
+	}
 	// シナリオファイルを読み取って、エディタに表示する
 	createNewTabByFile(url){
 		// タブの生成
 		this.createNewTab();
 		// エディタエリアに判別クラスを与える
-		const fileName = url.split("scenario/")[1];
-		const key = `${fileName.split(".")[0]}KS`;
-		this.$parent.removeClass("newEditorTab").addClass(key);
+		const key = this.fileName.replace(".ks", "KS");
+		this.$parent.addClass(key);
 
 		// ファイル名をタブに表示する
-		NLE.design.appendTabLabel(fileName);
+		NLE.design.appendTabLabel(this.fileName);
 		// ファイルリード
 		$.ajax({
 			url: url,
 			success: (data) => {
 				// 取得したテキストをエディタに表示
 				this.Editor.setValue(data, -1);
-				// 編集中フラグをfalse、保存済み状態とする
-				NLE.editor.editEnd();
-				NLE.editor.editSaveDone();
+				// 保存済み状態とする
+				NLE.editor.completeSave();
 				// アクティブなエディタとして設定
 				this.activate();
 				// 初回表示時のエディタundoスタックは不要なので消す
@@ -236,6 +374,11 @@ class EditorTab{
 	getSession(){
 		return this.Editor.getSession();
 	}
+	// 現在のカーソル行番号を返す
+	getLine(){
+		return this.Editor.getCursorPosition().row;
+	}
+	// 表示中のファイルのURLを返す
 	getFileUrl(){
 		return this.url;
 	}
@@ -243,6 +386,14 @@ class EditorTab{
 	// ================================================================
 	// ● 編集処理系
 	// ================================================================
+	// undo
+	undo(){
+		this.Editor.undo();
+	}
+	// undo
+	redo(){
+		this.Editor.redo();
+	}
 	// undoスタック消去
 	resetUndoStack(){
 		const manager = this.Editor.getSession().getUndoManager();
@@ -252,14 +403,17 @@ class EditorTab{
 	onChange(func){
 		this.Editor.on("change", (e) => func(e));
 	}
-	// 保存完了
-	save(cb){
+	// 保存
+	save(cb, url){
 		const fs = require("fs");
 		// ファイルに保存
-		fs.writeFile(this.url, this.Editor.getValue(), () => {
-			// 編集中フラグをfalse、保存済み状態とする
-			NLE.editor.editEnd();
-			NLE.editor.editSaveDone();
+		fs.writeFile(url || this.url, this.Editor.getValue(), () => {
+			// ■編集中フラグをfalse、保存済み状態とする
+			if(!url){
+				NLE.editor.editStop();
+				NLE.editor.errorEnd();
+				NLE.editor.completeSave();
+			}
 			if(cb) cb();
 		});
 	}
@@ -280,20 +434,40 @@ class EditorTab{
 		this.$parent.show();
 
 		// エディタをフォーカスする
-		this.$parent.find("textarea")[0].focus();
+		this.focus();
 	}
 	// アクティブ解除（他のタブをアクティブにするため、ここのエディタタブを隠す）
 	unactivate(){
 		this.$parent.hide();
+	}
+	// エディタをフォーカスする
+	focus(){
+		this.$parent.find("textarea")[0].focus();
 	}
 	// 消去（閉じる）
 	remove(){
 		this.Editor.destroy();
 		this.$parent.remove();
 		// タブ一覧オブジェクトから消去
-		const fileName = this.url.split("scenario/")[1];
-		const key = `${fileName.split(".")[0]}KS`;
+		const key = this.fileName.replace(".ks", "KS");
 		delete NLE.editor.tabObjects[key];
 	}
 
+	// ================================================================
+	// ● プレビュー系
+	// ================================================================
+	preview(){
+		// 編集中、エラー発生中は処理をしない（保存で編集状態が解除される）
+		if(NLE.flag.edit || NLE.flag.error) return;
+
+		// プレビューフラグがtrueでないと処理しない
+		if(!NLE.flag.canPreview) return;
+
+		// プレビュー実行表示
+		NLE.editor.previewStart();
+
+		// 現在のフォーカス行
+		const newLine = this.getLine();
+		NLE.parser.playFocusSectionOrder(newLine);
+	}
 }
