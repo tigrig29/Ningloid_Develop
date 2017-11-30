@@ -10,69 +10,86 @@ body{
 /*================================================================*/
 /* ● ゲームエリア*/
 /*================================================================*/
+#gameContainer{
+	left: 0;
+	top: 0;
+	height: 100%;
+	position: absolute;
+	background: gray;
+	z-index: 20;
+}
 #game{
 	position: absolute;
 	overflow: hidden;
 	background: black;
-	z-index: 20;
 }
 
 /*==================================*/
-/* ● リアルタイムプレビュー実行状態表示エリア */
+/* ● ゲームコントロールエリア */
 /*==================================*/
-#previewCondition div{
+#gameControl{
 	top: 0;
+	left: 0;
+	width: 100%;
+}
+/* ボタン */
+#gameControl i{
+	font-size: 36px;
+	cursor: pointer;
+}
+/* リアルタイムプレビュー実行状態表示エリア */
+.previewCondition{
 	right: 0;
+	top: 0;
 	width: 70px;
 	height: 40px;
 	margin: 5px;
 	border-radius: 20px;
 	font-weight: bold;
 	position: absolute;
-	z-index: 999;
 }
-#previewCondition .non-condition{
+.previewCondition.non-condition{
 	background: gray;
 }
-#previewCondition .non-condition:after{
+.previewCondition.non-condition:after{
 	left: 12px;
 	top: 9px;
 	content: "停止中";
 	position: relative;
 }
-#previewCondition .editing{
+.previewCondition.editing{
 	background: orange;
 }
-#previewCondition .editing:after{
+.previewCondition.editing:after{
 	left: 12px;
 	top: 9px;
 	content: "編集中";
 	position: relative;
 }
-#previewCondition .preview{
+.previewCondition.preview{
 	background: #2D2;
 }
-#previewCondition .preview:after{
+.previewCondition.preview:after{
 	left: 12px;
 	top: 9px;
 	font-size: 0.6em;
 	content: "プレビュー";
 	position: relative;
 }
-#previewCondition .error{
+.previewCondition.error{
 	background: #F33;
 }
-#previewCondition .error:after{
+.previewCondition.error:after{
 	left: 12px;
 	top: 9px;
 	content: "エラー";
 	position: relative;
 }
 
-#previewCondition .playing{
+.previewCondition.playing{
 	background: #69F;
 }
-#previewCondition .playing:after{
+.previewCondition.playing:after{
 	left: 12px;
 	top: 9px;
 	content: "実行中";
@@ -200,13 +217,6 @@ body{
 
 
 
-
-#resourceManager{
-	top: 70%;
-	width: 70%;
-	height: 30%;
-	position: absolute;
-}
 
 #wrapperOnPlayingGame{
 	width: 100%;

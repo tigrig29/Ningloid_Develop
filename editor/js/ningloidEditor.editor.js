@@ -1,4 +1,4 @@
-/* global NLE: true, Editor: true, remote: true */
+/* global NLE: true, Editor: true, remote: true, BrowserWindow: true */
 
 ningloidEditor.editor = {
 	// 使用中のエディタオブジェクト一覧
@@ -31,42 +31,46 @@ ningloidEditor.editor = {
 		NLE.flag.edit = true;
 		// 編集中 表示切り替え
 		this.previewStop();
-		$("#previewCondition").find(".non-condition").switchClass("error", "editing", 0);
+		$("#gameControl").find(".non-condition").switchClass("error", "editing", 0);
 		// ファイルタブの編集中設定
 		NLE.design.showEditMarkOnActiveTabLabel();
 	},
 	editStop(){
 		NLE.flag.edit = false;
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").find(".non-condition").removeClass("editing");
+		$("#gameControl").find(".non-condition").removeClass("editing");
 	},
 	previewStart(){
 		// if(!NLE.flag.canPreview) return;
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").find(".non-condition").addClass("preview");
+		$("#gameControl").find(".non-condition").addClass("preview");
 	},
 	previewStop(){
 		// resolve解除
 		$("#clickLayer").click();
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").find(".non-condition").removeClass("preview");
+		$("#gameControl").find(".non-condition").removeClass("preview");
 	},
 	errorStart(e){
 		NLE.flag.error = true;
-		$("#previewCondition").find(".non-condition").addClass("error");
+		$("#gameControl").find(".non-condition").addClass("error");
 		// エラー出力
 		$.tagError(e);
 		if(ningloid.config.develop.mode === true) console.error(e);
 	},
 	errorEnd(e){
 		NLE.flag.error = false;
-		$("#previewCondition").find(".non-condition").removeClass("error");
+		$("#gameControl").find(".non-condition").removeClass("error");
 	},
 	playStart(){
 		NLE.flag.playing = true;
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").find(".playing").show();
+		$("#gameControl").find(".playing").show();
+		// 停止ボタンを赤くする
+		$("#stopGameOnThis").find("i").css("color", "#C00");
+		// エディタ編集不可にする
 		$("body").append("<div id='wrapperOnPlayingGame'></div>");
+		// 停止処理
 		$("#wrapperOnPlayingGame").on("click", () => {
 			ningloid.stopResolve();
 		});
@@ -74,7 +78,10 @@ ningloidEditor.editor = {
 	playEnd(){
 		NLE.flag.playing = false;
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").find(".playing").hide();
+		$("#gameControl").find(".playing").hide();
+		// 停止ボタンを灰色にする
+		$("#stopGameOnThis").find("i").css("color", "#555");
+		// エディタ隠しを消す
 		$("#wrapperOnPlayingGame").remove();
 	},
 
@@ -260,6 +267,43 @@ ningloidEditor.editor = {
 			this.activeTabObject.redo();
 			this.activeTabObject.focus();
 		});
+
+		// = = = = = = = = = = = = = = =
+		// ゲーム起動ボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#playGameOnAnother").on("click", () => {
+			const windowOptions = require("../game/window_options.js");
+			let win = new BrowserWindow(windowOptions);
+			win.loadURL(`file://${__dirname}/../game/index.html`);
+		});
+
+		// = = = = = = = = = = = = = = =
+		// 選択行以降を実行するボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#playGameOnThis").on("click", async () => {
+			if(NLE.flag.playing) return;
+			NLE.reset();
+			// フラグ立てる
+			this.playStart();
+			const activeEditor = this.getActiveEditor();
+			const newLine = activeEditor.getCursorPosition().row;
+
+			await NLE.parser.skipProceedScenario(0, newLine - 1);
+
+			await ningloid.parser.playScenario(ningloid.parser.orderArray, newLine).catch((e) => {
+				$.tagError(e);
+				if(ningloid.config.develop.mode === true) console.error(e);
+			});
+			// フラグ消す
+			this.playEnd();
+			// リセット
+			NLE.reset();
+		});
+
+		// = = = = = = = = = = = = = = =
+		// 停止ボタンのクリックイベント
+		// = = = = = = = = = = = = = = =
+		$("#stopGameOnThis").on("click", () => ningloid.stopResolve());
 	},
 };
 

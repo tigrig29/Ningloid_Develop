@@ -1,23 +1,17 @@
-/* global NLE: true, Editor: true */
+/* global NLE: true, Editor: true, remote: true */
 
 ningloidEditor.design = {
 	$editActive: null,
 	colorTheme: "dark",
 	init(){
 		this.setEditorStyle();
-		// リソースマネージャーエリアのtop, width固定
-		$("#resourceManager").css("top", $("#game").height());
-		$("#resourceManager").css("width", $("#game").width());
-			// リソースマネージャーエリアのheightを画面サイズ追従させる
-			$("#resourceManager").css("height", $("body").height() - $("#game").height());
+		this.setGameAreaStyle();
 
-		const remote = require("electron").remote;
 		const win = remote.getCurrentWindow();
 		win.on("resize", () => {
 			// エディタエリアのwidthを画面サイズ追従させる
 			this.setEditorStyle();
-			// リソースマネージャーエリアのheightを画面サイズ追従させる
-			$("#resourceManager").css("height", $("body").height() - $("#game").height());
+			this.setGameAreaStyle();
 		});
 
 		// ファイルタブスクローラーのイベント
@@ -130,6 +124,22 @@ ningloidEditor.design = {
 			"-webkit-transform": `scale(${scale})`,
 			"transform": `scale(${scale})`
 		});
+
+		this.setGameAreaStyle();
+	},
+
+	// ゲームエリアのサイズ、位置調整
+	setGameAreaStyle(){
+		const $container = $("#gameContainer");
+		const $game = $("#game");
+		$container.css("width", $game.width());
+		$game.css({
+			top: ($container.height() - $game.height()) / 2
+		});
+
+		// 最小サイズを固定
+		const win = remote.getCurrentWindow();
+		win.setMinimumSize($container.width(), $game.height() + $("#gameControl").height());
 	},
 
 	// ================================================================
