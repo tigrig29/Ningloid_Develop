@@ -14,12 +14,13 @@ body{
 	position: absolute;
 	overflow: hidden;
 	background: black;
+	z-index: 20;
 }
 
 /*==================================*/
 /* ● リアルタイムプレビュー実行状態表示エリア */
 /*==================================*/
-#previewCondition{
+#previewCondition div{
 	top: 0;
 	right: 0;
 	width: 70px;
@@ -28,32 +29,53 @@ body{
 	border-radius: 20px;
 	font-weight: bold;
 	position: absolute;
+	z-index: 999;
 }
-#previewCondition.editing{
+#previewCondition .non-condition{
+	background: gray;
+}
+#previewCondition .non-condition:after{
+	left: 12px;
+	top: 9px;
+	content: "停止中";
+	position: relative;
+}
+#previewCondition .editing{
 	background: orange;
 }
-#previewCondition.editing:after{
+#previewCondition .editing:after{
 	left: 12px;
 	top: 9px;
 	content: "編集中";
 	position: relative;
 }
-#previewCondition.playing{
-	background: #69F;
+#previewCondition .preview{
+	background: #2D2;
 }
-#previewCondition.playing:after{
+#previewCondition .preview:after{
 	left: 12px;
 	top: 9px;
-	content: "実行中";
+	font-size: 0.6em;
+	content: "プレビュー";
 	position: relative;
 }
-#previewCondition.error{
+#previewCondition .error{
 	background: #F33;
 }
-#previewCondition.error:after{
+#previewCondition .error:after{
 	left: 12px;
 	top: 9px;
 	content: "エラー";
+	position: relative;
+}
+
+#previewCondition .playing{
+	background: #69F;
+}
+#previewCondition .playing:after{
+	left: 12px;
+	top: 9px;
+	content: "実行中";
 	position: relative;
 }
 
@@ -65,7 +87,7 @@ body{
 	position: absolute;
 }
 #editorArea{
-	top: 90px;/* 上の要素の合計height */
+	top: 75px;/* 上の要素の合計height */
 	width: 100%;
 	position: absolute;
 }
@@ -77,18 +99,15 @@ body{
 /*==================================*/
 /* ● ボタン配置エリア */
 /*==================================*/
-#editButton{
-	height: 55px;
+#editButtonArea{
+	height: 40px;
+	font-size: 23px;
 }
-#editButton > div{
-	float: left;
-	margin: 10px;
+#editButtonArea i{
 	cursor: pointer;
 }
-#editButton:after{
-	content: "";
-	clear: both;
-	display: block;
+#editButtonArea .separator{
+	border: dotted 1px black;
 }
 
 /*==================================*/
@@ -104,7 +123,7 @@ body{
 }
 /* 左右ボタン */
 #editTabLabelArrowArea{
-	top: 55px;
+	top: 40px;
 	left: 0px;
 	width: 55px;
 	height: 35px;
@@ -134,7 +153,7 @@ body{
 /* ファイルタブ本体 */
 #editTabLabel{
 	left: 55px;
-	top: 55px;
+	top: 40px;
 	height: 35px;
 	margin: 0px;
 	position: absolute;
@@ -146,8 +165,6 @@ body{
 	height: 0;
 }
 .tabLabel{
-	top: 7.5px;
-	padding: 7.5px 10px;
 	cursor: default;
 	position: relative;
 }
@@ -155,32 +172,31 @@ body{
 .tabLabelCloseButton{
 	margin-left: 5px;
 }
-.tabLabelCloseButton > .fa{
+.tabLabelCloseButton .fa{
 	font-size: 10px;
 }
 .tabLabelEditButton{
 	margin-left: 5px;
 	display: none;
 }
-.tabLabelEditButton > .fa{
+.tabLabelEditButton .fa{
 	font-size: 10px;
 }
 /*ここからカラーテーマ*/
-.editorTheme-dark > .tabLabel:hover{
+.editorTheme-dark .tabLabel:hover{
 	border-bottom: 2px #258CA4 solid;
 }
-.editorTheme-dark > .tabLabel.active{
+.editorTheme-dark .tabLabel.active{
 	color: #FFF;
 	border-bottom: 2px #00BCD4 solid;
 }
-.editorTheme-simple > .tabLabel:hover{
+.editorTheme-simple .tabLabel:hover{
 	border-bottom: 2px #258CA4 solid;
 }
-.editorTheme-simple > .tabLabel.active{
+.editorTheme-simple .tabLabel.active{
 	color: #000;
 	border-bottom: 2px #00BCD4 solid;
 }
-
 
 
 
@@ -189,5 +205,13 @@ body{
 	top: 70%;
 	width: 70%;
 	height: 30%;
+	position: absolute;
+}
+
+#wrapperOnPlayingGame{
+	width: 100%;
+	height: 100%;
+	background: rgba(100, 100, 100, 0.7);
+	z-index: 10;
 	position: absolute;
 }
