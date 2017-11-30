@@ -40,10 +40,12 @@ ningloidEditor.design = {
 		$("#editTabLabel").on({
 			mousedown: (self) => {
 				const $self = $(self.currentTarget);
+				// アクティブ状態のタブに対してならば、何もしない
+				if($self.attr("class") == this.$editActive.attr("class")) return;
 				// activeの更新（タブラベルのデザイン）
 				this.activateTabLabel($self);
 				// activeの更新（エディタエリアの表示）
-				const key = $self.attr("class").replace(/tabLabel|active|\s/g, "");
+				const key = $self.attr("class").replace(/tabLabel|old-active|active|\s/g, "");
 				NLE.editor.tabObjects[key].activate();
 			},
 			mouseenter: (e) => {
@@ -61,7 +63,7 @@ ningloidEditor.design = {
 		$("#editTabLabel").on({
 			click: (e) => {
 				const $target = $(e.currentTarget).parent();
-				const key = $target.attr("class").replace(/tabLabel|active|\s/g, "");
+				const key = $target.attr("class").replace(/tabLabel|old-active|active|\s/g, "");
 				// 編集中の場合
 				if($target.attr("editing") == "true"){
 					$.confirm({
@@ -95,6 +97,9 @@ ningloidEditor.design = {
 				}
 				else this.removeTabLabel($target);
 
+				e.stopPropagation();
+			},
+			mousedown: (e) => {
 				e.stopPropagation();
 			}
 		}, ".tabLabelCloseButton");
@@ -169,7 +174,7 @@ ningloidEditor.design = {
 	 * @param  {String} fileName ファイル名
 	 */
 	appendTabLabel(fileName){
-		const tabLabelId = `${fileName.split(".")[0]}KS`;
+		const tabLabelId = fileName.replace(".ks", "KS");
 		// 既に開いている場合
 		if($("#editTabLabel").find(`.${tabLabelId}`).length !== 0){
 			// タブのアクティブ化
@@ -177,7 +182,8 @@ ningloidEditor.design = {
 		}
 		else{
 			// タブの生成
-			const $tabLabel = $(`<td class="tabLabel ${tabLabelId}">${fileName}</td>`);
+			const $tabLabel = $(`<td class="tabLabel ${tabLabelId}"></td>`);
+			$tabLabel.append(`<span class="fileName">${fileName.includes(".ks") ? fileName : "untitled"}</span>`);
 			// 編集中/× ボタン
 			const $tabLabelCloseButton = $("<span class='tabLabelCloseButton'><i class='fa fa-close'></i></span>");
 			const $tabLabelEditButton = $("<span class='tabLabelEditButton'><i class='fa fa-pencil'></i></span>");
@@ -213,8 +219,13 @@ ningloidEditor.design = {
 	 * @param  {$Object} $target アクティブ化するファイルタブのjQueryオブジェクト
 	 */
 	activateTabLabel($target){
-		if(this.$editActive) this.$editActive.removeClass("active");
+		if(this.$editActive){
+			// アクティブクラス切り替え
+			$("#editTabLabel").find(".old-active").removeClass("old-active");
+			this.$editActive.switchClass("active", "old-active", 0);
+		}
 		this.$editActive = $target.addClass("active");
+
 		// 対象のタブがエリアの端からはみ出している場合、見える位置までスクロールする
 		// 左はみ出し
 		const leftOverPixel = $target.offset().left - ($("#game").width() + $("#editTabLabelArrowArea").width());
@@ -224,15 +235,16 @@ ningloidEditor.design = {
 		if(rightOverPixel > 0) $("#editTabLabel")[0].scrollLeft += rightOverPixel;
 	},
 	removeTabLabel($target){
-		const key = $target.attr("class").replace(/tabLabel|active|\s/g, "");
+		const key = $target.attr("class").replace(/tabLabel|old-active|active|\s/g, "");
 		// エディタの削除
 		NLE.editor.tabObjects[key].remove();
 		// タブラベルの削除
 		$target.remove();
-		// 他のタブが存在している場合
-		if(Object.keys(NLE.editor.tabObjects).length != 0){
+		// 他のタブが存在していて、アクティブタグが存在しない場合
+		if(Object.keys(NLE.editor.tabObjects).length != 0 && $("#editTabLabel").find(".active").length == 0){
 			// フォーカスする（フォーカスによりリセット実行される）
-			$("#editTabLabel").find(`.${Object.keys(NLE.editor.tabObjects)[0]}`).mousedown();
+			if($("#editTabLabel").find(".old-active").length != 0) $("#editTabLabel").find(".old-active").mousedown();
+			else $("#editTabLabel").find(".tabLabel").eq(0).mousedown();
 		}
 		// リセットのみ実行
 		else NLE.reset();

@@ -14,21 +14,21 @@ const template = [
 				label: "新規作成",
 				accelerator: "CommandOrControl+N",
 				click(){
-
+					$("#editButtonNewTab").click();
 				}
 			},
 			{
 				label: "開く",
 				accelerator: "CommandOrControl+O",
 				click(){
-
+					$("#editButtonFileOpen").click();
 				}
 			},
 			{
 				label: "閉じる",
 				accelerator: "CommandOrControl+W",
 				click(){
-
+					$("#editTabLabel").find(".active").find(".tabLabelCloseButton").click();
 				}
 			},
 			{type: "separator"},
@@ -36,14 +36,14 @@ const template = [
 				label: "上書き保存",
 				accelerator: "CommandOrControl+S",
 				click(){
-
+					$("#editButtonOverwriteSave").click();
 				}
 			},
 			{
-				label: "名前をつけて保存",
+				label: "別名で保存",
 				accelerator: "CommandOrControl+Shift+S",
 				click(){
-
+					$("#editButtonAnotherSave").click();
 				}
 			},
 		]
@@ -53,11 +53,17 @@ const template = [
 		submenu: [
 			{
 				label: "元に戻す",
-				role: "undo"
+				role: "undo",
+				click(){
+					$("#editButtonUndo").click();
+				}
 			},
 			{
 				label: "やり直す",
-				role: "redo"
+				role: "redo",
+				click(){
+					$("#editButtonRedo").click();
+				}
 			},
 			{type: "separator"},
 			{
@@ -177,6 +183,47 @@ const template = [
 					let win = new BrowserWindow(windowOptions);
 					win.loadURL(`file://${__dirname}/../game/index.html`);
 				},
+			},
+			{
+				label:"選択行以降を実行",
+				accelerator: "Shift+F5",
+				click: async () => {
+					if(NLE.flag.playing) return;
+					NLE.reset();
+					// フラグ立てる
+					NLE.editor.playStart();
+					const activeEditor = NLE.editor.getActiveEditor();
+					const newLine = activeEditor.getCursorPosition().row;
+
+					await NLE.parser.skipProceedScenario(0, newLine - 1);
+
+					await ningloid.parser.playScenario(ningloid.parser.orderArray, newLine).catch((e) => {
+						$.tagError(e);
+						if(ningloid.config.develop.mode === true) console.error(e);
+					});
+					// フラグ消す
+					NLE.editor.playEnd();
+					// リセット
+					NLE.reset();
+				},
+			},
+			{type: "separator"},
+			{
+				label:"リアルタイムプレビュー",
+				submenu: [
+					{
+						label: "オン",
+						type: "radio",
+						click(){
+						}
+					},
+					{
+						label: "オフ",
+						type: "radio",
+						click(){
+						}
+					}
+				]
 			},
 		]
 	},

@@ -58,7 +58,10 @@
 
 <body style="overflow:hidden">
 	<div id="game">
-		<div id="previewCondition"></div>
+		<div id="previewCondition">
+			<div class="non-condition"></div>
+			<div class="playing" style="display:none"></div>
+		</div>
 		<div id="ningloidBase" unselectable="on" >
 			<div id="dummyWrapper" class="wrapper"></div>
 			<div id="canvasWrapper" class="wrapper"></div>
@@ -70,18 +73,25 @@
 	<div id="editor">
 		<div id="editButtonArea">
 			<table border="0" cellspacing="0" cellpadding="7.5">
+				<td id="editButtonNewTab">
+					<i class="fa fa-file-o" aria-hidden="true" title="新規作成(Ctrl+N)" style="font-size: 22px"></i>
+				</td>
 				<td id="editButtonFileOpen">
-					<input id="fileOpener" type="file" style="display: none">
 					<i class="fa fa-folder-open" aria-hidden="true" title="開く(Ctrl+O)"></i>
 				</td>
-				<td id="editButtonFileSave">
-					<i class="fa fa-floppy-o" aria-hidden="true" title="上書き保存(Ctrl+S)"></i>
+				<td><i class="separator"></i></td>
+				<td id="editButtonOverwriteSave">
+					<i class="fa fa-save" aria-hidden="true" title="上書き保存(Ctrl+S)"></i>
 				</td>
+				<td id="editButtonAnotherSave">
+					<i class="fa fa-folder-o" aria-hidden="true" title="別名で保存(Ctrl+Shift+S)"></i>
+				</td>
+				<td><i class="separator"></i></td>
 				<td id="editButtonUndo">
-					<i class="fa fa-undo" aria-hidden="true" title="元に戻す(Ctrl+Z)"></i>
+					<i class="fa fa-mail-reply" aria-hidden="true" title="元に戻す(Ctrl+Z)" style="font-size: 21px"></i>
 				</td>
 				<td id="editButtonRedo">
-					<i class="fa fa-repeat" aria-hidden="true" title="やり直し(Ctrl+Y)"></i>
+					<i class="fa fa-mail-forward" aria-hidden="true" title="やり直し(Ctrl+Y)" style="font-size: 21px"></i>
 				</td>
 			</table>
 		</div>

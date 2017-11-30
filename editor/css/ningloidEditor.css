@@ -14,12 +14,13 @@ body{
 	position: absolute;
 	overflow: hidden;
 	background: black;
+	z-index: 20;
 }
 
 /*==================================*/
 /* ● リアルタイムプレビュー実行状態表示エリア */
 /*==================================*/
-#previewCondition{
+#previewCondition div{
 	top: 0;
 	right: 0;
 	width: 70px;
@@ -28,32 +29,53 @@ body{
 	border-radius: 20px;
 	font-weight: bold;
 	position: absolute;
+	z-index: 999;
 }
-#previewCondition.editing{
+#previewCondition .non-condition{
+	background: gray;
+}
+#previewCondition .non-condition:after{
+	left: 12px;
+	top: 9px;
+	content: "停止中";
+	position: relative;
+}
+#previewCondition .editing{
 	background: orange;
 }
-#previewCondition.editing:after{
+#previewCondition .editing:after{
 	left: 12px;
 	top: 9px;
 	content: "編集中";
 	position: relative;
 }
-#previewCondition.playing{
-	background: #69F;
+#previewCondition .preview{
+	background: #2D2;
 }
-#previewCondition.playing:after{
+#previewCondition .preview:after{
 	left: 12px;
 	top: 9px;
-	content: "実行中";
+	font-size: 0.6em;
+	content: "プレビュー";
 	position: relative;
 }
-#previewCondition.error{
+#previewCondition .error{
 	background: #F33;
 }
-#previewCondition.error:after{
+#previewCondition .error:after{
 	left: 12px;
 	top: 9px;
 	content: "エラー";
+	position: relative;
+}
+
+#previewCondition .playing{
+	background: #69F;
+}
+#previewCondition .playing:after{
+	left: 12px;
+	top: 9px;
+	content: "実行中";
 	position: relative;
 }
 
@@ -83,6 +105,9 @@ body{
 }
 #editButtonArea i{
 	cursor: pointer;
+}
+#editButtonArea .separator{
+	border: dotted 1px black;
 }
 
 /*==================================*/
@@ -180,5 +205,13 @@ body{
 	top: 70%;
 	width: 70%;
 	height: 30%;
+	position: absolute;
+}
+
+#wrapperOnPlayingGame{
+	width: 100%;
+	height: 100%;
+	background: rgba(100, 100, 100, 0.7);
+	z-index: 10;
 	position: absolute;
 }
