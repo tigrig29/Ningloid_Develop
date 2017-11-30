@@ -25,32 +25,59 @@ ningloidEditor.editor = {
 		return this.activeTabObject.getEditor();
 	},
 	// ================================================================
-	// ● 編集状態管理
+	// ● 実行状態管理
 	// ================================================================
 	editStart(){
 		NLE.flag.edit = true;
-		// 実行中/編集中 表示切り替え
-		$("#previewCondition").switchClass("error preview", "editing", 0);
+		// 編集中 表示切り替え
+		this.previewStop();
+		$("#previewCondition").find(".non-condition").switchClass("error", "editing", 0);
 		// ファイルタブの編集中設定
 		NLE.design.showEditMarkOnActiveTabLabel();
 	},
-	editEnd(){
+	editStop(){
 		NLE.flag.edit = false;
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").switchClass("editing error", "preview", 0);
+		$("#previewCondition").find(".non-condition").removeClass("editing");
+	},
+	previewStart(){
+		// if(!NLE.flag.canPreview) return;
+		// 実行中/編集中 表示切り替え
+		$("#previewCondition").find(".non-condition").addClass("preview");
+	},
+	previewStop(){
+		// resolve解除
+		$("#clickLayer").click();
+		// 実行中/編集中 表示切り替え
+		$("#previewCondition").find(".non-condition").removeClass("preview");
+	},
+	errorStart(e){
+		NLE.flag.error = true;
+		$("#previewCondition").find(".non-condition").addClass("error");
+		// エラー出力
+		$.tagError(e);
+		if(ningloid.config.develop.mode === true) console.error(e);
+	},
+	errorEnd(e){
+		NLE.flag.error = false;
+		$("#previewCondition").find(".non-condition").removeClass("error");
 	},
 	playStart(){
 		NLE.flag.playing = true;
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").switchClass("preview editing error", "playing", 0);
+		$("#previewCondition").find(".playing").show();
 		$("body").append("<div id='wrapperOnPlayingGame'></div>");
+		$("#wrapperOnPlayingGame").on("click", () => {
+			ningloid.stopResolve();
+		});
 	},
 	playEnd(){
 		NLE.flag.playing = false;
 		// 実行中/編集中 表示切り替え
-		$("#previewCondition").switchClass("playing editing error", "preview", 0);
+		$("#previewCondition").find(".playing").hide();
 		$("#wrapperOnPlayingGame").remove();
 	},
+
 	completeSave(){
 		// ファイルタブの編集中解除
 		NLE.design.removeEditMarkOnActiveTabLabel();
@@ -85,10 +112,9 @@ ningloidEditor.editor = {
 					case 38:
 					case 39:
 					case 40: {
-						const activeEditor = this.getActiveEditor();
-						const newLine = activeEditor.getCursorPosition().row;
+						const newLine = this.activeTabObject.getLine();
 						if(NLE.parser.currentLine != newLine){
-							NLE.parser.playFocusSectionOrder();
+							this.activeTabObject.preview();
 						}
 						break;
 					}
@@ -100,7 +126,7 @@ ningloidEditor.editor = {
 		});
 		$("#editorArea").on({
 			click: () => {
-				NLE.parser.playFocusSectionOrder();
+				this.activeTabObject.preview();
 			},
 		}, ".ace_scroller");
 
@@ -147,8 +173,6 @@ ningloidEditor.editor = {
 		// 保存ボタンのクリックイベント
 		// = = = = = = = = = = = = = = =
 		$("#editButtonOverwriteSave").on("click", () => {
-			// エラーフラグは消す
-			NLE.flag.error = false;
 			// 空白タブの保存時
 			if(!this.activeTabObject.url.includes("/")){
 				// 「名前をつけて保存」ダイアログ
@@ -188,7 +212,7 @@ ningloidEditor.editor = {
 					// ゲーム画面と、シナリオデータのリセット
 					NLE.reset();
 					// 命令実行
-					NLE.parser.playFocusSectionOrder();
+					this.activeTabObject.preview();
 				});
 			}
 			// focus
@@ -253,17 +277,21 @@ class EditorTab{
 			// 編集が繰り返されるうちは、↓のタイマーをリセットする
 			if(NLE.editor.timer !== "done") clearTimeout(NLE.editor.timer);
 
-			// 編集中フラグをtrueにし、ゲームの実行を止める
+			// ■編集中フラグをtrueにし、ゲームの実行を止める
 			NLE.editor.editStart();
 			// 編集から一定時間が経過したらシナリオ実行
 			NLE.editor.timer = setTimeout(() => {
-				if(NLE.flag.edit === false || NLE.flag.error === true) return;
+				if(NLE.flag.edit === false) return;
+				if(NLE.flag.error === true){
+					NLE.editor.editStop();
+					return;
+				}
 				// ゲーム画面と、シナリオデータのリセット
 				NLE.reset();
 
 				// 命令実行（行数などが変わるので、初期ロードから実行させるため、currentLineを更新する）
-				NLE.parser.currentLine = this.Editor.getCursorPosition().row;
-				NLE.parser.playFocusSectionOrder();
+				NLE.parser.currentLine = 0;
+				this.preview();
 
 				// タイマーを消す
 				NLE.editor.timer = "done";
@@ -300,8 +328,7 @@ class EditorTab{
 		// ファイル名をタブに表示する
 		NLE.design.appendTabLabel(tabName);
 
-		// 編集中フラグをfalse、保存済み状態とする
-		NLE.editor.editEnd();
+		// 保存済み状態とする
 		NLE.editor.completeSave();
 		// アクティブなエディタとして設定
 		this.activate();
@@ -322,8 +349,7 @@ class EditorTab{
 			success: (data) => {
 				// 取得したテキストをエディタに表示
 				this.Editor.setValue(data, -1);
-				// 編集中フラグをfalse、保存済み状態とする
-				NLE.editor.editEnd();
+				// 保存済み状態とする
 				NLE.editor.completeSave();
 				// アクティブなエディタとして設定
 				this.activate();
@@ -348,6 +374,11 @@ class EditorTab{
 	getSession(){
 		return this.Editor.getSession();
 	}
+	// 現在のカーソル行番号を返す
+	getLine(){
+		return this.Editor.getCursorPosition().row;
+	}
+	// 表示中のファイルのURLを返す
 	getFileUrl(){
 		return this.url;
 	}
@@ -377,9 +408,10 @@ class EditorTab{
 		const fs = require("fs");
 		// ファイルに保存
 		fs.writeFile(url || this.url, this.Editor.getValue(), () => {
-			// 編集中フラグをfalse、保存済み状態とする
+			// ■編集中フラグをfalse、保存済み状態とする
 			if(!url){
-				NLE.editor.editEnd();
+				NLE.editor.editStop();
+				NLE.editor.errorEnd();
 				NLE.editor.completeSave();
 			}
 			if(cb) cb();
@@ -421,4 +453,21 @@ class EditorTab{
 		delete NLE.editor.tabObjects[key];
 	}
 
+	// ================================================================
+	// ● プレビュー系
+	// ================================================================
+	preview(){
+		// 編集中、エラー発生中は処理をしない（保存で編集状態が解除される）
+		if(NLE.flag.edit || NLE.flag.error) return;
+
+		// プレビューフラグがtrueでないと処理しない
+		if(!NLE.flag.canPreview) return;
+
+		// プレビュー実行表示
+		NLE.editor.previewStart();
+
+		// 現在のフォーカス行
+		const newLine = this.getLine();
+		NLE.parser.playFocusSectionOrder(newLine);
+	}
 }

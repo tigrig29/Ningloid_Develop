@@ -40,6 +40,8 @@ ningloidEditor.design = {
 		$("#editTabLabel").on({
 			mousedown: (self) => {
 				const $self = $(self.currentTarget);
+				// アクティブ状態のタブに対してならば、何もしない
+				if($self.attr("class") == this.$editActive.attr("class")) return;
 				// activeの更新（タブラベルのデザイン）
 				this.activateTabLabel($self);
 				// activeの更新（エディタエリアの表示）
@@ -218,6 +220,7 @@ ningloidEditor.design = {
 	 */
 	activateTabLabel($target){
 		if(this.$editActive){
+			// アクティブクラス切り替え
 			$("#editTabLabel").find(".old-active").removeClass("old-active");
 			this.$editActive.switchClass("active", "old-active", 0);
 		}

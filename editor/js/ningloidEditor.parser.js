@@ -11,10 +11,7 @@ ningloidEditor.parser = {
 	 * シナリオデータの「○○行から○○行までの区間」の命令を実行する
 	 * エディタ上でフォーカスを移動させた時に実行され、その際の区間は「以前のフォーカス行～現在のフォーカス行」とする
 	 */
-	playFocusSectionOrder(){
-		// 編集中、エラー発生中は処理をしない（保存で編集状態が解除される）
-		if(NLE.flag.edit || NLE.flag.error || NLE.flag.playing) return;
-
+	playFocusSectionOrder(newLine){
 		// 命令実行開始前に、残っているpromiseをクリアする
 		// ∵[l]タグなどが実行された後だとpromiseが残ってしまう
 		// ※また、jumpタグなどで通常のシナリオ実行が開始されてしまった場合にも、これにより強制終了できる
@@ -23,9 +20,6 @@ ningloidEditor.parser = {
 
 		// 以前のフォーカス行
 		const oldLine = this.currentLine;
-		// 現在のフォーカス行
-		const activeEditor = NLE.editor.getActiveEditor();
-		const newLine = activeEditor.getCursorPosition().row;
 
 		// 停止フラグ
 		if(NLE.flag.stop !== false){
@@ -132,10 +126,8 @@ ningloidEditor.parser = {
 
 			const stopFlag = await parser.executePluralOrders(order).catch((e) => {
 				// エラーフラグを立てることで、強制的に次の実行を止める（次の実行がなされるとエラーが重複する）
-				NLE.flag.error = true;
-				$("#previewCondition").removeClass("editing playing").addClass("error");
-				$.tagError(e);
-				if(ningloid.config.develop.mode === true) console.error(e);
+				NLE.editor.errorStart(e);
+				NLE.editor.previewStop();
 				return "stop";
 			});
 			if(stopFlag === "stop") return "stop";

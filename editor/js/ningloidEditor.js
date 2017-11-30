@@ -13,7 +13,15 @@ const ningloidEditor = {
 		// エラー発生状態を管理する
 		error: false,
 		// 編集状態（未保存状態）を管理する
-		edit: false,
+		editing: false,
+		// リアルタイムプレビュー実行状態を管理する
+		preview: false,
+		// エディタ上でのゲーム実行状態を管理する
+		playing: false,
+
+		// リアルタイムプレビュー許可状態を管理する
+		canPreview: true,
+
 		// [s]タグ等による処理停止状態
 		stop: false,
 	},
@@ -41,7 +49,6 @@ const ningloidEditor = {
 		this.tag.init();
 	},
 	reset(){
-		if(NLE.flag.playing) return;
 		// ゲーム画面のリセット
 		ningloid.resetGame();
 		// シナリオリセット（シナリオ全文を取得 → 命令配列化）
@@ -49,8 +56,11 @@ const ningloidEditor = {
 		ningloid.parser.loadScenario($.cloneArray(activeEditor.getSession().getDocument().$lines));
 		// 実行行数のリセット
 		NLE.parser.currentLine = -1;
-		NLE.editor.editEnd();
-		clearTimeout(NLE.editor.timer)
+		clearTimeout(NLE.editor.timer);
+		// 編集/実行状態解除
+		NLE.editor.previewStart();
+		NLE.editor.editStop();
+		NLE.editor.errorEnd();
 		// オートセーブデータを削除
 		ningloid.system.autoSave.clear();
 	},

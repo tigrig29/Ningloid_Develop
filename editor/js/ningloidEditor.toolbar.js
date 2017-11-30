@@ -207,6 +207,24 @@ const template = [
 					NLE.reset();
 				},
 			},
+			{type: "separator"},
+			{
+				label:"リアルタイムプレビュー",
+				submenu: [
+					{
+						label: "オン",
+						type: "radio",
+						click(){
+						}
+					},
+					{
+						label: "オフ",
+						type: "radio",
+						click(){
+						}
+					}
+				]
+			},
 		]
 	},
 	{
