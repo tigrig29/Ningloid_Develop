@@ -42,6 +42,8 @@ ningloidEditor.editor = {
 	},
 	previewStart(){
 		// if(!NLE.flag.canPreview) return;
+		// resolve解除
+		$("#clickLayer").click();
 		// 実行中/編集中 表示切り替え
 		$("#gameControl").find(".non-condition").addClass("preview");
 	},

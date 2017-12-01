@@ -535,6 +535,13 @@ ningloid.parser = {
 					if(!this[ningloid.config.message.showType]){
 						reject(`Error:Config.js<br>message.showType: ${ningloid.config.message.showType}は使用不可能な値です。「fade」か「clatter」を指定してください。`);	
 					}
+					// 先にテキストを追加（禁則処理を適応させるため）
+					let $text = "";
+					for(let i = 0; i < text.length; i++){
+						$text += `<span id="appendingText-${i}" class="appendingText" style="opacity: 0">${text[i]}</span>`;
+					}
+					$target.append($text);
+					// 表示処理
 					this[ningloid.config.message.showType](resolve, reject);
 				}
 			});
@@ -547,21 +554,29 @@ ningloid.parser = {
 		clatter(resolver, rejecter){
 			const text = this.text;
 			const $target = this.$target;
-			let currentChar = "";// 現在フェード表示中の１文字
 			// テキスト表示速度が0の場合
 			if(ningloid.config.message.textSpeed < 1){
-				// テキスト一括表示
-				$target.html(text);
+				// 空白とタブをエスケープ文字に変換する
+				const appendText = text.replace(/\s/g, "&nbsp;").replace(/\t/g, "&#009;");
+				// 既に追加していた文字列を削除
+				$target.find(".appendingText").remove();
+				// 新たに全文を追加し、表示アニメーション
+				$target.html(appendText);
+				// メッセージスキップフラグ消去
+				ningloid.flag.message.skip = false;
 				// テキスト表示中フラグを消し、次へ
 				ningloid.flag.message.append = false;
 				resolver();
 			}
 			// メッセージスキップ時
 			else if(ningloid.flag.message.skip === true){
-				currentChar = text.substring(this.index, text.length);
 				// 空白とタブをエスケープ文字に変換する
-				currentChar = currentChar.replace(/\s/g, "&nbsp;").replace(/\t/g, "&#009;");
-				$target.append(currentChar);
+				let appendText = text.substring(this.index, text.length);
+				appendText = appendText.replace(/\s/g, "&nbsp;").replace(/\t/g, "&#009;");
+				// 既に追加していた文字列を削除
+				$target.find(".appendingText").remove();
+				// 不足分の文字列を追加し、表示アニメーション
+				$target.append(appendText);
 				// メッセージスキップフラグ消去
 				ningloid.flag.message.skip = false;
 				// テキスト表示中フラグを消し、次へ
@@ -570,11 +585,15 @@ ningloid.parser = {
 			}
 			// 通常時
 			else{
-				// 表示対象文字をピックアップし、メッセージレイヤに追加する
-				currentChar = text.substring(this.index, ++this.index);
+				const $currentChar = $target.find(`#appendingText-${this.index++}`);
+				// スキップ時に削除されないよう、テキスト追加中を示すクラスを削除する
+				$currentChar.removeClass("appendingText");
 				// 空白とタブをエスケープ文字に変換する
-				currentChar = currentChar.replace(/\s/g, "&nbsp;").replace(/\t/g, "&#009;");
-				$target.append(currentChar);
+				$currentChar.text($currentChar.text().replace(/\s/g, "&nbsp;").replace(/\t/g, "&#009;"));
+				// メッセージレイヤに追加し、表示
+				$currentChar.css("opacity", 1);
+				// 表示後、Spanタグを削除（負荷軽減のため）
+				$currentChar.replaceWith($currentChar.html());
 				// コンフィグの textSpeed ミリ秒後
 				setTimeout(() => {
 					// 次の文字表示へ
@@ -597,13 +616,16 @@ ningloid.parser = {
 		fade(resolver, rejecter){
 			const text = this.text;
 			const $target = this.$target;
-			let $currentChar = $("<span></span>").css("opacity", "0");// 現在フェード表示中のSpan要素
-			$target.append($currentChar);
-			let currentChar = "";// 現在フェード表示中の１文字
 			// テキスト表示速度が0の場合
 			if(ningloid.config.message.textSpeed < 1){
-				// 表示
-				$currentChar.html(text).velocity(
+				const $leftover = $("<span></span>").css("opacity", "0");
+				// 空白とタブをエスケープ文字に変換する
+				const appendText = text.replace(/\s/g, "&nbsp;").replace(/\t/g, "&#009;");
+				// 既に追加していた文字列を削除
+				$target.find(".appendingText").remove();
+				// 新たに全文を追加し、表示アニメーション
+				$target.append($leftover);
+				$leftover.html(appendText).velocity(
 					{opacity: "1"},
 					300,
 					"easeOutSine",
@@ -621,11 +643,15 @@ ningloid.parser = {
 			}
 			// メッセージスキップ時
 			else if(ningloid.flag.message.skip === true){
-				currentChar = text.substring(this.index, text.length);
+				const $leftover = $("<span></span>").css("opacity", "0");
 				// 空白とタブをエスケープ文字に変換する
-				currentChar = currentChar.replace(/\s/g, "&nbsp;").replace(/\t/g, "&#009;");
-				// 表示
-				$currentChar.html(currentChar).velocity(
+				let appendText = text.substring(this.index, text.length);
+				appendText = appendText.replace(/\s/g, "&nbsp;").replace(/\t/g, "&#009;");
+				// 既に追加していた文字列を削除
+				$target.find(".appendingText").remove();
+				// 不足分の文字列を追加し、表示アニメーション
+				$target.append($leftover);
+				$leftover.html(appendText).velocity(
 					{opacity: "1"},
 					300,
 					"easeOutSine",
@@ -643,11 +669,13 @@ ningloid.parser = {
 			}
 			// 通常時
 			else{
-				currentChar = text.substring(this.index, ++this.index);
+				const $currentChar = $target.find(`#appendingText-${this.index++}`);
+				// スキップ時に削除されないよう、テキスト追加中を示すクラスを削除する
+				$currentChar.removeClass("appendingText");
 				// 空白とタブをエスケープ文字に変換する
-				currentChar = currentChar.replace(/\s/g, "&nbsp;").replace(/\t/g, "&#009;");
+				$currentChar.text($currentChar.text().replace(/\s/g, "&nbsp;").replace(/\t/g, "&#009;"));
 				// メッセージレイヤに追加し、フェードイン
-				$currentChar.html(currentChar).velocity(
+				$currentChar.velocity(
 					{opacity: "1"},
 					300 + ningloid.config.message.textSpeed * 4,
 					"easeOutSine",
