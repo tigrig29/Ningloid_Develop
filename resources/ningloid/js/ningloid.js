@@ -23,6 +23,11 @@ const ningloid = {
 		currentMessage: "",
 		autoStartTimeoutIdOfResolve: null,
 		skipStartTimeoutIdOfResolve: null,
+		audio: {
+			bgm: [],
+			se: [],
+			voice: [],
+		},
 	},
 	variable: {
 		sf: {},
@@ -173,6 +178,14 @@ const ningloid = {
 	 * ※statデータや画面の状態を初期状態にする
 	 */
 	resetGame(){
+		// 音声の停止
+		for(let target in this.tmp.audio){
+			for(let audio of this.tmp.audio[target]){
+				audio.pause();
+			}
+		}
+
+
 		const $layer = ningloid.layer.jObj;
 
 		// 変数の初期化
@@ -191,6 +204,11 @@ const ningloid = {
 			currentMessage: "",
 			autoStartTimeoutIdOfResolve: null,
 			skipStartTimeoutIdOfResolve: null,
+			audio: {
+				bgm: [],
+				se: [],
+				voice: [],
+			},
 		};
 		this.variable = {
 			sf: {}, tf: {}, mp: {},
@@ -223,7 +241,6 @@ const ningloid = {
 		this.keyMouse.init();
 	},
 };
-
 
 // pixiオブジェクトの簡易記述用変数
 const   Container = PIXI.Container,

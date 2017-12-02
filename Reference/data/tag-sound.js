@@ -23,6 +23,18 @@ tag_data.kind_of_sound = {
 					name: "volume", required: "×", default: "", type: "",
 					description: ""
 				},
+				{
+					name: "loop", required: "×", default: "", type: "",
+					description: ""
+				},
+				{
+					name: "buf", required: "×", default: "", type: "",
+					description: ""
+				},
+				{
+					name: "wait", required: "×", default: "", type: "",
+					description: ""
+				},
 			],
 			example: "@"
 		},

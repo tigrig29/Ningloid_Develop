@@ -705,7 +705,94 @@ ningloid.tag.hidebutton = {
 		return p;
 	}
 };
+// ================================================================
+// ● 音声関連
+// ================================================================
+ningloid.tag.playbgm = {
+	vital: ["storage"],
+	pm: {storage: "", fade: false, volume: 100, loop: true, buf: 0, wait: false},
+	start: (pm) => {
+		// Promise
+		let [resolver, rejecter] = [null, null];
+		const p = new Promise((resolve, reject) => resolver = resolve);
 
+		let audio = null;
+		// オーディオオブジェクトの作成
+		if(!ningloid.tmp.audio.bgm[pm.buf]) audio = ningloid.tmp.audio.bgm[pm.buf] = new Audio();
+		else audio = ningloid.tmp.audio.bgm[pm.buf];
+
+		// ボリューム設定
+		audio.volume = parseInt(pm.volume) / 100;
+		// ファイル指定
+		audio.src = `../resources/data/bgm/${pm.storage}`;
+		// ループ
+		if(String(pm.loop) == "true") audio.loop = true;
+		audio.onloadeddata = () => {
+			// 再生
+			audio.play();
+			// フェードイン
+			if(!(String(pm.fade) == "false" || pm.fade == "0")){
+				audio.volume = 0;
+				const plusVolume = (parseInt(pm.volume) / 100) / (parseInt(pm.fade) / 10);
+				const timer = setInterval(() => {
+					if(audio.volume + plusVolume >= 1.0) audio.volume = 1.0;
+					else audio.volume += plusVolume;
+					if(audio.volume >= parseFloat(pm.volume) / 100) clearInterval(timer);
+				}, 10);
+			}
+
+			// 次へ
+			if(String(pm.wait) == "false") resolver();
+		};
+
+		// 終了時
+		audio.onended = () => {
+			// 次へ
+			if(String(pm.wait) == "true") resolver();
+		};
+
+		return p;
+	}
+};
+
+ningloid.tag.stopbgm = {
+	vital: [],
+	pm: {fade: false, buf: 0, wait: true},
+	start: (pm) => {
+		// Promise
+		let [resolver, rejecter] = [null, null];
+		const p = new Promise((resolve, reject) => resolver = resolve);
+
+		const audio = ningloid.tmp.audio.bgm[pm.buf];
+		// フェードイン
+		if(!(String(pm.fade) == "false" || pm.fade == "0")){
+			const minusVolume = audio.volume / (parseInt(pm.fade) / 10);
+			const timer = setInterval(() => {
+				if(audio.volume - minusVolume < 0) audio.volume = 0.0;
+				else audio.volume -= minusVolume;
+				if(audio.volume == 0.0){
+					clearInterval(timer);
+					audio.pause();
+
+					// 次へ
+					if(String(pm.wait) == "true") resolver();
+				}
+			}, 10);
+		}
+		else{
+			// 停止
+			audio.pause();
+
+			// 次へ
+			if(String(pm.wait) == "true") resolver();
+		}
+
+		// 次へ
+		if(String(pm.wait) == "false") resolver();
+
+		return p;
+	}
+};
 // ================================================================
 // ● ラベル・ジャンプ操作
 // ================================================================
