@@ -141,7 +141,11 @@ const $ = jQuery = require("../resources/libs/jquery-3.0.0.min.js");
                     useBootstrap: false,
                     draggable: true,
                     buttons: {
-                        close: () => {}
+                        close: {
+                            text: "閉じる(<u>ESC</u>)",
+                            keys: ["esc"],
+                            action: () => {}
+                        },
                     }
                 });
         }

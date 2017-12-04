@@ -39,7 +39,7 @@ ningloid.tag.s = {
 };
 
 // ================================================================
-// ● レイヤ関連
+// ● 背景関連
 // ================================================================
 ningloid.tag.bg = {
 	vital: ["storage"],
@@ -85,7 +85,6 @@ ningloid.tag.bg = {
 		const bgData = spriteData[`../resources/data/bgimage/${pm.storage}`] = {};
 		if(pm.width) bgData.width = parseFloat(pm.width);
 		if(pm.height) bgData.height = parseFloat(pm.height);
-
 		// 画像描画
 		ningloid.canvas.renderImage("bg", null, spriteData, (stage, renderer) => {
 			// fitパラメータによるキャンバス拡縮
@@ -139,6 +138,9 @@ ningloid.tag.blind = {
 	},
 };
 
+// ================================================================
+// ● 動画関連
+// ================================================================
 // 動画再生
 ningloid.tag.playmovie = {
 	vital: ["layer", "storage"],
@@ -220,6 +222,8 @@ ningloid.tag.stopmovie = {
 		}
 		// 消去
 		if(String(pm.remove) != "false"){
+			// システムスキップ
+			if(ningloid.flag.systemSkipMode === true) pm.remove = 0;
 			// フェードアウト時間
 			const time = parseInt(pm.remove);
 			// 即時消去（その後、エンドファンクション呼び出し）
@@ -232,17 +236,16 @@ ningloid.tag.stopmovie = {
 				});
 				// 次へ
 				if(String(pm.wait) == "false") resolver();
-				// resolve重複してしまうので、フェードアウト時はここで処理終了
 				return p;
 			}
 		}
 		// 一時停止
-		else ningloid.video.pause($video);
-
-		// 次へ
-		resolver();
-
-		return p;
+		else{
+			ningloid.video.pause($video);
+			// 次へ
+			resolver();
+			return p;
+		}
 	}
 };
 
@@ -303,10 +306,17 @@ ningloid.tag.removemovie = {
 			// スキップ処理
 			ningloid.video.skipToEnd($video, true);
 		}
+		// システムスキップ
+		if(ningloid.flag.systemSkipMode === true) pm.fade = 0;
 		// フェードアウト時間
 		const time = parseInt(pm.fade);
 		// 即時消去（その後、エンドファンクション呼び出し）
-		if(time == 0 || isNaN(time)) ningloid.video.remove($video, true);
+		if(time == 0 || isNaN(time)){
+			ningloid.video.remove($video, true);
+			// 次へ
+			resolver();
+			return p;
+		}
 		// フェードアウト→消去（その後、エンドファンクション呼び出し）
 		else{
 			ningloid.video.fadeOut($video, time, true, () => {
@@ -318,11 +328,6 @@ ningloid.tag.removemovie = {
 			// resolve重複してしまうので、フェードアウト時はここで処理終了
 			return p;
 		}
-
-		// 次へ
-		resolver();
-
-		return p;
 	}
 };
 
@@ -330,12 +335,12 @@ ningloid.tag.removemovie = {
 // ● キャラ関連
 // ================================================================
 
-ningloid.tag.charaShow = {
+ningloid.tag.charashow = {
 	vital: ["name"],
 	pm: {
 		name: "", image: null,
-		left: 0, top: 0, scale: 1.0, opacity: 1.0, reflect: false,
-		zindex: 0, fromX: null, fromY: null, fromScale: 0,
+		left: 0, top: 0, scale: 1.0, /* opacity: 1.0, reflect: false,*/
+		zindex: 0, /*fromX: null, fromY: null, fromScale: 0,*/
 		time: 1E3, method: "fadeIn", easing: "linear",
 		click: true, wait: true
 	},
@@ -365,7 +370,8 @@ ningloid.tag.charaShow = {
 		$target.css({
 			left: pm.left,
 			top: pm.top,
-			scale: pm.scale
+			scale: pm.scale,
+			"z-index": parseInt(pm.zindex) || "auto",
 		});
 		// 画像描画
 		ningloid.canvas.renderImage(pm.name, null, spriteData, (stage, renderer) => {
@@ -406,7 +412,7 @@ ningloid.tag.charaShow = {
  * @vertical {Boolean} false 縦書き指定
  * @visible {Boolean} false 可視状態指定
  */
-ningloid.tag.messageConfig = {
+ningloid.tag.messageconfig = {
 	vital: [],
 	pm: {
 		layer: ningloid.stat.currentLayer, style: "", bgstyle: "",
@@ -762,6 +768,10 @@ ningloid.tag.stopbgm = {
 		// Promise
 		let [resolver, rejecter] = [null, null];
 		const p = new Promise((resolve, reject) => resolver = resolve);
+
+		if(String(pm.wait) == "true" && ningloid.flag.systemSkipMode === true){
+			pm.fade = false;
+		}
 
 		const audio = ningloid.tmp.audio.bgm[pm.buf];
 		// フェードイン

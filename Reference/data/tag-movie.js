@@ -1,12 +1,12 @@
 /* global tag_data: true */
 
-tag_data.kind_of_effect = {
-	overview: "画面演出関連",
+tag_data.kind_of_movie = {
+	overview: "動画関連",
 	tag: {
 		playmovie:{
 			name: "playmovie",
 			overview: "動画の再生を行う",
-			description: "指定したレイヤ上で動画を再生します。<br>※レイヤ合成させる場合には、該当レイヤにbrendmodeタグを使用してください。",
+			description: "指定したレイヤ上で動画を再生します。",//+"<br>※レイヤ合成させる場合には、該当レイヤにbrendmodeタグを使用してください。",
 			develop_info: [
 				"テスト実装", "-", "・volume実装<br>・対応ファイル形式の確認、拡張など（現在は.webmのみ）"
 			],
@@ -26,10 +26,6 @@ tag_data.kind_of_effect = {
 				{
 					name: "loop", required: "×", default: "false", type: "真偽値",
 					description: "動画が終端に達した際に、再生し直す（ループさせる）かを指定します。trueを指定するとループします。"
-				},
-				{
-					name: "volume", required: "×", default: "100", type: "数値<br>0 - 100",
-					description: "再生動画の音量を指定します。"
 				},
 				{
 					name: "clickskip", required: "×", default: "false", type: "真偽値",

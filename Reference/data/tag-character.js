@@ -6,74 +6,70 @@ tag_data.kind_of_character = {
 		"charashow":{
 			name: "charashow",
 			overview: "キャラクターの登場",
-			description: "キャラクターを登場させます。<br>chara_setting.jsのparts_modeによって、必須が「△」（image・pose・face・????）の属性の必要有無が変化します。",
+			description: "キャラクターを登場させます。<br>CharacterSetting.jsのpartsModeによって、必須が「△」（image・????）のパラメータの必要有無が変化します。",
 			develop_info: [
-				"テスト実装", "テスト中", ""
+				"テスト実装", "-", "・form系のパラメータ実装<br>reflectパラメータ実装"
 			],
 			parameter:[
 				{
 					name: "name", required: "○", default: "×", type: "名称",
-					description: "登場させる${chara_name}"
+					description: "登場させる${charaName}"
 				},
 				{
 					name: "image", required: "△", default: "0", type: "名称",
-					description: "登場${chara_image}"
-				},
-				{
-					name: "pose", required: "△", default: "0", type: "名称",
-					description: "登場${chara_pose}"
-				},
-				{
-					name: "face", required: "△", default: "0", type: "名称",
-					description: "登場${chara_face}"
+					description: "登場${charaImage}"
 				},
 				{
 					name: "????", required: "△", default: "0", type: "名称",
-					description: "登場${chara_parts}"
+					description: "登場${charaParts}"
 				},
 				{
-					name: "x", required: "×", default: "center", type: "left,center,right / 数値(px)",
-					description: "キャラクターの登場${chara_x}"
+					name: "left", required: "×", default: "0", type: "数値(px)",
+					description: "キャラクターの登場左端位置を指定します。"
 				},
 				{
-					name: "y", required: "×", default: "200", type: "数値(px)",
-					description: "キャラクターの登場${chara_y}"
+					name: "top", required: "×", default: "0", type: "数値(px)",
+					description: "キャラクターの登場上端位置を指定します。"
 				},
 				{
 					name: "scale", required: "×", default: "1.0", type: "数値(倍率)",
 					description: "${scale}"
 				},
-				{
-					name: "opacity", required: "×", default: "1.0", type: "数値(0.0~1.0)",
-					description: "${opacity}"
-				},
-				{
-					name: "reflect", required: "×", default: "false", type: "真偽値",
-					description: "キャラクターの画像を左右反転させる場合、trueを指定します。"
-				},
+				// {
+				// 	name: "opacity", required: "×", default: "1.0", type: "数値(0.0~1.0)",
+				// 	description: "${opacity}"
+				// },
+				// {
+				// 	name: "reflect", required: "×", default: "false", type: "真偽値",
+				// 	description: "キャラクターの画像を左右反転させる場合、trueを指定します。"
+				// },
 				{
 					name: "zindex", required: "×", default: "0", type: "数値",
 					description: "表示キャラクターの重なり順序を指定します。数値が大きいほど前面に、小さいほど背面に表示されます。"
 				},
-				{
-					name: "fromX", required: "×", default: "center", type: "left,center,right / 数値(px)",
-					description: "${fromX}"
-				},
-				{
-					name: "fromY", required: "×", default: "200", type: "数値(px)",
-					description: "${fromY}"
-				},
-				{
-					name: "fromScale", required: "×", default: "1.0", type: "数値(倍率)",
-					description: "${fromScale}"
-				},
-				{
-					name: "method", required: "×", default: "fadeIn", type: "名称",
-					description: "表示${method}"
-				},
+				// {
+				// 	name: "fromX", required: "×", default: "center", type: "left,center,right / 数値(px)",
+				// 	description: "${fromX}"
+				// },
+				// {
+				// 	name: "fromY", required: "×", default: "200", type: "数値(px)",
+				// 	description: "${fromY}"
+				// },
+				// {
+				// 	name: "fromScale", required: "×", default: "1.0", type: "数値(倍率)",
+				// 	description: "${fromScale}"
+				// },
 				{
 					name: "time", required: "×", default: "1000", type: "数値(ms)",
 					description: "表示${time}"
+				},
+				{
+					name: "method", required: "×", default: "fadeIn", type: "名称",
+					description: "表示${showMethod}"
+				},
+				{
+					name: "easing", required: "×", default: "linear", type: "文字列(リンク先参照)",
+					description: "${easing}"
 				},
 				{
 					name: "click", required: "×", default: "true", type: "真偽値",
@@ -84,12 +80,15 @@ tag_data.kind_of_character = {
 					description: "${wait}"
 				}
 			],
-			example:"<font color=#4c4>;parts_mode:\"single\"の場合</font><br>" + 
-					"[chara_show name=dorayaki image=normal x=left top=400 size=1.5 time=2000]<br><br>" +
-					"<font color=#4c4>;parts_mode:\"pose_face\"の場合</font><br>" +
-					"@chara_show name=dorayaki pose=banzai face=nikoniko reflect=true zindex<br><br>" +
-					"<font color=#4c4>;parts_mode:\"multi\"の場合</font><br>" +
-					"@chara_show name=taiyaki pose=normal cloth=seihuku eye=nikoniko mouth=normal method=slideInRight"
+			example:"\
+					;partsMode:\"single\"の場合<br>\
+					;立ち絵画像としてimageパラメータを指定する必要がある<br>\
+					[charaShow name=test image=normal scale=1.5 time=2000]<br><br>\
+					;partsMode:\"multi\"の場合<br>\
+					;パーツ画像として、CharaSettingに記述したパーツ名のパラメータを指定する必要がある<br>\
+					;パーツとして「pose」「face」の2つを定義した例<br>\
+					@charaShow name=test2 pose=test_pose1 face=test_face1<br><br>\
+					"
 		},
 	}
 };
