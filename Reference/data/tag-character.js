@@ -87,7 +87,7 @@ tag_data.kind_of_character = {
 					;partsMode:\"multi\"の場合<br>\
 					;パーツ画像として、CharaSettingに記述したパーツ名のパラメータを指定する必要がある<br>\
 					;パーツとして「pose」「face」の2つを定義した例<br>\
-					@charaShow name=test2 pose=test_pose1 face=test_face1<br><br>\
+					@charaShow name=test2 pose=test_pose1 face=test_face1\
 					"
 		},
 	}
