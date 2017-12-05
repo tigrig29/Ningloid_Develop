@@ -1,7 +1,8 @@
 [current layer="message1"]
 
 [l]
-[messageconfig left=5% top=75% width=90% height=20% opacity=0.8 margin=10px]
+;[messageconfig left=5% top=75% width=90% height=20% opacity=0.8 margin=10px]
+[messageconfig style="{'left': '5%', 'top': '75%', 'width': '90%', 'height': '20%'}" opacity=0.8 margin=10px]
 [bg storage="room.jpg" time=1000]
 
 

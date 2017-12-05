@@ -206,11 +206,6 @@ ningloid.tag.cm = {
 		return p;
 	},
 };
-ningloid.tag.s = {
-	start: () => new Promise((resolve, reject) => {
-		resolve("stop");
-	})
-};
 /**
  * メッセージレイヤの基礎項目を設定する
  * vital : []
@@ -867,6 +862,11 @@ ningloid.tag.jump = {
 
 		return p;
 	}
+};
+ningloid.tag.s = {
+	start: () => new Promise((resolve, reject) => {
+		resolve("stop");
+	})
 };
 
 

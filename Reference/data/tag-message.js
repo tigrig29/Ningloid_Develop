@@ -87,11 +87,11 @@ tag_data.kind_of_message = {
 								メッセージレイヤの数はConfig.jsで指定できます。"
 				},
 				{
-					name: "left", required: "×", default: "0", type: "数値(px)",
+					name: "left", required: "×", default: "-", type: "数値(px)",
 					description: "表示左端位置をピクセルで指定します。"
 				},
 				{
-					name: "top", required: "×", default: "0", type: "数値(px)",
+					name: "top", required: "×", default: "-", type: "数値(px)",
 					description: "表示上端位置をピクセルで指定します。"
 				},
 				{
@@ -105,6 +105,22 @@ tag_data.kind_of_message = {
 				{
 					name: "time", required: "×", default: "200", type: "数値(ms)",
 					description: "${time}"
+				},
+				{
+					name: "style", required: "×", default: "-", type: "JSON",
+					description: "<font color=red>JavaScript言語を理解している人向けのパラメータです。</font><br>\
+								対象のメッセージレイヤのCSSスタイルを変更します。jQueryのcss関数と同様に一括で指定することが出来ます。JSON形式での指定です。<br>\
+								例：style=\"{'left': '10px', 'top': '30px', 'width': '1000px'}\"<br>\
+								※各プロパティ名、値をシングルクォーテーションで囲う必要があります。\
+								"
+				},
+				{
+					name: "bgstyle", required: "×", default: "-", type: "JSON",
+					description: "<font color=red>JavaScript言語を理解している人向けのパラメータです。</font><br>\
+								対象のメッセージレイヤの背景（メッセージレイヤの枠部分）のCSSスタイルを変更します。jQueryのcss関数と同様に一括で指定することが出来ます。JSON形式での指定です。<br>\
+								例：style=\"{'background-color': '#888', 'opacity': '0.5'}\"<br>\
+								※各プロパティ名、値をシングルクォーテーションで囲う必要があります。\
+								"
 				},
 			],
 			example: "@messageconfig name=enigma"
