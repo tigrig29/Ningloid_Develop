@@ -21,7 +21,7 @@ tag_data.kind_of_message = {
 		"r":{
 			name: "r",
 			overview: "改行",
-			description: "currentLayerのメッセージを改行します。currentLayerは[current]タグで指定できます。",
+			description: "操作中のメッセージレイヤのメッセージを改行します。操作中のメッセージレイヤ(currentLayer)は[current]タグで指定できます。",
 			develop_info: [
 				"完成", "-", "-"
 			],
@@ -34,7 +34,7 @@ tag_data.kind_of_message = {
 		},
 		"er":{
 			name: "er",
-			overview: "currentメッセージのクリア",
+			overview: "操作中メッセージレイヤのクリア",
 			description: "現在currentであるメッセージレイヤ(currentLayer)のメッセージをクリアします。",
 			develop_info: [
 				"完成", "-", "-"
@@ -55,13 +55,13 @@ tag_data.kind_of_message = {
 			parameter: null,
 			example: "\
 					;クリックされたら、メッセージをクリアする<br>\
-					[l][cm]\
+					こんにちは。クリックでクリアします。[l][cm]\
 					"
 		},
 		"current":{
 			name: "current",
 			overview: "操作中レイヤの変更",
-			description: "操作中のレイヤを変更します。ここで指定したレイヤがcurrentLayerとなります。",
+			description: "操作中のレイヤを変更します。ここで指定したレイヤがcurrentLayerとなります。<br>初期状態のcurrentLayerはmessage0です。",
 			develop_info: [
 				"テスト実装", "-", "-"
 			],
@@ -71,7 +71,43 @@ tag_data.kind_of_message = {
 					description: "操作中に設定するメッセージレイヤの名称を指定します。指定できる名称はmessage0, 1, 2, ...です。"
 				},
 			],
-			example: "@"
+			example: "@current layer=message1"
+		},
+		"messageconfig":{
+			name: "messageconfig",
+			overview: "メッセージレイヤの設定",
+			description: "メッセージレイヤの各種設定を変更します。layerパラメータを指定しなかった場合、操作中レイヤ(currentLayer)が対象となります。",
+			develop_info: [
+				"テスト実装", "-", "-"
+			],
+			parameter:[
+				{
+					name: "layer", required: "×", default: "-", type: "文字列(名称)",
+					description: "対象のレイヤ名称。message0, 1, 2...。<br>\
+								メッセージレイヤの数はConfig.jsで指定できます。"
+				},
+				{
+					name: "left", required: "×", default: "0", type: "数値(px)",
+					description: "表示左端位置をピクセルで指定します。"
+				},
+				{
+					name: "top", required: "×", default: "0", type: "数値(px)",
+					description: "表示上端位置をピクセルで指定します。"
+				},
+				{
+					name: "width", required: "×", default: "-", type: "数値(px)",
+					description: "背景画像の横幅サイズをピクセルで指定します。"
+				},
+				{
+					name: "height", required: "×", default: "-", type: "数値(px)",
+					description: "背景画像の高さサイズをピクセルで指定します。"
+				},
+				{
+					name: "time", required: "×", default: "200", type: "数値(ms)",
+					description: "${time}"
+				},
+			],
+			example: "@messageconfig name=enigma"
 		},
 		"showmessage":{
 			name: "showmessage",

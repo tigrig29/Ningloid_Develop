@@ -1,52 +1,4 @@
 ningloid.tag = {};
-ningloid.tag.l = {
-	start: () => {
-		return new Promise((resolve, reject) => {
-			if(ningloid.flag.systemSkipMode === true) resolve();
-			ningloid.tmp.resolver = resolve;
-			ningloid.tmp.stopResolver = resolve;
-			if(ningloid.flag.skipMode === true) ningloid.system.skip.resolveAfterSkipWaitTime();
-			else if(ningloid.flag.autoMode === true) ningloid.system.auto.resolveAfterAutoWaitTime();
-		});
-	},
-};
-ningloid.tag.r = {
-	start: () => {
-		// Promise
-		let resolver = null;
-		const p = new Promise((resolve, reject) => resolver = resolve);
-
-		$(`#${ningloid.stat.currentLayer}Inner`).append("<br>");
-		resolver();
-
-		return p;
-	},
-};
-ningloid.tag.er = {
-	start: () => {
-		// Promise
-		let resolver = null;
-		const p = new Promise((resolve, reject) => resolver = resolve);
-		$(`#${ningloid.stat.currentLayer}Inner`).empty();
-		resolver();
-		return p;
-	},
-};
-ningloid.tag.cm = {
-	start: () => {
-		// Promise
-		let resolver = null;
-		const p = new Promise((resolve, reject) => resolver = resolve);
-		$(".messageInner").empty();
-		resolver();
-		return p;
-	},
-};
-ningloid.tag.s = {
-	start: () => new Promise((resolve, reject) => {
-		resolve("stop");
-	})
-};
 
 // ================================================================
 // ● 背景関連
@@ -211,6 +163,54 @@ ningloid.tag.charashow = {
 // ================================================================
 // ● メッセージ関連
 // ================================================================
+ningloid.tag.l = {
+	start: () => {
+		return new Promise((resolve, reject) => {
+			if(ningloid.flag.systemSkipMode === true) resolve();
+			ningloid.tmp.resolver = resolve;
+			ningloid.tmp.stopResolver = resolve;
+			if(ningloid.flag.skipMode === true) ningloid.system.skip.resolveAfterSkipWaitTime();
+			else if(ningloid.flag.autoMode === true) ningloid.system.auto.resolveAfterAutoWaitTime();
+		});
+	},
+};
+ningloid.tag.r = {
+	start: () => {
+		// Promise
+		let resolver = null;
+		const p = new Promise((resolve, reject) => resolver = resolve);
+
+		$(`#${ningloid.stat.currentLayer}Inner`).append("<br>");
+		resolver();
+
+		return p;
+	},
+};
+ningloid.tag.er = {
+	start: () => {
+		// Promise
+		let resolver = null;
+		const p = new Promise((resolve, reject) => resolver = resolve);
+		$(`#${ningloid.stat.currentLayer}Inner`).empty();
+		resolver();
+		return p;
+	},
+};
+ningloid.tag.cm = {
+	start: () => {
+		// Promise
+		let resolver = null;
+		const p = new Promise((resolve, reject) => resolver = resolve);
+		$(".messageInner").empty();
+		resolver();
+		return p;
+	},
+};
+ningloid.tag.s = {
+	start: () => new Promise((resolve, reject) => {
+		resolve("stop");
+	})
+};
 /**
  * メッセージレイヤの基礎項目を設定する
  * vital : []
