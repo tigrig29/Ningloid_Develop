@@ -14,6 +14,13 @@ $(document).ready(function() {
 			var $tag = $("<div id='" + tag_name + "' class='tag' head='#" + tag_class.replace(/kind/g, "list") + "'></div>");
 			// タグリファレンスのパラメータを生成
 			var param = getParamTable(self);
+			// 記述例のコメントハイライト
+			var exampleLine = self.example.split("<br>");
+			for(var i = 0; i < exampleLine.length; i++){
+				if(i == 0) self.example = "";
+				if(exampleLine[i].replace(/\t/g, "").substring(0, 1) == ";") exampleLine[i] = "<font color='#4c4'>" + exampleLine[i] + "</font>";
+				self.example += exampleLine[i] + "<br>";
+			}
 			// リファレンスの挿入
 			$tag.html(
 				"<h3 class='tag_name'>[" + self.name + "] " + self.overview + "</h3>" +
@@ -107,27 +114,25 @@ function buildNavigator(){
 function getParamTable(data){
 	var param = "";
 	var description_pattern = {
-		charaName: "キャラクターの名称を指定します。chara_setting.jsで定義した名称を使用してください。",
-		charaImage: "parts_mode:\"single\"の場合に使用します。<br>キャラクターの立ち絵名称を指定します。chara_setting.jsで定義した名称を使用してください。",
-		charaPose: "parts_mode:\"pose_face\"の場合に使用します。<br>キャラクターのポーズ名称を指定します。chara_setting.jsで定義した名称を使用してください。",
-		charaFace: "parts_mode:\"pose_face\"の場合に使用します。<br>キャラクターの表情名称を指定します。chara_setting.jsで定義した名称を使用してください。",
-		charaParts: "parts_mode:\"multi\"の場合に使用します。chara_setting.jsにて定義したパーツの数だけ指定してください。また属性名「????」には定義したパーツの名称を当てはめてください。" +
-					"<br>値にはパーツに対応する要素の名称を指定します。chara_setting.jsで定義した名称を使用してください。",
-		chara_x: "位置（左右の位置）を指定します。「left」「center」「right」、あるいはピクセル数値で指定してください。",
-		chara_y: "位置（上下の位置）を指定します。ピクセル数値で指定してください。",
+		charaName: "キャラクターの名称を指定します。CharaSetting.jsで定義した名称を使用してください。",
+		charaImage: "partsMode:\"single\"の場合に使用します。<br>キャラクターの立ち絵名称を指定します。CharaSetting.jsで定義した名称を使用してください。",
+		charaParts: "partsMode:\"multi\"の場合に使用します。CharaSetting.jsにて定義したパーツの数だけ指定してください。また属性名「????」には定義したパーツの名称を当てはめてください。" +
+					"<br>値にはパーツに対応する要素の名称を指定します。CharaSetting.jsで定義した名称を使用してください。",
+		charaLeft: "位置（左右の位置）を指定します。「left」「center」「right」、あるいはピクセル数値で指定してください。",
+		charaTop: "位置（上下の位置）を指定します。ピクセル数値で指定してください。",
 		storage_suffix: "このフォルダに画像を配置するか、あるいは別のフォルダに配置し、規定フォルダからの相対パスでアドレスを指定してください。",
 		color_suffix: "black, white などの名称のほか、#fff や rgb(255, 255, 255), rgba(255, 255, 255, 1.0)と言った指定も可能です。",
 		scale: "拡縮率を指定します。倍率での指定です。",
 		viewLayer: "レイヤを指定します。bg, fore0, fore1, ...(foreレイヤはConfig.jsで指定した値まで存在します）から選択してください。",
 		systemLayer: "レイヤを指定します。free, message0, message1, ...(messageレイヤはConfig.jsで指定した値まで存在します）から選択してください。",
 		opacity: "透過度を指定します。0が透明（不可視）で、1が完全不透明です。",
-		method: "演出を指定します。次の名称から選択してください。",
+		showMethod: "演出を指定します。次のリンク先の名称から選択してください。<br><a href='https://daneden.github.io/animate.css/' target='_blank' style='color:blue'>アニメーション一覧<a><br>上記に加え「show」も指定可能です（この場合timeパラメータは無視され、即表示されます）。",
 		fromX: "演出開始時のx座標地点（左右位置）を指定します。この値の位置から、x属性の位置まで移動演出を行います。",
 		fromY: "演出開始時のy座標地点（上下位置）を指定します。この値の位置から、y属性の位置まで移動演出を行います。",
 		fromScale: "演出開始時の拡縮率を指定します。この値の拡縮率から、scale属性の拡縮率まで拡大/縮小演出を行います。",
-		effect: "演出におけるeasing設定を行います。詳細は以下を御覧ください。<br><a href='http://semooh.jp/jquery/cont/doc/easing/' target='_blank' style='color:blue'>easing一覧<a>",
+		easing: "演出におけるeasing設定を行います。詳細は以下を御覧ください。<br><a href='http://semooh.jp/jquery/cont/doc/easing/' target='_blank' style='color:blue'>easing一覧<a>",
 		time: "演出にかける時間を指定します。",
-		skip: "演出をクリックでスキップ出来るように設定する場合true, スキップできないように設定する場合falseを指定します。",
+		click: "演出をクリックでスキップ出来るように設定する場合true, スキップできないように設定する場合falseを指定します。",
 		wait: "演出の終了を待つ場合true, 待たずに次の処理を行う場合falseを指定します。falseを指定することによって、その他の演出（背景表示など）を当演出と同時に行わせることが可能です。",
 	};
 	if(data.parameter === null) param = "<tr><td colspan='5'>指定できるパラメータはありません。</td></tr>";

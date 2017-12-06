@@ -1,7 +1,7 @@
-tag_data.kind_of_camera = {
-	overview: "カメラ関連",
-	tag: {
-	}
+// tag_data.kind_of_camera = {
+// 	overview: "カメラ関連",
+// 	tag: {
+// 	}
 };
 /*
 	,
