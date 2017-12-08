@@ -119,8 +119,8 @@ ningloid.tag.charashow = {
 		const p = new Promise((resolve, reject) => [resolver, rejecter] = [resolve, reject]);
 
 		// fromX/Yが常に０になってしまうので、初期化として、x/yと同値にする
-		// if(pm.fromX === null) pm.fromX = pm.x;
-		// if(pm.fromY === null) pm.fromY = pm.y;
+		// if(pm.fromX === null) pm.fromX = pm.left;
+		// if(pm.fromY === null) pm.fromY = pm.top;
 
 		ningloid.character.createLayer(pm.name);
 		const partsData = {};
@@ -205,6 +205,24 @@ ningloid.tag.cm = {
 		resolver();
 		return p;
 	},
+};
+
+ningloid.tag.current = {
+	vital: ["layer"],
+	pm: {
+		layer: "",
+	},
+	start: (pm) => {
+		// Promise
+		let [resolver, rejecter] = [null, null];
+		const p = new Promise((resolve, reject) => [resolver, rejecter] = [resolve, reject]);
+
+		ningloid.stat.currentLayer = pm.layer;
+
+		resolver();
+
+		return p;
+	}
 };
 /**
  * メッセージレイヤの基礎項目を設定する
@@ -293,7 +311,8 @@ ningloid.tag.showmessage = {
 	vital: [],
 	pm: {
 		layer: "",
-		time: 3E2, method: "fadeIn", click: true, wait: true
+		time: 3E2, method: "fadeIn", easing: "linear",
+		click: true, wait: true
 	},
 	start: (pm) => {
 		// Promise
@@ -327,7 +346,8 @@ ningloid.tag.hidemessage = {
 	vital: [],
 	pm: {
 		layer: "",
-		time: 3E2, method: "fadeOut", click: true, wait: true
+		time: 3E2, method: "fadeOut", easing: "linear",
+		click: true, wait: true
 	},
 	start: (pm) => {
 		// Promise
@@ -346,191 +366,6 @@ ningloid.tag.hidemessage = {
 		}, [resolver, rejecter], function(){
 			// 不可視にする
 			$target.hide();
-			// 次へ
-			if(String(pm.wait) == "true") resolver();
-		});
-
-		// 処理終了待たずに次へ
-		if(String(pm.wait) == "false") resolver();
-
-		return p;
-	}
-};
-ningloid.tag.current = {
-	vital: ["layer"],
-	pm: {
-		layer: "",
-	},
-	start: (pm) => {
-		// Promise
-		let [resolver, rejecter] = [null, null];
-		const p = new Promise((resolve, reject) => [resolver, rejecter] = [resolve, reject]);
-
-		ningloid.stat.currentLayer = pm.layer;
-
-		resolver();
-
-		return p;
-	}
-};
-
-// ================================================================
-// ● ボタン関連
-// ================================================================
-
-// ボタンを画面に追加する
-// （挿入対象のレイヤを選択させることで、レイヤごとの管理を可能にする～messageレイヤのみ）
-ningloid.tag.button = {
-	vital: ["layer"],
-	pm: {
-		name: "", layer: "", exp: "", role: "",
-		text: "", hint: "", style: "",
-		x: "", y: "", width: "", height: "",
-		border: "", "border-radius": "", "border-style": "", "border-color": "",
-		"font": "", "font-color": "", "font-size": "", "font-weight": "",
-		"bg-image": "", "bg-color": "",
-		enterimg: "", downimg: "", clickimg: "",
-		enterse: "", downse: "", clickse: ""
-	},
-	start: (pm) => {
-		// Promise
-		let resolver = null;
-		let rejecter = null;
-		const p = new Promise((resolve, reject) => {
-			resolver = resolve;
-			rejecter = reject;
-		});
-		// 対象レイヤ
-		const $target = ningloid.layer.getLayer(pm.layer);
-
-		// ボタンのオブジェクト
-		const $button = $("<div class='graphicButton eventElement'></div>");
-
-		// ID, テキスト, ヒントを設定
-		if(pm.id !== ""){
-			// ID重複チェック
-			if($(`#${pm.name}`).length){
-				// 重複時はエラーを投げ、終了する
-				rejecter(`名称「${pm.name}」のボタンは既に存在するため、作成できません。<br>name属性を修正してください。`);
-			}
-			$button.attr("id", pm.name);
-		}
-		if(pm.text !== "") $button.html(pm.text);
-		if(pm.hint !== "") $button.attr("title", pm.hint);
-
-		// ボタンのスタイル
-		const style = {};
-		if(pm.x !== "") style.left = pm.x;
-		if(pm.y !== "") style.top = pm.y;
-		if(pm.width !== "") style.width = pm.width;
-		if(pm.height !== "") style.height = pm.height;
-		if(pm.border !== ""){
-			// 線の太さ
-			style.border = `${pm.border} `;
-			// 線の種類
-			if(pm["border-style"] !== "") style.border += `${pm["border-style"]} `;
-			else style.border += "solid ";
-			// 線の色
-			if(pm["border-color"] !== "") style.border += `${pm["border-color"]} `;
-			else style.border += "black ";
-		}
-		if(pm["border-radius"] !== "") style["border-radius"] = pm["border-radius"];
-		if(pm.font !== "") style["font-family"] = pm.font;
-		if(pm["font-color"] !== "") style.color = pm["font-color"];
-		if(pm["font-size"] !== "") style["font-size"] = pm["font-size"];
-		if(pm["font-weight"] !== "") style["font-weight"] = pm["font-weight"];
-		if(pm["bg-image"] !== "") style["background-image"] = pm["bg-image"];
-		if(pm["bg-color"] !== "") style["background-color"] = pm["bg-color"];
-
-		// スタイル適応
-		$button.css(style);
-
-		// 各種イベントセット
-		ningloid.layer.setEvent($button, {
-			mouseenter: null,
-			mouseleave: null,
-			mousedown: null,
-			mouseup: null,
-			click: pm.role,
-		});
-
-		// DOMに追加
-		$target.append($button);
-
-		// 次へ
-		resolver();
-
-		return p;
-	}
-};
-// ボタンの表示演出を行う
-ningloid.tag.showbutton = {
-	// nameかlayerどちらか必須
-	vital: [["name", "layer"]],
-	pm: {
-		name: "", layer: "",
-		time: 3E2, method: "fadeIn", click: true, wait: true
-	},
-	start: (pm) => {
-		// Promise
-		let [resolver, rejecter] = [null, null];
-		const p = new Promise((resolve, reject) => [resolver, rejecter] = [resolve, reject]);
-
-		// 対象レイヤ
-		let $target = null;
-		if(pm.layer !== ""){
-			const $parent = ningloid.layer.getLayer(pm.layer);
-			$target = $parent.find(".graphicButton");
-			if($parent.css("opacity") == 0 || $parent.css("display") == "none") pm.method = "show";
-		}
-		if(pm.name !== "") $target = $(`#${pm.name}`);
-
-		// 表示アニメーション
-		ningloid.animate.ext.play($target, {
-			method: pm.method,
-			duration: parseInt(pm.time),
-			// easing: pm.easing,
-			skippable: pm.click,
-		}, [resolver, rejecter], function(){
-			// 次へ
-			if(String(pm.wait) == "true") resolver();
-		});
-
-		// 処理終了待たずに次へ
-		if(String(pm.wait) == "false") resolver();
-
-		return p;
-	}
-};
-// ボタンの消去演出を行う
-ningloid.tag.hidebutton = {
-	// nameかlayerどちらか必須
-	vital: [["name", "layer"]],
-	pm: {
-		name: "", layer: "",
-		time: 3E2, method: "fadeOut", click: true, wait: true
-	},
-	start: (pm) => {
-		// Promise
-		let [resolver, rejecter] = [null, null];
-		const p = new Promise((resolve, reject) => [resolver, rejecter] = [resolve, reject]);
-
-		// 対象レイヤ
-		let $target = null;
-		if(pm.layer !== ""){
-			const $parent = ningloid.layer.getLayer(pm.layer);
-			$target = $parent.find(".graphicButton");
-			if($parent.css("opacity") == 0 || $parent.css("display") == "none") pm.method = "hide";
-		}
-		if(pm.name !== "") $target = $(`#${pm.name}`);
-
-		// 表示アニメーション
-		ningloid.animate.ext.play($target, {
-			method: pm.method,
-			duration: parseInt(pm.time),
-			// easing: pm.easing,
-			skippable: pm.click,
-		}, [resolver, rejecter], function(){
 			// 次へ
 			if(String(pm.wait) == "true") resolver();
 		});
@@ -824,6 +659,174 @@ ningloid.tag.removemovie = {
 			// resolve重複してしまうので、フェードアウト時はここで処理終了
 			return p;
 		}
+	}
+};
+
+// ================================================================
+// ● ボタン関連
+// ================================================================
+
+// ボタンを画面に追加する
+// （挿入対象のレイヤを選択させることで、レイヤごとの管理を可能にする～messageレイヤのみ）
+ningloid.tag.button = {
+	vital: ["layer"],
+	pm: {
+		name: "", layer: "", exp: "", role: "",
+		text: "", hint: "", style: "",
+		left: "", top: "", width: "", height: "",
+		border: "", "border-radius": "", "border-style": "", "border-color": "",
+		"font": "", "font-color": "", "font-size": "", "font-weight": "",
+		"bg-image": "", "bg-color": "",
+		enterimg: "", downimg: "", clickimg: "",
+		enterse: "", downse: "", clickse: ""
+	},
+	start: (pm) => {
+		// Promise
+		let resolver = null;
+		let rejecter = null;
+		const p = new Promise((resolve, reject) => {
+			resolver = resolve;
+			rejecter = reject;
+		});
+		// 対象レイヤ
+		const $target = ningloid.layer.getLayer(pm.layer);
+
+		// ボタンのオブジェクト
+		const $button = $("<div class='graphicButton eventElement'></div>");
+
+		// ID, テキスト, ヒントを設定
+		if(pm.id !== ""){
+			// ID重複チェック
+			if($(`#${pm.name}`).length){
+				// 重複時はエラーを投げ、終了する
+				rejecter(`名称「${pm.name}」のボタンは既に存在するため、作成できません。<br>name属性を修正してください。`);
+			}
+			$button.attr("id", pm.name);
+		}
+		if(pm.text !== "") $button.html(pm.text);
+		if(pm.hint !== "") $button.attr("title", pm.hint);
+
+		// ボタンのスタイル
+		const style = {};
+		if(pm.left !== "") style.left = pm.left;
+		if(pm.top== "") style.top = pm.top;
+		if(pm.width !== "") style.width = pm.width;
+		if(pm.height !== "") style.height = pm.height;
+		if(pm.border !== ""){
+			// 線の太さ
+			style.border = `${pm.border} `;
+			// 線の種類
+			if(pm["border-style"] !== "") style.border += `${pm["border-style"]} `;
+			else style.border += "solid ";
+			// 線の色
+			if(pm["border-color"] !== "") style.border += `${pm["border-color"]} `;
+			else style.border += "black ";
+		}
+		if(pm["border-radius"] !== "") style["border-radius"] = pm["border-radius"];
+		if(pm.font !== "") style["font-family"] = pm.font;
+		if(pm["font-color"] !== "") style.color = pm["font-color"];
+		if(pm["font-size"] !== "") style["font-size"] = pm["font-size"];
+		if(pm["font-weight"] !== "") style["font-weight"] = pm["font-weight"];
+		if(pm["bg-image"] !== "") style["background-image"] = pm["bg-image"];
+		if(pm["bg-color"] !== "") style["background-color"] = pm["bg-color"];
+
+		// スタイル適応
+		$button.css(style);
+
+		// 各種イベントセット
+		ningloid.layer.setEvent($button, {
+			mouseenter: null,
+			mouseleave: null,
+			mousedown: null,
+			mouseup: null,
+			click: pm.role,
+		});
+
+		// DOMに追加
+		$target.append($button);
+
+		// 次へ
+		resolver();
+
+		return p;
+	}
+};
+// ボタンの表示演出を行う
+ningloid.tag.showbutton = {
+	// nameかlayerどちらか必須
+	vital: [["name", "layer"]],
+	pm: {
+		name: "", layer: "",
+		time: 3E2, method: "fadeIn", click: true, wait: true
+	},
+	start: (pm) => {
+		// Promise
+		let [resolver, rejecter] = [null, null];
+		const p = new Promise((resolve, reject) => [resolver, rejecter] = [resolve, reject]);
+
+		// 対象レイヤ
+		let $target = null;
+		if(pm.layer !== ""){
+			const $parent = ningloid.layer.getLayer(pm.layer);
+			$target = $parent.find(".graphicButton");
+			if($parent.css("opacity") == 0 || $parent.css("display") == "none") pm.method = "show";
+		}
+		if(pm.name !== "") $target = $(`#${pm.name}`);
+
+		// 表示アニメーション
+		ningloid.animate.ext.play($target, {
+			method: pm.method,
+			duration: parseInt(pm.time),
+			// easing: pm.easing,
+			skippable: pm.click,
+		}, [resolver, rejecter], function(){
+			// 次へ
+			if(String(pm.wait) == "true") resolver();
+		});
+
+		// 処理終了待たずに次へ
+		if(String(pm.wait) == "false") resolver();
+
+		return p;
+	}
+};
+// ボタンの消去演出を行う
+ningloid.tag.hidebutton = {
+	// nameかlayerどちらか必須
+	vital: [["name", "layer"]],
+	pm: {
+		name: "", layer: "",
+		time: 3E2, method: "fadeOut", click: true, wait: true
+	},
+	start: (pm) => {
+		// Promise
+		let [resolver, rejecter] = [null, null];
+		const p = new Promise((resolve, reject) => [resolver, rejecter] = [resolve, reject]);
+
+		// 対象レイヤ
+		let $target = null;
+		if(pm.layer !== ""){
+			const $parent = ningloid.layer.getLayer(pm.layer);
+			$target = $parent.find(".graphicButton");
+			if($parent.css("opacity") == 0 || $parent.css("display") == "none") pm.method = "hide";
+		}
+		if(pm.name !== "") $target = $(`#${pm.name}`);
+
+		// 表示アニメーション
+		ningloid.animate.ext.play($target, {
+			method: pm.method,
+			duration: parseInt(pm.time),
+			// easing: pm.easing,
+			skippable: pm.click,
+		}, [resolver, rejecter], function(){
+			// 次へ
+			if(String(pm.wait) == "true") resolver();
+		});
+
+		// 処理終了待たずに次へ
+		if(String(pm.wait) == "false") resolver();
+
+		return p;
 	}
 };
 

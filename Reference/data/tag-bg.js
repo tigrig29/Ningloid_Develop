@@ -13,7 +13,7 @@ tag_data.kind_of_bg = {
 			parameter:[
 				{
 					name: "storage", required: "○", default: "×", type: "文字列(アドレス)",
-					description: "背景画像を指定します。対象フォルダは./data/bgimage/です。${storage_suffix}"
+					description: "背景画像を指定します。対象フォルダは「bgimage」です。${storageSuffix}"
 				},
 				{
 					name: "left", required: "×", default: "0", type: "数値(px)",
@@ -117,7 +117,9 @@ tag_data.kind_of_bg = {
 					@bg storage=test.jpg left=1920 fit=cover<br><br>\
 					;背景表示演出開始と同時にBGM再生を開始する<br>\
 					@bg storage=test.jpg time=3000 click=false wait=false<br>\
-					@playbgm storage=test.ogg\
+					@playbgm storage=test.ogg<br><br>\
+					;※背景画像の保存先が「bgimage/???」である場合<br>\
+					@bg storage=\"???/test.jpg\" time=3000\
 					"
 		},
 	}

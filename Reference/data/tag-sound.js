@@ -13,7 +13,7 @@ tag_data.kind_of_sound = {
 			parameter:[
 				{
 					name: "storage", required: "○", default: "×", type: "文字列<br>(アドレス)",
-					description: "音声ファイル名を指定します。対象フォルダは./data/bgm/です。${storage_suffix}"
+					description: "音声ファイル名を指定します。対象フォルダは「bgm」です。${storageSuffix}"
 				},
 				{
 					name: "fade", required: "×", default: "0", type: "数値[ms]",
