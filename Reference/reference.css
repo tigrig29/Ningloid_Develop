@@ -214,7 +214,7 @@ table.tag_parameter > tbody > tr > td:last-child{
 
 /* タグの記述例 */
 .tag_example{
-	font-family: 'Courier','Avenir Next',YuGothic,'Yu Gothic','Hiragino Kaku Gothic ProN','ヒラギノ角ゴ ProN W3';
+	font-family: 'Avenir Next',YuGothic,'Yu Gothic','Hiragino Kaku Gothic ProN','ヒラギノ角ゴ ProN W3';
 	margin-top: 30px;
 	font-size: 1.3em;
 }

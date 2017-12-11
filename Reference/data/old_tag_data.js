@@ -355,7 +355,7 @@ var tag_data = {
 				parameter:[
 					{
 						name: "storage", required: "○", default: "×", type: "文字列(アドレス)",
-						description: "背景画像を指定します。対象フォルダは./data/bgimage/です。${storage_suffix}"
+						description: "背景画像を指定します。対象フォルダは./data/bgimage/です。${storageSuffix}"
 					},
 					{
 						name: "left", required: "×", default: "0", type: "数値(px)",
@@ -489,11 +489,11 @@ var tag_data = {
 				parameter:[
 					{
 						name: "storage", required: "○", default: "×", type: "文字列(アドレス)",
-						description: "スチル画像（差分を用いる場合にはベース画像）のファイル名を指定します。対象フォルダは./data/fgimage/still/です。${storage_suffix}"
+						description: "スチル画像（差分を用いる場合にはベース画像）のファイル名を指定します。対象フォルダは./data/fgimage/still/です。${storageSuffix}"
 					},
 					{
 						name: "upon", required: "×", default: "-", type: "文字列(アドレス)",
-						description: "スチルの差分画像のファイル名を指定します。対象フォルダは./data/fgimage/still/です。${storage_suffix}"
+						description: "スチルの差分画像のファイル名を指定します。対象フォルダは./data/fgimage/still/です。${storageSuffix}"
 					},
 					{
 						name: "left", required: "×", default: "0", type: "数値(px)",
@@ -571,7 +571,7 @@ var tag_data = {
 				parameter:[
 					{
 						name: "storage", required: "○", default: "×", type: "文字列(アドレス)",
-						description: "スチルの差分画像のファイル名を指定します。対象フォルダは./data/fgimage/still/です。${storage_suffix}"
+						description: "スチルの差分画像のファイル名を指定します。対象フォルダは./data/fgimage/still/です。${storageSuffix}"
 					},
 					{
 						name: "effect", required: "×", default: "linear", type: "文字列(リンク先参照)",
@@ -763,7 +763,7 @@ var tag_data = {
 				parameter:[
 					{
 						name: "storage", required: "○", default: "×", type: "文字列(アドレス)",
-						description: "動画を指定します。対象フォルダは./data/video/overlay/です。${storage_suffix}"
+						description: "動画を指定します。対象フォルダは./data/video/overlay/です。${storageSuffix}"
 					},
 					{
 						name: "time", required: "×", default: "500", type: "数値(ms)",
@@ -885,7 +885,7 @@ var tag_data = {
 				parameter:[
 					{
 						name: "storage", required: "○", default: "×", type: "文字列(アドレス)",
-						description: "音声ファイルを指定します。対象フォルダは./data/bgm/です。${storage_suffix}"
+						description: "音声ファイルを指定します。対象フォルダは./data/bgm/です。${storageSuffix}"
 					},
 					{
 						name: "loop", required: "×", default: "true", type: "真偽値",
@@ -949,7 +949,7 @@ var tag_data = {
 				parameter:[
 					{
 						name: "storage", required: "○", default: "×", type: "文字列(アドレス)",
-						description: "音声ファイルを指定します。対象フォルダは./data/bgm/です。${storage_suffix}"
+						description: "音声ファイルを指定します。対象フォルダは./data/bgm/です。${storageSuffix}"
 					},
 					{
 						name: "fadein", required: "×", default: "false", type: "真偽値",
@@ -1014,7 +1014,7 @@ var tag_data = {
 					/*
 					{
 						name: "storage", required: "○", default: "×", type: "文字列(アドレス)",
-						description: "音声ファイルを指定します。対象フォルダは./data/bgm/です。${storage_suffix}"
+						description: "音声ファイルを指定します。対象フォルダは./data/bgm/です。${storageSuffix}"
 					},
 					*/
 					{

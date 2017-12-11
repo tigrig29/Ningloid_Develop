@@ -13,7 +13,7 @@ tag_data.kind_of_movie = {
 			parameter:[
 				{
 					name: "storage", required: "○", default: "×", type: "文字列<br>(アドレス)",
-					description: "動画ファイル名を指定します。対象フォルダは./data/video/です。${storage_suffix}"
+					description: "動画ファイル名を指定します。対象フォルダは「video」です。${storageSuffix}"
 				},
 				{
 					name: "layer", required: "○", default: "x", type: "文字列<br>(レイヤ名)",
@@ -45,7 +45,13 @@ tag_data.kind_of_movie = {
 									"また、何らかの処理のあとに、動画再生完了を待つ場合には[waitmovie]タグを使用します。"
 				},
 			],
-			example: ""
+			example: "\
+					;ムービーを再生 → クリックされたらフェードアウト<br>\
+					@playmovie storage=test.webm layer=fore0 clickremove=1000<br><br>\
+					;ムービーを再生 → クリックされたら終端までスキップし、その後フェードアウト<br>\
+					@playmovie storage=test.webm layer=fore0 clickskip=true<br>\
+					@removemovie layer=fore0 fade=1000\
+					"
 		},
 		stopmovie:{
 			name: "stopmovie",
@@ -76,12 +82,18 @@ tag_data.kind_of_movie = {
 									"フェードアウト${wait}"
 				},
 			],
-			example: ""
+			example: "\
+					;ムービー再生 → クリックされたら、停止＆ムービー消去<br>\
+					@playmovie storage=test.webm layer=fore0 wait=false<br>\
+					@l<br>\
+					@stopmovie layer=fore0 remove=true<br>\
+					\
+					"
 		},
 		resumemovie:{
 			name: "resumemovie",
 			overview: "動画を再開する",
-			description: "指定したレイヤ上の、停止中の動画を再開します。",
+			description: "指定したレイヤ上で停止中の動画を再開します。",
 			develop_info: [
 				"テスト実装", "-", "・volume実装<br>"
 			],
@@ -112,7 +124,15 @@ tag_data.kind_of_movie = {
 									"また、何らかの処理のあとに、動画再生完了を待つ場合には[waitmovie]タグを使用します。"
 				},
 			],
-			example: ""
+			example: "\
+					;3秒だけ再生<br>\
+					@playmovie storage=test.webm layer=fore1 wait=false<br>\
+					@wait time=3000<br>\
+					;一旦停止<br>\
+					@stopmovie layer=fore1<br>\
+					;クリックで再開<br>\
+					[l][resumemovie layer=fore1]\
+					"
 		},
 		removemovie:{
 			name: "removemovie",
@@ -139,7 +159,12 @@ tag_data.kind_of_movie = {
 					description: "フェードアウト${wait}"
 				},
 			],
-			example: "@"
+			example: "\
+					;ムービーを再生 → クリックされたら終端までスキップし、その後フェードアウト<br>\
+					@playmovie storage=test.webm layer=fore0 wait=false<br>\
+					@l<br>\
+					@removemovie layer=fore0 fade=1000 skip=true\
+					"
 		},
 	}
 };
