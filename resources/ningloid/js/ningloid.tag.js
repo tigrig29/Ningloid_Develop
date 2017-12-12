@@ -155,6 +155,41 @@ ningloid.tag.charashow = {
 				if(String(pm.wait) == "true") resolver();
 			});
 		});
+		// 処理終了待たずに次へ
+		if(String(pm.wait) == "false") resolver();
+
+		return p;
+	}
+};
+
+ningloid.tag.charahide = {
+	vital: ["name"],
+	pm: {
+		name: "",
+		time: 1E3, method: "fadeOut", easing: "linear",
+		click: true, wait: true
+	},
+	start: (pm) => {
+		// Promise
+		let [resolver, rejecter] = [null, null];
+		const p = new Promise((resolve, reject) => [resolver, rejecter] = [resolve, reject]);
+
+
+		const $target = $("#character").find(`#${pm.name}`);
+		// 消去アニメーション
+		ningloid.animate.ext.play($target, {
+			method: pm.method,
+			duration: parseInt(pm.time),
+			easing: pm.easing,
+			skippable: pm.click,
+		}, [resolver, rejecter], function(){
+			// ステージのクリア
+			ningloid.canvas.clearStage(pm.name);
+			// 次へ
+			if(String(pm.wait) == "true") resolver();
+		});
+		// 処理終了待たずに次へ
+		if(String(pm.wait) == "false") resolver();
 
 		return p;
 	}
@@ -844,6 +879,7 @@ ningloid.tag.jump = {
 		const p = new Promise((resolve, reject) => [resolver, rejecter] = [resolve, reject]);
 
 		const parser = ningloid.parser;
+		const label = parser.label.data[`*${pm.target.replace("*", "")}`];
 		if(pm.storage){
 			// シナリオファイルの読み込み
 			parser.loadScenarioByFile(`../resources/data/scenario/${pm.storage}`).then(() => {
@@ -851,14 +887,14 @@ ningloid.tag.jump = {
 				// この場合にはsetTimeoutで↓の処理を囲んだほうが良い
 					// setTimeout(() => {}, 200);
 				// シナリオの実行
-				parser.playScenarioByCache(pm.target ? parser.label[`*${pm.target}`].line : 0);
+				parser.playScenarioByCache(pm.target ? label.line : 0);
 				// 次へ＆これまでのシナリオファイルの逐次実行を停止する
 				resolver("stop");
 			});
 		}
 		else{
 			// シナリオの実行
-			parser.playScenarioByCache(parser.label[`*${pm.target}`].line);
+			parser.playScenarioByCache(label.line);
 			// 次へ＆これまでのシナリオファイルの逐次実行を停止する
 			resolver("stop");
 		}
@@ -991,6 +1027,22 @@ ningloid.tag.wait = {
 		setTimeout(() => {
 			resolver();
 		}, parseInt(pm.time))
+		return p;
+	}
+};
+ningloid.tag.text = {
+	vital: ["value"],
+	pm: {value: ""},
+	start: (pm) => {
+		// Promise
+		let resolver = null;
+		const p = new Promise((resolve, reject) => resolver = resolve);
+
+		(async () => {
+			await ningloid.parser.message.execute(pm.value);
+			resolver();
+		})();
+
 		return p;
 	}
 };

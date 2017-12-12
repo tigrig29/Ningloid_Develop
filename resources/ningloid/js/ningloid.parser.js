@@ -94,8 +94,9 @@ ningloid.parser = {
 			}
 
 			const stopFlag = await this.executePluralOrders(order);
-			if(stopFlag === "stop") return;
+			if(stopFlag === "stop") return order;
 		}
+		return order;
 	},
 
 	// ================================================================
@@ -268,7 +269,7 @@ ningloid.parser = {
 		if(orderType != "tag"){
 			this.orderObj = orderType;
 			// 実行した命令をログに表示（tag以外はここで、tagの場合はtag.execute内でログ表示処理を行う）
-			$.orderLog();
+			if(orderType != "comment") $.orderLog();
 		}
 
 		if(orderType != "label"){
@@ -441,7 +442,7 @@ ningloid.parser = {
 				}
 
 				// パラメータに変数が渡されている場合（&tf.testなど）、変数として処理する
-				if(val.substring(0, 1) == "&") pm[key] = ningloid.evalScript(val.replace("&", ""));
+				if(val.substring(0, 1) == "&") pm[key] = String(ningloid.evalScript(val.replace("&", "")));
 				else pm[key] = val;
 			}
 
@@ -523,7 +524,7 @@ ningloid.parser = {
 				// スキップ時
 				if(ningloid.flag.skipMode === true || ningloid.flag.systemSkipMode === true){
 					// テキスト一括表示
-					$target.html(text);
+					$target.append(text);
 					// 次へ
 					resolve();
 				}
@@ -692,8 +693,10 @@ ningloid.parser = {
 					// 全テキスト表示完了時
 					else{
 						// テキスト表示中フラグを消し、次へ
-						ningloid.flag.message.append = false;
-						resolver();
+						setTimeout(() => {
+							ningloid.flag.message.append = false;
+							resolver();
+						}, 300 + ningloid.config.message.textSpeed * 4);
 					}
 				}, ningloid.config.message.textSpeed);
 			}
@@ -762,6 +765,8 @@ ningloid.parser = {
 					return stopFlag;
 				}
 			}
+			// 生成したmp変数をリセットする
+			for(let key in ningloid.variable.mp) delete ningloid.variable.mp[key];
 		},
 		/**
 		 * マクロ内の処理として、命令を保管する

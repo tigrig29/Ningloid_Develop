@@ -1,8 +1,36 @@
 /* global tag_data: true */
 
 tag_data.kind_of_message = {
-	overview: "メッセージウィンドウ関連",
+	overview: "メッセージ関連",
 	tag: {
+		"text":{
+			name: "text",
+			overview: "テキストの表示",
+			description: "現在操作中のメッセージレイヤにテキストメッセージを表示します。<br>タグを使わないテキスト表示と処理内容は同じですが、タグを利用して文字出力を行いたい場合に利用します。",
+			develop_info: [
+				"完成", "-", "-"
+			],
+			parameter:[
+				{
+					name: "value", required: "○", default: "-", type: "文字",
+					description: "表示させるメッセージテキストを指定します。"
+				},
+			],
+			example: "\
+					;マクロを定義\
+					;キャラ名称用メッセージレイヤにキャラ名を表示する\
+					[macro name=\"showcharaname\"]\
+						;操作レイヤをキャラ名称用に切り替え\
+						[current layer=message1]\
+						;テキスト表示（マクロのtextパラメータで指定したテキストを表示できる）\
+						@text value=\%text\
+						;レイヤを表示\
+						[showmessage time=300]\
+						;操作レイヤをもとに戻しておく\
+						[current layer=message0]\
+					[endmacro]\
+					"
+		},
 		"r":{
 			name: "r",
 			overview: "改行",
@@ -20,7 +48,7 @@ tag_data.kind_of_message = {
 		"er":{
 			name: "er",
 			overview: "操作中メッセージレイヤのクリア",
-			description: "現在currentであるメッセージレイヤ(currentLayer)のメッセージをクリアします。",
+			description: "現在操作中のメッセージレイヤ(currentLayer)のメッセージをクリアします。",
 			develop_info: [
 				"完成", "-", "-"
 			],
