@@ -91,16 +91,6 @@ ningloidEditor.parser = {
 		for(let i = parser.line; i <= endLine; i++){
 			const order = orderArray[i];
 
-			// jumpタグが実行された場合
-			for(let val of order){
-				if(val.includes("jump") && (val.includes("[") || val.includes("@"))){
-					const e = "Sorry: Jumpタグの処理はエディタに未対応です。";
-					$.tagError(e);
-					if(ningloid.config.develop.mode === true) console.error(e);
-					return;
-				}
-			}
-
 			// 実行中の行数を保存
 			parser.line = i;
 
@@ -122,6 +112,17 @@ ningloidEditor.parser = {
 				await parser.executeOrder(order);
 				// 以降の処理実行は不要なので、次のループに進む
 				continue;
+			}
+
+			// jumpタグが実行された場合
+			for(let val of order){
+				if(val.includes("@jump") || val.split("jump")[0].replace(/\s/g, "") == "["){
+					const e = "Sorry: Jumpタグの処理はエディタに未対応です。";
+					// エラーフラグを立てることで、強制的に次の実行を止める（次の実行がなされるとエラーが重複する）
+					NLE.editor.errorStart(e);
+					NLE.editor.previewStop();
+					return "stop";
+				}
 			}
 
 			const stopFlag = await parser.executePluralOrders(order).catch((e) => {
@@ -160,6 +161,8 @@ ningloidEditor.parser = {
 
 		// 即時実行解除
 		ningloid.flag.systemSkipMode = false;
+
+		return stopFlag;
 	},
 
 
@@ -184,10 +187,10 @@ ningloidEditor.parser = {
 				break;
 			}
 		}
+		// ゲーム起動時の状態（初期状態）を復元する
+		ningloid.resetGame();
 		// 一致するオートセーブデータがなかった場合
 		if(saveKey === null){
-			// ゲーム起動時の状態（初期状態）を復元する
-			ningloid.resetGame();
 			if(cb) cb(restartLine);
 		}
 		else{

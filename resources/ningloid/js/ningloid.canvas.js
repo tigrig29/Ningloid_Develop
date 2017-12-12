@@ -218,6 +218,7 @@ ningloid.canvas = {
 		const that = this;
 		// spriteDataから読み込み画像のファイルパスを取得
 		const file = [];
+		console.log(spriteData)
 		for(let pass in spriteData) file.push(pass);
 		// 画像のロード
 		this.loadTexture(file, (textureArray) => {

@@ -99,32 +99,46 @@ const characterData = {
 	},
 
 	*/
-	// test: {
-	// 	normal: "testNormal.png",
-	// 	angry: "testAngry.png",
+
+	// サンプルシナリオで使うデータ
+
+	// singleモードの場合
+	// testA: {
+	// 	normal: "test_single/A/normal.png",
+	// 	angry: "test_single/A/angry.png",
+	// 	blue: "test_single/A/blue.png",
+	// 	tere: "test_single/A/tere.png",
 	// },
-	test: {
+	// testB: {
+	// 	normal: "test_single/B/normal.png",
+	// 	angry: "test_single/B/angry.png",
+	// 	blue: "test_single/B/blue.png",
+	// 	tere: "test_single/B/tere.png",
+	// },
+
+	// multiモードの場合
+	testA: {
 		pose: {
-			normal: "test/pose/normal.png",
-			second: "test/pose/second.png",
+			miko1: "test_multi/A/pose/miko1.png",
+			miko2: "test_multi/A/pose/miko2.png",
+			school1: "test_multi/A/pose/school1.png",
+			school2: "test_multi/A/pose/school2.png",
 		},
 		face: {
-			angry: "test/face/angry.png",
-			sad: "test/face/sad.png"
+			angry: "test_multi/A/face/angry.png",
+			sad: "test_multi/A/face/sad.png"
 		}
 	},
-	// test: {
-	// 	pose: {
-	// 		normal: "testMulti/pose/normal.png",
-	// 	},
-	// 	cloth: {
-	// 		school: "testMulti/cloth/school.png",
-	// 	},
-	// 	eye: {
-	// 		angry: "testMulti/eye/angry.png",
-	// 	},
-	// 	mouth: {
-	// 		laugh: "testMulti/mouth/laugh.png",
-	// 	}
-	// },
+	testB: {
+		pose: {
+			taisou1: "test_multi/B/pose/taisou1.png",
+			taisou2: "test_multi/B/pose/taisou2.png",
+			school1: "test_multi/B/pose/school1.png",
+			school2: "test_multi/B/pose/school2.png",
+		},
+		face: {
+			angry: "test_multi/B/face/angry.png",
+			sad: "test_multi/B/face/sad.png"
+		}
+	},
 };

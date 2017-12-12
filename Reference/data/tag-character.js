@@ -8,7 +8,7 @@ tag_data.kind_of_character = {
 			overview: "キャラクターの登場",
 			description: "キャラクターを登場させます。<br>CharacterSetting.jsのpartsModeによって、必須が「△」（image・????）のパラメータの必要有無が変化します。",
 			develop_info: [
-				"テスト実装", "-", "・form系のパラメータ実装<br>reflectパラメータ実装"
+				"テスト実装", "-", "・fromX, Yなどのパラメータ実装<br>reflectパラメータ実装"
 			],
 			parameter:[
 				{
@@ -88,6 +88,43 @@ tag_data.kind_of_character = {
 					;パーツ画像として、CharaSettingに記述したパーツ名のパラメータを指定する必要がある<br>\
 					;パーツとして「pose」「face」の2つを定義した例<br>\
 					@charaShow name=test2 pose=test_pose1 face=test_face1\
+					"
+		},
+		"charahide":{
+			name: "charahide",
+			overview: "キャラクターの退場",
+			description: "キャラクターを退場させます。",
+			develop_info: [
+				"テスト実装", "-", ""
+			],
+			parameter:[
+				{
+					name: "name", required: "○", default: "×", type: "名称",
+					description: "登場させる${charaName}"
+				},
+				{
+					name: "time", required: "×", default: "1000", type: "数値(ms)",
+					description: "表示${time}"
+				},
+				{
+					name: "method", required: "×", default: "fadeIn", type: "名称",
+					description: "表示${hideMethod}"
+				},
+				{
+					name: "easing", required: "×", default: "linear", type: "文字列(リンク先参照)",
+					description: "${easing}"
+				},
+				{
+					name: "click", required: "×", default: "true", type: "真偽値",
+					description: "${click}"
+				},
+				{
+					name: "wait", required: "×", default: "true", type: "真偽値",
+					description: "${wait}"
+				}
+			],
+			example:"\
+					@charahide name=test\
 					"
 		},
 	}

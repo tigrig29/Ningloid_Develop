@@ -290,12 +290,22 @@ ningloidEditor.editor = {
 			const activeEditor = this.getActiveEditor();
 			const newLine = activeEditor.getCursorPosition().row;
 
-			await NLE.parser.skipProceedScenario(0, newLine - 1);
-
-			await ningloid.parser.playScenario(ningloid.parser.orderArray, newLine).catch((e) => {
-				$.tagError(e);
-				if(ningloid.config.develop.mode === true) console.error(e);
-			});
+			const stopFlag = await NLE.parser.skipProceedScenario(0, newLine - 1);
+			let order = "";
+			if(stopFlag != "stop"){
+				order = await ningloid.parser.playScenario(ningloid.parser.orderArray, newLine).catch((e) => {
+					$.tagError(e);
+					if(ningloid.config.develop.mode === true) console.error(e);
+				});
+			}
+			else{
+				alert(`${ningloid.parser.line+1}行目のタグで進行を停止しているため、カーソル行以降を実行することが出来ません。`)
+			}
+			for(let val of order){
+				if(val.includes("@jump") || val.split("jump")[0].replace(/\s/g, "") == "["){
+					alert("[jump]タグはプレビュー上での実行に対応していません。");
+				}
+			}
 			// フラグ消す
 			this.playEnd();
 			// リセット
