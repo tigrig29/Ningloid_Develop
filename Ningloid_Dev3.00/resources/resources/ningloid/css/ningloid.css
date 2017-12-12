@@ -1,0 +1,149 @@
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+body{
+	margin: auto;
+	background-color: black;
+}
+div{
+	margin: auto;
+	user-select: none;
+}
+
+/* 統括レイヤ */
+#ningloidBase{
+	position: absolute;
+    transform-origin : left top;
+}
+.wrapper{
+	position: absolute;
+}
+
+/* ダミーラッパー */
+#dummyWrapper{
+	z-index: -20;
+	display: none;
+}
+
+/* キャンバスレイヤ */
+#canvasWrapper{
+	z-index: -10;
+}
+.canvasLayer{
+	/* HTMLコード上のスペースにより、インライン要素に生じる数pxの隙間を消す */
+	font-size: 0px;
+	position: absolute;
+}
+#bg{
+	z-index: 0;
+}
+.characterLayer{
+	z-index: 10;
+}
+
+/* システムレイヤ */
+#systemWrapper{
+}
+.systemLayer{
+	position: absolute;
+}
+
+/* クリックレイヤ */
+#clickLayer{
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	opacity: 0;
+	z-index: 10000;
+}
+
+/* メッセージレイヤ */
+.messageLayer{
+	opacity: 0;
+	width: 100%;
+	height: 100%;
+	display: none;
+	pointer-events: auto;
+}
+.messageOuter{
+	left: 5%;
+	top: 5%;
+	width: 90%;
+	height: 90%;
+	background-color: rgb(50, 50, 50);
+	opacity: 1.0;
+}
+.messageInner{
+	left: 5%;
+	top: 5%;
+	width: 90%;
+	height: 90%;
+	overflow: hidden;
+	font-size: 35px;
+	line-height: 50px;
+	color: white;
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+/* フリーレイヤ */
+#freeLayer{
+	width: 100%;
+	height: 100%;
+}
+
+/* メニューラッパー */
+#menuWrapper{
+	z-index: 1000000;
+	display: none;
+}
+
+/* イベントエレメント */
+.eventElement{
+	z-index: 10001;
+}
+
+/* グラフィカルボタン */
+.graphicButton{
+	margin: auto;
+	position: absolute;
+	text-align: center;
+	opacity: 0;
+	cursor: pointer;
+	/* アンチエイリアシング */
+    transform: rotate(0.028deg);
+    -webkit-transform: rotate(0.028deg);
+}
+
+/* ブラインドレイヤ */
+#blind{
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	position: absolute;
+	font-size: 4.0em;
+	color: white;
+	text-align: center;
+	-webkit-transform-origin:left top;
+	transform-origin:left top;
+	display: none;
+}
+
+
+
+/*================================================================*/
+/* 各種追加エレメント */
+/*================================================================*/
+
+video{
+	left:0;
+	top:0;
+	width: 100%;
+	height: 100%;
+	position:absolute;
+}
