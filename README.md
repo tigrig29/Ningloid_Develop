@@ -7,6 +7,14 @@
 
 <br>
 
+# アンケートについて
+Ningloid開発テスト版は、大学の卒業研究として制作しております。論文執筆へ向けて当エンジンの評価を行いたく、アンケートの回答をお願いしています。\
+差し支えなければ、以下のリンクからアンケートページへジャンプし、回答をよろしくお願いいたします。
+
+[Ningloidに関するアンケート](https://drive.google.com/open?id=1qUGayqtloT6IAbCEa4bHWRYiaVTz9Ba-NsElx7JJ03E)
+
+<br>
+
 # フォルダ構成
 Ningloid/\
 &nbsp;&nbsp;┣ locales/\
@@ -193,14 +201,6 @@ chara_name: {
 # システム設定
 ゲーム画面の解像度やテキスト表示速度などのシステム設定を行うには、Config.jsを編集して下さい。
 詳細はConfig.js内のコメントに記述しています。
-
-<br>
-
-# アンケートについて
-Ningloid開発テスト版は、大学の卒業研究として制作しております。そのため、論文執筆へ向けて幾つか調査したいことがあり、アンケートの回答をお願いしています。\
-差し支えなければ、以下のリンクからアンケートページへジャンプし、回答をよろしくお願いいたします。
-
-[Ningloidに関するアンケート](https://drive.google.com/open?id=1qUGayqtloT6IAbCEa4bHWRYiaVTz9Ba-NsElx7JJ03E)
 
 <!-- 
 
