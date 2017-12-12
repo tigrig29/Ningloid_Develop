@@ -3,7 +3,9 @@
 
 こちらでは、テスト用に簡単な使用方法を記載しています。
 
-[Release]()からダウンロードできます。
+[Release](https://github.com/tigrig29/Ningloid_Develop/releases)からダウンロードできます。
+
+<font style="color: rgba(0, 0, 0, 0)">aaaa</font>
 
 # フォルダ構成
 Ningloid/\
@@ -26,6 +28,8 @@ Ningloid/\
 ※太字箇所は、ゲーム開発時に主に利用するファイル・フォルダです。
 
 
+<font style="color: rgba(0, 0, 0, 0)">aaaa</font>
+
 
 # Ningloidの使い方
 
@@ -36,6 +40,8 @@ Ningloidフォルダの中の『**ningloid.exe**』をクリックして下さ�
 エディタエリアをクリック、あるいは↑↓キーで行カーソル移動すると、カーソル行までの実行状態がゲームエリアにリアルタイムで表示されます。
 
 リアルタイムプレビューでは、エディタのアクティブなタブ（編集中のシナリオファイル）の命令のみ実行します。つまりタブを切り替えるごとにプレビューはリセットされ、また[jump]などのシナリオファイルを移動する命令は実行できません。
+
+<font style="color: rgba(0, 0, 0, 0)">aaaa</font>
 
 ## エディタの使い方
 
@@ -86,7 +92,12 @@ Ningloidフォルダの中の『**ningloid.exe**』をクリックして下さ�
 | エラー     | スクリプトエラーにより、リアルタイムプレビューを停止している状態<br>です。エラー箇所を修正し、**保存処理を行うとリアルタイムプレビュー<br>が再度実行**されます。 |
 | 実行中     | 「カーソル行以降の実行」が開始され、編集、リアルタイムプレビュー<br>が無効化された状態です。実行停止すると、この状態は解除されます。 |
 
+<font style="color: rgba(0, 0, 0, 0)">aaaa</font>
 
+## 挙動がおかしくなった場合
+もし動作がおかしくなったり、操作不能になったりした場合には、ショートカットキー『**Ctrl+R**』あるいは『**ツールバー→ウィンドウ→リロード**』で、リロードを行って下さい。
+
+<font style="color: rgba(0, 0, 0, 0)">aaaa</font>
 
 # スクリプトの書き方
 ## タグについて
@@ -96,6 +107,8 @@ Ningloidフォルダの中の『**ningloid.exe**』をクリックして下さ�
 ![タグ説明画像](https://raw.githubusercontent.com/tigrig29/Ningloid_Develop/readme_image/3.png)
 
 使用できるタグの種類や、各タグの説明は[リファレンス](#リファレンス)を参照してください。
+
+<font style="color: rgba(0, 0, 0, 0)">aaaa</font>
 
 ## 記述規則
 
@@ -107,6 +120,8 @@ Ningloidフォルダの中の『**ningloid.exe**』をクリックして下さ�
 |行頭に ;|コメント|何も実行されない（無視される）|
 |行頭に *|ラベル|シナリオの区切り<br>オートセーブが実行される<br>[jump]タグなどでシナリオジャンプが出来る|
 
+<font style="color: rgba(0, 0, 0, 0)">aaaa</font>
+
 ## スクリプトの例
 
 ![スクリプトサンプル](https://raw.githubusercontent.com/tigrig29/Ningloid_Develop/readme_image/2.png)
@@ -117,6 +132,8 @@ Ningloidフォルダの中の『**ningloid.exe**』をクリックして下さ�
 Ningloid.exeを起動し、ツールバー（上部のラベル）の「ヘルプ」→「リファレンス」をクリックすると、規定のブラウザでNingloid公式リファレンスが表示されます。
 
 タグの使い方やパラメータがわからない場合は、こちらを参考にして下さい。
+
+<font style="color: rgba(0, 0, 0, 0)">aaaa</font>
 
 # キャラクター定義
 キャラクターを表示するには[charashow]タグを使用しますが、予め**CharacterSetting.js**にてキャラクター定義しておく必要があります。
@@ -171,15 +188,19 @@ chara_name: {
 },
 ```
 
+<font style="color: rgba(0, 0, 0, 0)">aaaa</font>
+
 # システム設定
 ゲーム画面の解像度やテキスト表示速度などのシステム設定を行うには、Config.jsを編集して下さい。
 詳細はConfig.js内のコメントに記述しています。
+
+<font style="color: rgba(0, 0, 0, 0)">aaaa</font>
 
 # アンケートについて
 Ningloid開発テスト版は、大学の卒業研究として制作しております。そのため、論文執筆へ向けて幾つか調査したいことがあり、アンケートの回答をお願いしています。\
 差し支えなければ、以下のリンクからアンケートページへジャンプし、回答をよろしくお願いいたします。
 
-[Ningloidに関するアンケート]()
+[Ningloidに関するアンケート](https://drive.google.com/open?id=1qUGayqtloT6IAbCEa4bHWRYiaVTz9Ba-NsElx7JJ03E)
 
 <!-- 
 
