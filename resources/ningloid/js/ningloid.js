@@ -178,6 +178,7 @@ const ningloid = {
 	 * ※statデータや画面の状態を初期状態にする
 	 */
 	resetGame(){
+				console.log("aaa")
 		// 音声の停止
 		for(let target in this.tmp.audio){
 			for(let audio of this.tmp.audio[target]){

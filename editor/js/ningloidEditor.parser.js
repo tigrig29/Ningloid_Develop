@@ -184,10 +184,10 @@ ningloidEditor.parser = {
 				break;
 			}
 		}
+		// ゲーム起動時の状態（初期状態）を復元する
+		ningloid.resetGame();
 		// 一致するオートセーブデータがなかった場合
 		if(saveKey === null){
-			// ゲーム起動時の状態（初期状態）を復元する
-			ningloid.resetGame();
 			if(cb) cb(restartLine);
 		}
 		else{

@@ -405,7 +405,7 @@ ningloid.tag.playbgm = {
 			if(!(String(pm.fade) == "false" || pm.fade == "0")){
 				audio.volume = 0;
 				const plusVolume = (parseInt(pm.volume) / 100) / (parseInt(pm.fade) / 10);
-				const timer = setInterval(() => {
+				const timer = ningloid.tmp.audioTimer = setInterval(() => {
 					if(audio.volume + plusVolume >= 1.0) audio.volume = 1.0;
 					else audio.volume += plusVolume;
 					if(audio.volume >= parseFloat(pm.volume) / 100) clearInterval(timer);
