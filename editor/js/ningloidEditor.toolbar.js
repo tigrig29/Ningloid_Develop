@@ -256,13 +256,19 @@ const template = [
 		label: "ヘルプ",
 		submenu: [
 			{
+				label: "Ningloidの使い方",
+				click () {
+					require("electron").shell.openExternal("https://github.com/tigrig29/Ningloid_Develop");
+				}
+			},
+			{
 				label: "タグリファレンス",
 				click () {
 					let dir = __dirname.replace(/\\/g, "/").replace(/\/editor|\/app/g, "");
 					// console.log(`file://${dir}/Reference/reference.html`);
 					require("electron").shell.openExternal(`file://${dir}/Reference/reference.html`);
 				}
-			}
+			},
 		]
 	}
 ];
