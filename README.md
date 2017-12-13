@@ -110,13 +110,13 @@ Ningloidフォルダの中の『**ningloid.exe**』をクリックして下さ�
 # スクリプトの書き方
 ## タグについて
 「タグ」とは、ゲームに何らかの動作をさせるための命令のことです。\
-次のような規則で記述します。
-
-![タグ説明画像](https://raw.githubusercontent.com/tigrig29/Ningloid_Develop/readme_image/3.png)
-
 使用できるタグの種類や、各タグの説明は[リファレンス](#リファレンス)を参照してください。
 
+次のような規則で記述します。
+
+![タグ説明画像](https://raw.githubusercontent.com/tigrig29/Ningloid_Develop/readme_image/3_.png)
 <br>
+
 
 ## 記述規則
 
